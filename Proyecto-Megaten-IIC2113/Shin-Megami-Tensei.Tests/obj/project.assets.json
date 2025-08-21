@@ -978,20 +978,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\colas\\.nuget\\packages\\": {}
+    "/Users/cristobalmingo/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\colas\\Downloads\\E12\\Proyecto-Megaten-IIC2113\\Proyecto-Megaten-IIC2113\\Shin-Megami-Tensei.Tests\\Shin-Megami-Tensei.Tests.csproj",
+      "projectUniqueName": "/Users/cristobalmingo/Downloads/8º semestre/Diseño detallado/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei.Tests/Shin-Megami-Tensei.Tests.csproj",
       "projectName": "Shin-Megami-Tensei.Tests",
-      "projectPath": "C:\\Users\\colas\\Downloads\\E12\\Proyecto-Megaten-IIC2113\\Proyecto-Megaten-IIC2113\\Shin-Megami-Tensei.Tests\\Shin-Megami-Tensei.Tests.csproj",
-      "packagesPath": "C:\\Users\\colas\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\colas\\Downloads\\E12\\Proyecto-Megaten-IIC2113\\Proyecto-Megaten-IIC2113\\Shin-Megami-Tensei.Tests\\obj\\",
+      "projectPath": "/Users/cristobalmingo/Downloads/8º semestre/Diseño detallado/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei.Tests/Shin-Megami-Tensei.Tests.csproj",
+      "packagesPath": "/Users/cristobalmingo/.nuget/packages/",
+      "outputPath": "/Users/cristobalmingo/Downloads/8º semestre/Diseño detallado/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei.Tests/obj/",
       "projectStyle": "PackageReference",
-      "UsingMicrosoftNETSdk": false,
       "configFilePaths": [
-        "C:\\Users\\colas\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "/Users/cristobalmingo/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
@@ -1003,11 +1002,11 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "projectReferences": {
-            "C:\\Users\\colas\\Downloads\\E12\\Proyecto-Megaten-IIC2113\\Proyecto-Megaten-IIC2113\\Shin-Megami-Tensei-Controller\\Shin-Megami-Tensei-Controller.csproj": {
-              "projectPath": "C:\\Users\\colas\\Downloads\\E12\\Proyecto-Megaten-IIC2113\\Proyecto-Megaten-IIC2113\\Shin-Megami-Tensei-Controller\\Shin-Megami-Tensei-Controller.csproj"
+            "/Users/cristobalmingo/Downloads/8º semestre/Diseño detallado/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/Shin-Megami-Tensei-Controller.csproj": {
+              "projectPath": "/Users/cristobalmingo/Downloads/8º semestre/Diseño detallado/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/Shin-Megami-Tensei-Controller.csproj"
             },
-            "C:\\Users\\colas\\Downloads\\E12\\Proyecto-Megaten-IIC2113\\Proyecto-Megaten-IIC2113\\Shin-Megami-Tensei-View\\Shin-Megami-Tensei-View.csproj": {
-              "projectPath": "C:\\Users\\colas\\Downloads\\E12\\Proyecto-Megaten-IIC2113\\Proyecto-Megaten-IIC2113\\Shin-Megami-Tensei-View\\Shin-Megami-Tensei-View.csproj"
+            "/Users/cristobalmingo/Downloads/8º semestre/Diseño detallado/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-View/Shin-Megami-Tensei-View.csproj": {
+              "projectPath": "/Users/cristobalmingo/Downloads/8º semestre/Diseño detallado/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-View/Shin-Megami-Tensei-View.csproj"
             }
           }
         }
@@ -1021,7 +1020,8 @@
         "enableAudit": "true",
         "auditLevel": "low",
         "auditMode": "direct"
-      }
+      },
+      "SdkAnalysisLevel": "9.0.300"
     },
     "frameworks": {
       "net8.0": {
@@ -1055,26 +1055,12 @@
         ],
         "assetTargetFallback": true,
         "warn": true,
-        "downloadDependencies": [
-          {
-            "name": "Microsoft.AspNetCore.App.Ref",
-            "version": "[8.0.11, 8.0.11]"
-          },
-          {
-            "name": "Microsoft.NETCore.App.Ref",
-            "version": "[8.0.11, 8.0.11]"
-          },
-          {
-            "name": "Microsoft.WindowsDesktop.App.Ref",
-            "version": "[8.0.11, 8.0.11]"
-          }
-        ],
         "frameworkReferences": {
           "Microsoft.NETCore.App": {
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.101/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/9.0.304/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

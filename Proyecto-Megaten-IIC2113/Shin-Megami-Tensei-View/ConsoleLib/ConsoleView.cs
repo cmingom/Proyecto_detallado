@@ -2,6 +2,8 @@
 
 public class ConsoleView : AbstractView
 {
+    private const string INPUT_PROMPT = "INPUT: ";
+
     protected override void Write(object text)
     {
         base.Write(text);
@@ -10,7 +12,7 @@ public class ConsoleView : AbstractView
 
     protected override string GetNextInput()
     {
-        Console.Write("INPUT: ");
-        return Console.ReadLine();
+        Console.Write(INPUT_PROMPT);
+        return Console.ReadLine() ?? string.Empty;
     }
 }

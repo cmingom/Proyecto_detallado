@@ -1,0 +1,39 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v9.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v9.0": {
+      "debug_project/1.0.0": {
+        "dependencies": {
+          "Shin-Megami-Tensei-Model": "1.0.0"
+        },
+        "runtime": {
+          "debug_project.dll": {}
+        }
+      },
+      "Shin-Megami-Tensei-Model/1.0.0": {
+        "runtime": {
+          "Shin-Megami-Tensei-Model.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "debug_project/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Shin-Megami-Tensei-Model/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

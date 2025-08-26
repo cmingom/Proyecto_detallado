@@ -1,0 +1,11 @@
+/Users/cristobalmingo/Downloads/8º semestre/Diseño detallado/Copia E1 copia/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Model/bin/Debug/net8.0/Shin-Megami-Tensei-Model.deps.json
+/Users/cristobalmingo/Downloads/8º semestre/Diseño detallado/Copia E1 copia/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Model/bin/Debug/net8.0/Shin-Megami-Tensei-Model.dll
+/Users/cristobalmingo/Downloads/8º semestre/Diseño detallado/Copia E1 copia/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Model/bin/Debug/net8.0/Shin-Megami-Tensei-Model.pdb
+/Users/cristobalmingo/Downloads/8º semestre/Diseño detallado/Copia E1 copia/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Model/obj/Debug/net8.0/Shin-Megami-Tensei-Model.GeneratedMSBuildEditorConfig.editorconfig
+/Users/cristobalmingo/Downloads/8º semestre/Diseño detallado/Copia E1 copia/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Model/obj/Debug/net8.0/Shin-Megami-Tensei-Model.AssemblyInfoInputs.cache
+/Users/cristobalmingo/Downloads/8º semestre/Diseño detallado/Copia E1 copia/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Model/obj/Debug/net8.0/Shin-Megami-Tensei-Model.AssemblyInfo.cs
+/Users/cristobalmingo/Downloads/8º semestre/Diseño detallado/Copia E1 copia/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Model/obj/Debug/net8.0/Shin-Megami-Tensei-Model.csproj.CoreCompileInputs.cache
+/Users/cristobalmingo/Downloads/8º semestre/Diseño detallado/Copia E1 copia/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Model/obj/Debug/net8.0/Shin-Megami-Tensei-Model.dll
+/Users/cristobalmingo/Downloads/8º semestre/Diseño detallado/Copia E1 copia/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Model/obj/Debug/net8.0/refint/Shin-Megami-Tensei-Model.dll
+/Users/cristobalmingo/Downloads/8º semestre/Diseño detallado/Copia E1 copia/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Model/obj/Debug/net8.0/Shin-Megami-Tensei-Model.pdb
+/Users/cristobalmingo/Downloads/8º semestre/Diseño detallado/Copia E1 copia/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Model/obj/Debug/net8.0/ref/Shin-Megami-Tensei-Model.dll

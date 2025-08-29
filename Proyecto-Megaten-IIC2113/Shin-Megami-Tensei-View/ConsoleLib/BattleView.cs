@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using Shin_Megami_Tensei_Model.Domain.States;
 using Shin_Megami_Tensei_Model.Domain.Entities;
+using Shin_Megami_Tensei_Model.CombatSystem.Core;
 
 namespace Shin_Megami_Tensei_View.ConsoleLib
 {
-    public class BattleView
+    public class BattleView : IBattleView
     {
         private readonly View view;
 

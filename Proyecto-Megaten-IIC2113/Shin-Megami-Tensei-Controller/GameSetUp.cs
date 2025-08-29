@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Shin_Megami_Tensei_Model.Domain.Entities;
 using Shin_Megami_Tensei_Model.Domain.States;
+using Shin_Megami_Tensei_Model.CombatSystem.Core;
 
 namespace Shin_Megami_Tensei
 {
@@ -14,8 +15,7 @@ namespace Shin_Megami_Tensei
             this.unitData = unitData;
         }
         
-        public BattleState CreateBattleState(List<Game.UnitInfo> team1, 
-                                           List<Game.UnitInfo> team2)
+        public BattleState CreateBattleState(List<GameService.UnitInfo> team1, List<GameService.UnitInfo> team2)
         {
             var team1Units = CreateTeamUnits(team1);
             var team2Units = CreateTeamUnits(team2);
@@ -26,7 +26,7 @@ namespace Shin_Megami_Tensei
             return new BattleState(battleTeam1, battleTeam2);
         }
         
-        private List<UnitInstance> CreateTeamUnits(List<Game.UnitInfo> team)
+        private List<UnitInstance> CreateTeamUnits(List<GameService.UnitInfo> team)
         {
             var units = new List<UnitInstance>();
             char[] positions = { 'A', 'B', 'C', 'D' };
@@ -56,8 +56,7 @@ namespace Shin_Megami_Tensei
             return units;
         }
         
-        public (string player1Name, string player2Name) GetPlayerNames(List<Game.UnitInfo> team1, 
-                                                                                  List<Game.UnitInfo> team2)
+        public (string player1Name, string player2Name) GetPlayerNames(List<GameService.UnitInfo> team1, List<GameService.UnitInfo> team2)
         {
             var player1Name = team1.FirstOrDefault(u => u.IsSamurai)?.Name ?? team1.FirstOrDefault()?.Name ?? "Player1";
             var player2Name = team2.FirstOrDefault(u => u.IsSamurai)?.Name ?? team2.FirstOrDefault()?.Name ?? "Player2";

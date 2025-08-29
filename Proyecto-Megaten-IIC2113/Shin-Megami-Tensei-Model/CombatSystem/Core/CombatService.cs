@@ -36,52 +36,61 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 
             while (!actionCompleted)
             {
-                var actions = GetAvailableActions(actingUnit);
-                battleView.ShowActionMenu(actingUnit, actions);
+                var availableActions = GetAvailableActions(actingUnit);
+                battleView.ShowActionMenu(actingUnit, availableActions);
 
-                var choice = battleView.GetActionChoice(actions.Count);
-                if (choice == -1) continue;
+                var actionChoice = battleView.GetActionChoice(availableActions.Count);
+                if (actionChoice == -1) continue;
 
-                var selectedAction = actions[choice - 1];
-
-                switch (selectedAction)
+                var selectedAction = availableActions[actionChoice - 1];
+                actionCompleted = ExecuteSelectedAction(actingUnit, battleState, selectedAction, player1Name, player2Name);
+                
+                if (IsPlayerSurrendering(selectedAction))
                 {
-                    case "Atacar":
-                        actionCompleted = ExecutePhysicalAttack(actingUnit, battleState);
-                        break;
-                    case "Disparar":
-                        actionCompleted = ExecuteGunAttack(actingUnit, battleState);
-                        break;
-                    case "Usar Habilidad":
-                        if (ProcessUseSkill(actingUnit, battleState))
-                        {
-                            actionCompleted = true;
-                        }
-                        break;
-                    case "Invocar":
-                        actionCompleted = true;
-                        break;
-                    case "Pasar Turno":
-                        actionCompleted = true;
-                        break;
-                    case "Rendirse":
-                        return ProcessSurrender(battleState, player1Name, player2Name);
-                    default:
-                        break;
+                    return true;
                 }
             }
 
             return false;
         }
 
+        private bool ExecuteSelectedAction(UnitInstance actingUnit, BattleState battleState, string selectedAction, string player1Name, string player2Name)
+        {
+            switch (selectedAction)
+            {
+                case "Atacar":
+                    return ExecutePhysicalAttack(actingUnit, battleState);
+                case "Disparar":
+                    return ExecuteGunAttack(actingUnit, battleState);
+                case "Usar Habilidad":
+                    return ProcessUseSkill(actingUnit, battleState);
+                case "Invocar":
+                    return true;
+                case "Pasar Turno":
+                    return true;
+                case "Rendirse":
+                    ProcessSurrender(battleState, player1Name, player2Name);
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        private bool IsPlayerSurrendering(string selectedAction)
+        {
+            return selectedAction == "Rendirse";
+        }
+
         public bool ExecutePhysicalAttack(UnitInstance attacker, BattleState battleState)
         {
-            return ProcessAttack(attacker, battleState, isGunAttack: false);
+            var attackContext = new AttackContext(attacker, battleState, AttackType.Physical);
+            return ProcessAttack(attackContext);
         }
 
         public bool ExecuteGunAttack(UnitInstance attacker, BattleState battleState)
         {
-            return ProcessAttack(attacker, battleState, isGunAttack: true);
+            var attackContext = new AttackContext(attacker, battleState, AttackType.Gun);
+            return ProcessAttack(attackContext);
         }
 
         public List<string> GetAvailableActions(UnitInstance unit)
@@ -110,29 +119,25 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             }
         }
 
-        private bool ProcessAttack(UnitInstance attacker, BattleState battleState, bool isGunAttack)
+        private bool ProcessAttack(AttackContext attackContext)
         {
-            var enemyTeam = battleState.IsPlayer1Turn ? battleState.Team2 : battleState.Team1;
-            var targets = GetTargets(enemyTeam);
+            var enemyTeam = GetEnemyTeam(attackContext.BattleState);
+            var availableTargets = GetAvailableTargets(enemyTeam);
 
-            if (!targets.Any())
+            if (!availableTargets.Any())
                 return false;
 
-            battleView.ShowTargetSelection(attacker, targets);
+            battleView.ShowTargetSelection(attackContext.Attacker, availableTargets);
 
-            var choice = battleView.GetTargetChoice(targets.Count);
-            if (choice == -1 || choice == targets.Count + 1)
+            var targetChoice = battleView.GetTargetChoice(availableTargets.Count);
+            if (IsInvalidTargetChoice(targetChoice, availableTargets.Count))
                 return false;
 
-            var target = targets[choice - 1];
-
-            int damage = isGunAttack
-                ? damageCalculator.CalculateGunDamage(attacker.Skl)
-                : damageCalculator.CalculatePhysicalDamage(attacker.Str);
-
-            target.HP = Math.Max(0, target.HP - damage);
-
-            battleView.ShowAttackResult(attacker, target, damage, isGunAttack);
+            var selectedTarget = availableTargets[targetChoice - 1];
+            var damage = CalculateAttackDamage(attackContext);
+            
+            ApplyDamageToTarget(selectedTarget, damage);
+            ShowAttackResult(attackContext, selectedTarget, damage);
 
             return true;
         }
@@ -143,13 +148,18 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 
             battleView.ShowSkillSelection(unit, availableSkills);
 
-            var choice = battleView.GetSkillChoice(availableSkills.Count);
-            if (choice == -1 || choice == availableSkills.Count + 1)
+            var skillChoice = battleView.GetSkillChoice(availableSkills.Count);
+            if (IsInvalidSkillChoice(skillChoice, availableSkills.Count))
             {
                 return false;
             }
 
             return true;
+        }
+
+        private bool IsInvalidSkillChoice(int skillChoice, int skillCount)
+        {
+            return skillChoice == -1 || skillChoice == skillCount + 1;
         }
 
         public List<Skill> GetAvailableSkills(UnitInstance unit)
@@ -169,14 +179,67 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 
         private bool ProcessSurrender(BattleState battleState, string player1Name, string player2Name)
         {
-            var playerName = battleState.IsPlayer1Turn ? player1Name : player2Name;
-            var playerNumber = battleState.IsPlayer1Turn ? "J1" : "J2";
-            var winnerName = battleState.IsPlayer1Turn ? player2Name : player1Name;
-            var winnerNumber = battleState.IsPlayer1Turn ? "J2" : "J1";
+            var surrenderingPlayerName = GetSurrenderingPlayerName(battleState, player1Name, player2Name);
+            var surrenderingPlayerNumber = GetSurrenderingPlayerNumber(battleState);
+            var winnerName = GetSurrenderWinnerName(battleState, player1Name, player2Name);
+            var winnerNumber = GetSurrenderWinnerNumber(battleState);
 
-            battleView.ShowSurrender(playerName, playerNumber, winnerName, winnerNumber);
+            battleView.ShowSurrender(surrenderingPlayerName, surrenderingPlayerNumber, winnerName, winnerNumber);
 
             return true;
+        }
+
+        private string GetSurrenderingPlayerName(BattleState battleState, string player1Name, string player2Name)
+        {
+            return battleState.IsPlayer1Turn ? player1Name : player2Name;
+        }
+
+        private string GetSurrenderingPlayerNumber(BattleState battleState)
+        {
+            return battleState.IsPlayer1Turn ? "J1" : "J2";
+        }
+
+        private string GetSurrenderWinnerName(BattleState battleState, string player1Name, string player2Name)
+        {
+            return battleState.IsPlayer1Turn ? player2Name : player1Name;
+        }
+
+        private string GetSurrenderWinnerNumber(BattleState battleState)
+        {
+            return battleState.IsPlayer1Turn ? "J2" : "J1";
+        }
+
+        private TeamState GetEnemyTeam(BattleState battleState)
+        {
+            return battleState.IsPlayer1Turn ? battleState.Team2 : battleState.Team1;
+        }
+
+        private List<UnitInstance> GetAvailableTargets(TeamState enemyTeam)
+        {
+            return enemyTeam.AliveUnits.ToList();
+        }
+
+        private bool IsInvalidTargetChoice(int targetChoice, int targetCount)
+        {
+            return targetChoice == -1 || targetChoice == targetCount + 1;
+        }
+
+        private int CalculateAttackDamage(AttackContext attackContext)
+        {
+            return attackContext.AttackType == AttackType.Gun
+                ? damageCalculator.CalculateGunDamage(attackContext.Attacker.Skl)
+                : damageCalculator.CalculatePhysicalDamage(attackContext.Attacker.Str);
+        }
+
+        private void ApplyDamageToTarget(UnitInstance target, int damage)
+        {
+            target.HP = Math.Max(0, target.HP - damage);
+        }
+
+        private void ShowAttackResult(AttackContext attackContext, UnitInstance target, int damage)
+        {
+            var isGunAttack = attackContext.AttackType == AttackType.Gun;
+            battleView.ShowAttackResult(attackContext.Attacker, target, damage, isGunAttack);
         }
 
         public List<UnitInstance> GetTargets(TeamState enemyTeam)
@@ -187,7 +250,11 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
         public void ConsumeTurn(BattleState battleState)
         {
             battleView.ShowTurnConsumption();
+            DecreaseFullTurns(battleState);
+        }
 
+        private void DecreaseFullTurns(BattleState battleState)
+        {
             battleState.FullTurns = Math.Max(0, battleState.FullTurns - 1);
         }
 

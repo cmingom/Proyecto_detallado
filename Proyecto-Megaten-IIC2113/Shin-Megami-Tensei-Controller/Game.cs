@@ -5,6 +5,7 @@ using System.IO;
 using Shin_Megami_Tensei_View;
 using Shin_Megami_Tensei_Model.CombatSystem.Core;
 using Shin_Megami_Tensei_Model.CombatSystem.Setup;
+using Shin_Megami_Tensei_Model.Domain.States;
 
 namespace Shin_Megami_Tensei;
 
@@ -18,6 +19,13 @@ public class Game
     public Game(View view, string teamsPath)
     {
         this.view = view;
+        InitializeTeamsPath(teamsPath);
+        this.gameService = new GameService();
+        this.gameService.LoadReferenceData();
+    }
+    
+    private void InitializeTeamsPath(string teamsPath)
+    {
         if (teamsPath.EndsWith(".txt"))
         {
             this.specificTeamsFile = teamsPath;
@@ -27,9 +35,6 @@ public class Game
         {
             this.teamsFolder = teamsPath;
         }
-        
-        this.gameService = new GameService();
-        this.gameService.LoadReferenceData();
     }
     
     private void ShowTeamFiles(string[] files)
@@ -44,51 +49,91 @@ public class Game
     private bool TrySelectFile(string[] files, out string selectedFile)
     {
         selectedFile = string.Empty;
-        if (!int.TryParse(view.ReadLine(), out int index) || index < 0 || index >= files.Length)
+        var input = view.ReadLine();
+        if (!IsValidFileIndex(input, files.Length))
         {
             return false;
         }
-        selectedFile = files[index];
+        selectedFile = files[int.Parse(input)];
         return true;
+    }
+    
+    private bool IsValidFileIndex(string input, int filesLength)
+    {
+        return int.TryParse(input, out int index) && index >= 0 && index < filesLength;
     }
 
     public void Play()
     {
-        string file;
-        
-        if (specificTeamsFile != null)
-        {
-            file = specificTeamsFile;
-        }
-        else
-        {
-            var files = Directory.GetFiles(teamsFolder, "*.txt").OrderBy(f => f).ToArray();
-
-            ShowTeamFiles(files);
-
-            if (!TrySelectFile(files, out file))
-            {
-                view.WriteLine("Archivo de equipos inválido");
-                return;
-            }
-        }
-
-        string[] lines = File.ReadAllLines(file);
-        var (team1, team2) = TeamParser.ParseTeams(lines);
-
-        if (!gameService.ValidateTeams(team1, team2))
+        var file = GetTeamsFile();
+        if (string.IsNullOrEmpty(file))
         {
             view.WriteLine("Archivo de equipos inválido");
             return;
         }
-
-        var (parsedTeam1, parsedTeam2) = gameService.ParseTeamsFromFile(file);
         
+        var battleState = CreateBattleState(file);
+        var playerNames = GetPlayerNames(file);
+        
+        StartBattle(battleState, playerNames);
+    }
+    
+    private string GetTeamsFile()
+    {
+        if (specificTeamsFile != null)
+        {
+            return specificTeamsFile;
+        }
+        
+        var files = GetTeamFiles();
+        ShowTeamFiles(files);
+        
+        if (!TrySelectFile(files, out string selectedFile))
+        {
+            return string.Empty;
+        }
+        
+        return selectedFile;
+    }
+    
+    private string[] GetTeamFiles()
+    {
+        return Directory.GetFiles(teamsFolder, "*.txt").OrderBy(f => f).ToArray();
+    }
+    
+    private BattleState CreateBattleState(string file)
+    {
+        var lines = File.ReadAllLines(file);
+        var (team1, team2) = TeamParser.ParseTeams(lines);
+        
+        if (!gameService.ValidateTeams(team1, team2))
+        {
+            return null;
+        }
+        
+        var (parsedTeam1, parsedTeam2) = gameService.ParseTeamsFromFile(file);
         var gameSetup = new GameSetup(gameService.GetUnitData());
-        var battleState = gameSetup.CreateBattleState(parsedTeam1, parsedTeam2);
-        var (player1Name, player2Name) = gameSetup.GetPlayerNames(parsedTeam1, parsedTeam2);
+        
+        return gameSetup.CreateBattleState(parsedTeam1, parsedTeam2);
+    }
+    
+    private (string player1Name, string player2Name) GetPlayerNames(string file)
+    {
+        var (parsedTeam1, parsedTeam2) = gameService.ParseTeamsFromFile(file);
+        var gameSetup = new GameSetup(gameService.GetUnitData());
+        
+        return gameSetup.GetPlayerNames(parsedTeam1, parsedTeam2);
+    }
+    
+    private void StartBattle(BattleState battleState, (string player1Name, string player2Name) playerNames)
+    {
+        if (battleState == null)
+        {
+            view.WriteLine("Archivo de equipos inválido");
+            return;
+        }
         
         var battleEngine = new BattleEngine(view, gameService.GetSkillData());
-        battleEngine.StartBattle(battleState, player1Name, player2Name);
+        battleEngine.StartBattle(battleState, playerNames.player1Name, playerNames.player2Name);
     }
 }

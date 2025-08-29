@@ -70,6 +70,8 @@ namespace Shin_Megami_Tensei
 				battleState.BlinkingTurns = 0;
 			}
 		}
+
+		
 		
 		private void AnnounceWinner(BattleState battleState, string player1Name, string player2Name)
 		{

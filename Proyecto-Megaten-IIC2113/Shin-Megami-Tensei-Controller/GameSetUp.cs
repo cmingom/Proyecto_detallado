@@ -3,6 +3,7 @@ using System.Linq;
 using Shin_Megami_Tensei_Model.Domain.Entities;
 using Shin_Megami_Tensei_Model.Domain.States;
 using Shin_Megami_Tensei_Model.CombatSystem.Core;
+using System;
 
 namespace Shin_Megami_Tensei
 {
@@ -29,31 +30,59 @@ namespace Shin_Megami_Tensei
         private List<UnitInstance> CreateTeamUnits(List<GameService.UnitInfo> team)
         {
             var units = new List<UnitInstance>();
-            char[] positions = { 'A', 'B', 'C', 'D' };
+            var positions = GetTeamPositions();
+            var teamSize = GetTeamSize(team);
             
-            for (int i = 0; i < team.Count && i < 4; i++)
+            PopulateTeamUnits(units, team, positions, teamSize);
+            
+            return units;
+        }
+        
+        private void PopulateTeamUnits(List<UnitInstance> units, List<GameService.UnitInfo> team, char[] positions, int teamSize)
+        {
+            for (int i = 0; i < teamSize; i++)
             {
-                var unitInfo = team[i];
-                
-                if (unitData.TryGetValue(unitInfo.Name, out var unitTemplate))
+                var unitInstance = CreateUnitInstance(team[i], positions[i]);
+                if (unitInstance != null)
                 {
-                    var unitInstance = new UnitInstance(
-                        name: unitInfo.Name,
-                        maxHP: unitTemplate.Stats.HP,
-                        maxMP: unitTemplate.Stats.MP,
-                        str: unitTemplate.Stats.Str,
-                        skl: unitTemplate.Stats.Skl,
-                        spd: unitTemplate.Stats.Spd,
-                        isSamurai: unitInfo.IsSamurai,
-                        position: positions[i],
-                        skills: unitInfo.IsSamurai ? unitInfo.Skills : unitTemplate.Skills
-                    );
-                    
                     units.Add(unitInstance);
                 }
             }
+        }
+        
+        private char[] GetTeamPositions()
+        {
+            return new char[] { 'A', 'B', 'C', 'D' };
+        }
+        
+        private int GetTeamSize(List<GameService.UnitInfo> team)
+        {
+            return Math.Min(team.Count, 4);
+        }
+        
+        private UnitInstance? CreateUnitInstance(GameService.UnitInfo unitInfo, char position)
+        {
+            if (!unitData.TryGetValue(unitInfo.Name, out var unitTemplate))
+            {
+                return null;
+            }
             
-            return units;
+            return new UnitInstance(
+                name: unitInfo.Name,
+                maxHP: unitTemplate.Stats.HP,
+                maxMP: unitTemplate.Stats.MP,
+                str: unitTemplate.Stats.Str,
+                skl: unitTemplate.Stats.Skl,
+                spd: unitTemplate.Stats.Spd,
+                isSamurai: unitInfo.IsSamurai,
+                position: position,
+                skills: GetUnitSkills(unitInfo, unitTemplate)
+            );
+        }
+        
+        private List<string> GetUnitSkills(GameService.UnitInfo unitInfo, Unit unitTemplate)
+        {
+            return unitInfo.IsSamurai ? unitInfo.Skills : unitTemplate.Skills;
         }
         
         public (string player1Name, string player2Name) GetPlayerNames(List<GameService.UnitInfo> team1, List<GameService.UnitInfo> team2)

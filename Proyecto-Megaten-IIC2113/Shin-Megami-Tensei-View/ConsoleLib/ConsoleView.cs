@@ -1,5 +1,6 @@
 ﻿namespace Shin_Megami_Tensei_View.ConsoleLib;
 
+
 public class ConsoleView : AbstractView
 {
     private const string INPUT_PROMPT = "INPUT: ";

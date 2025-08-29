@@ -1,22 +1,23 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Shin_Megami_Tensei_View;
+using Shin_Megami_Tensei_View.ConsoleLib;
 using Shin_Megami_Tensei_Model.Domain.States;
 using Shin_Megami_Tensei_Model.Domain.Entities;
 using Shin_Megami_Tensei_Model.CombatSystem.Core;
+using Shin_Megami_Tensei_View;
 
 namespace Shin_Megami_Tensei
 {
 	public class BattleEngine
 	{
-		private readonly View view;
+		private readonly BattleView battleView;
 		private readonly DamageCalculator damageCalculator;
 		private readonly Dictionary<string, Skill> skillData;
 		
 		public BattleEngine(View view, Dictionary<string, Skill> skillData)
 		{
-			this.view = view;
+			this.battleView = new BattleView(view);
 			this.damageCalculator = new DamageCalculator();
 			this.skillData = skillData;
 		}
@@ -29,16 +30,16 @@ namespace Shin_Megami_Tensei
 				var currentPlayerName = battleState.IsPlayer1Turn ? player1Name : player2Name;
 				var playerNumber = battleState.IsPlayer1Turn ? "J1" : "J2";
 				
-				ShowRoundHeader(currentPlayerName, playerNumber);
+				battleView.ShowRoundHeader(currentPlayerName, playerNumber);
 				
 				var actionOrder = CalculateActionOrder(currentTeam);
 				
 				while (battleState.FullTurns > 0 && !IsBattleOver(battleState))
 				{
-					ShowBattlefield(battleState, player1Name, player2Name);
-					ShowTurnCounters(battleState);
+					battleView.ShowBattlefield(battleState, player1Name, player2Name);
+					battleView.ShowTurnCounters(battleState);
 					
-					ShowActionOrderBySpeed(actionOrder);
+					battleView.ShowActionOrderBySpeed(actionOrder);
 					
 					if (actionOrder.Count == 0)
 						break;
@@ -72,64 +73,6 @@ namespace Shin_Megami_Tensei
 			}
 		}
 		
-		private void ShowRoundHeader(string playerName, string playerNumber)
-		{
-			view.WriteLine("----------------------------------------");
-			view.WriteLine($"Ronda de {playerName} ({playerNumber})");
-		}
-		
-		private void ShowBattlefield(BattleState battleState, string player1Name, string player2Name)
-		{
-			view.WriteLine("----------------------------------------");
-			ShowTeamStatus(battleState.Team1, player1Name, "J1");
-			ShowTeamStatus(battleState.Team2, player2Name, "J2");
-		}
-		
-		private void ShowTeamStatus(TeamState team, string playerName, string playerNumber)
-		{
-			view.WriteLine($"Equipo de {playerName} ({playerNumber})");
-			
-			char[] positions = { 'A', 'B', 'C', 'D' };
-			
-			for (int i = 0; i < 4; i++)
-			{
-				var unit = team.Units[i];
-				if (unit != null)
-				{
-								if (unit.IsSamurai || unit.HP > 0)
-					{
-						view.WriteLine($"{positions[i]}-{unit.Name} HP:{unit.HP}/{unit.MaxHP} MP:{unit.MP}/{unit.MaxMP}");
-					}
-					else
-					{
-						view.WriteLine($"{positions[i]}-");
-					}
-				}
-				else
-				{
-					view.WriteLine($"{positions[i]}-");
-				}
-			}
-		}
-		
-		private void ShowTurnCounters(BattleState battleState)
-		{
-			view.WriteLine("----------------------------------------");
-			view.WriteLine($"Full Turns: {battleState.FullTurns}");
-			view.WriteLine($"Blinking Turns: {battleState.BlinkingTurns}");
-		}
-		
-		private void ShowActionOrderBySpeed(List<UnitInstance> actionOrder)
-		{
-			view.WriteLine("----------------------------------------");
-			view.WriteLine("Orden:");
-			
-			for (int i = 0; i < actionOrder.Count; i++)
-			{
-				view.WriteLine($"{i + 1}-{actionOrder[i].Name}");
-			}
-		}
-		
 		private List<UnitInstance> CalculateActionOrder(TeamState team)
 		{
 			return team.AliveUnits.OrderByDescending(u => u.Spd).ToList();
@@ -146,18 +89,11 @@ namespace Shin_Megami_Tensei
 			
 			while (!actionCompleted)
 			{
-				view.WriteLine("----------------------------------------");
-				view.WriteLine($"Seleccione una acción para {actingUnit.Name}");
-				
 				var actions = GetAvailableActions(actingUnit);
-				for (int i = 0; i < actions.Count; i++)
-				{
-					view.WriteLine($"{i + 1}: {actions[i]}");
-				}
+				battleView.ShowActionMenu(actingUnit, actions);
 				
-				var input = view.ReadLine();
-				if (!int.TryParse(input, out int choice) || choice < 1 || choice > actions.Count)
-					continue;
+				var choice = battleView.GetActionChoice(actions.Count);
+				if (choice == -1) continue;
 					
 				var selectedAction = actions[choice - 1];
 				
@@ -235,37 +171,21 @@ namespace Shin_Megami_Tensei
 			if (!targets.Any())
 				return false;
 				
-			view.WriteLine("----------------------------------------");
-			view.WriteLine($"Seleccione un objetivo para {attacker.Name}");
+			battleView.ShowTargetSelection(attacker, targets);
 			
-			for (int i = 0; i < targets.Count; i++)
-			{
-				var currentTarget = targets[i];
-				view.WriteLine($"{i + 1}-{currentTarget.Name} HP:{currentTarget.HP}/{currentTarget.MaxHP} MP:{currentTarget.MP}/{currentTarget.MaxMP}");
-			}
-			view.WriteLine($"{targets.Count + 1}-Cancelar");
-			
-			var input = view.ReadLine();
-			if (!int.TryParse(input, out int choice) || choice < 1 || choice > targets.Count + 1)
-				return false;
-				
-			if (choice == targets.Count + 1)
+			var choice = battleView.GetTargetChoice(targets.Count);
+			if (choice == -1 || choice == targets.Count + 1)
 				return false;
 				
 			var target = targets[choice - 1];
-			
-			view.WriteLine("----------------------------------------");
 			
 			int damage = isGunAttack 
 				? damageCalculator.CalculateGunDamage(attacker.Skl)
 				: damageCalculator.CalculatePhysicalDamage(attacker.Str);
 			
-			string attackType = isGunAttack ? "dispara a" : "ataca a";
-			view.WriteLine($"{attacker.Name} {attackType} {target.Name}");
-			view.WriteLine($"{target.Name} recibe {damage} de daño");
-			
 			target.HP = Math.Max(0, target.HP - damage);
-			view.WriteLine($"{target.Name} termina con HP:{target.HP}/{target.MaxHP}");
+			
+			battleView.ShowAttackResult(attacker, target, damage, isGunAttack);
 			
 			return true;
 		}
@@ -274,21 +194,10 @@ namespace Shin_Megami_Tensei
 		{
 			var availableSkills = GetAvailableSkills(unit);
 			
-			view.WriteLine("----------------------------------------");
-			view.WriteLine($"Seleccione una habilidad para que {unit.Name} use");
+			battleView.ShowSkillSelection(unit, availableSkills);
 			
-			for (int i = 0; i < availableSkills.Count; i++)
-			{
-				var skill = availableSkills[i];
-				view.WriteLine($"{i + 1}-{skill.Name} MP:{skill.Cost}");
-			}
-			view.WriteLine($"{availableSkills.Count + 1}-Cancelar");
-			
-			var input = view.ReadLine();
-			if (!int.TryParse(input, out int choice) || choice < 1 || choice > availableSkills.Count + 1)
-				return false;
-				
-			if (choice == availableSkills.Count + 1)
+			var choice = battleView.GetSkillChoice(availableSkills.Count);
+			if (choice == -1 || choice == availableSkills.Count + 1)
 			{
 				return false;
 			}
@@ -318,10 +227,7 @@ namespace Shin_Megami_Tensei
 			var winnerName = battleState.IsPlayer1Turn ? player2Name : player1Name;
 			var winnerNumber = battleState.IsPlayer1Turn ? "J2" : "J1";
 			
-			view.WriteLine("----------------------------------------");
-			view.WriteLine($"{playerName} ({playerNumber}) se rinde");
-			view.WriteLine("----------------------------------------");
-			view.WriteLine($"Ganador: {winnerName} ({winnerNumber})");
+			battleView.ShowSurrender(playerName, playerNumber, winnerName, winnerNumber);
 			
 			return true;
 		}
@@ -333,9 +239,7 @@ namespace Shin_Megami_Tensei
 		
 		private void ConsumeTurn(BattleState battleState)
 		{
-			view.WriteLine("----------------------------------------");
-			view.WriteLine("Se han consumido 1 Full Turn(s) y 0 Blinking Turn(s)");
-			view.WriteLine("Se han obtenido 0 Blinking Turn(s)");
+			battleView.ShowTurnConsumption();
 			
 			battleState.FullTurns = Math.Max(0, battleState.FullTurns - 1);
 		}
@@ -347,15 +251,13 @@ namespace Shin_Megami_Tensei
 		
 		private void AnnounceWinner(BattleState battleState, string player1Name, string player2Name)
 		{
-			view.WriteLine("----------------------------------------");
-			
 			if (!battleState.Team1.AliveUnits.Any())
 			{
-				view.WriteLine($"Ganador: {player2Name} (J2)");
+				battleView.ShowWinner(player2Name, "J2");
 			}
 			else
 			{
-				view.WriteLine($"Ganador: {player1Name} (J1)");
+				battleView.ShowWinner(player1Name, "J1");
 			}
 		}
 	}

@@ -13,11 +13,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/cristobalmingo/Downloads/8º semestre/Diseño detallado/Copia E1 copia/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Model/Shin-Megami-Tensei-Model.csproj",
+      "projectUniqueName": "/Users/cristobalmingo/Downloads/8º semestre/Diseño detallado/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Model/Shin-Megami-Tensei-Model.csproj",
       "projectName": "Shin-Megami-Tensei-Model",
-      "projectPath": "/Users/cristobalmingo/Downloads/8º semestre/Diseño detallado/Copia E1 copia/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Model/Shin-Megami-Tensei-Model.csproj",
+      "projectPath": "/Users/cristobalmingo/Downloads/8º semestre/Diseño detallado/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Model/Shin-Megami-Tensei-Model.csproj",
       "packagesPath": "/Users/cristobalmingo/.nuget/packages/",
-      "outputPath": "/Users/cristobalmingo/Downloads/8º semestre/Diseño detallado/Copia E1 copia/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Model/obj/",
+      "outputPath": "/Users/cristobalmingo/Downloads/8º semestre/Diseño detallado/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Model/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/Users/cristobalmingo/.nuget/NuGet/NuGet.Config"

@@ -88,23 +88,24 @@ C:/Users/colas/Downloads/E12/Proyecto-Megaten-IIC2113/Proyecto-Megaten-IIC2113/S
 /Users/cristobalmingo/Downloads/8º semestre/Diseño detallado/Copia E1/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/obj/Debug/net8.0/Shin-Megami-Tensei-Controller.pdb
 /Users/cristobalmingo/Downloads/8º semestre/Diseño detallado/Copia E1/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/obj/Debug/net8.0/Shin-Megami-Tensei-Controller.genruntimeconfig.cache
 /Users/cristobalmingo/Downloads/8º semestre/Diseño detallado/Copia E1/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/obj/Debug/net8.0/ref/Shin-Megami-Tensei-Controller.dll
-/Users/cristobalmingo/Downloads/8º semestre/Diseño detallado/Copia E1 copia/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/obj/Debug/net8.0/Shin-Megami-Tensei-Controller.csproj.AssemblyReference.cache
-/Users/cristobalmingo/Downloads/8º semestre/Diseño detallado/Copia E1 copia/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/obj/Debug/net8.0/Shin-Megami-Tensei-Controller.GeneratedMSBuildEditorConfig.editorconfig
-/Users/cristobalmingo/Downloads/8º semestre/Diseño detallado/Copia E1 copia/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/obj/Debug/net8.0/Shin-Megami-Tensei-Controller.AssemblyInfoInputs.cache
-/Users/cristobalmingo/Downloads/8º semestre/Diseño detallado/Copia E1 copia/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/obj/Debug/net8.0/Shin-Megami-Tensei-Controller.AssemblyInfo.cs
-/Users/cristobalmingo/Downloads/8º semestre/Diseño detallado/Copia E1 copia/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/obj/Debug/net8.0/Shin-Megami-Tensei-Controller.csproj.CoreCompileInputs.cache
-/Users/cristobalmingo/Downloads/8º semestre/Diseño detallado/Copia E1 copia/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/obj/Debug/net8.0/Shin-Megami-Tensei-Controller.dll
-/Users/cristobalmingo/Downloads/8º semestre/Diseño detallado/Copia E1 copia/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/obj/Debug/net8.0/refint/Shin-Megami-Tensei-Controller.dll
-/Users/cristobalmingo/Downloads/8º semestre/Diseño detallado/Copia E1 copia/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/obj/Debug/net8.0/Shin-Megami-Tensei-Controller.pdb
-/Users/cristobalmingo/Downloads/8º semestre/Diseño detallado/Copia E1 copia/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/bin/Debug/net8.0/Shin-Megami-Tensei-Controller
-/Users/cristobalmingo/Downloads/8º semestre/Diseño detallado/Copia E1 copia/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/bin/Debug/net8.0/Shin-Megami-Tensei-Controller.deps.json
-/Users/cristobalmingo/Downloads/8º semestre/Diseño detallado/Copia E1 copia/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/bin/Debug/net8.0/Shin-Megami-Tensei-Controller.runtimeconfig.json
-/Users/cristobalmingo/Downloads/8º semestre/Diseño detallado/Copia E1 copia/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/bin/Debug/net8.0/Shin-Megami-Tensei-Controller.dll
-/Users/cristobalmingo/Downloads/8º semestre/Diseño detallado/Copia E1 copia/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/bin/Debug/net8.0/Shin-Megami-Tensei-Controller.pdb
-/Users/cristobalmingo/Downloads/8º semestre/Diseño detallado/Copia E1 copia/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/bin/Debug/net8.0/Shin-Megami-Tensei-Model.dll
-/Users/cristobalmingo/Downloads/8º semestre/Diseño detallado/Copia E1 copia/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/bin/Debug/net8.0/Shin-Megami-Tensei-View.dll
-/Users/cristobalmingo/Downloads/8º semestre/Diseño detallado/Copia E1 copia/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/bin/Debug/net8.0/Shin-Megami-Tensei-View.pdb
-/Users/cristobalmingo/Downloads/8º semestre/Diseño detallado/Copia E1 copia/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/bin/Debug/net8.0/Shin-Megami-Tensei-Model.pdb
-/Users/cristobalmingo/Downloads/8º semestre/Diseño detallado/Copia E1 copia/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/obj/Debug/net8.0/Shin-Meg.3F350B1A.Up2Date
-/Users/cristobalmingo/Downloads/8º semestre/Diseño detallado/Copia E1 copia/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/obj/Debug/net8.0/Shin-Megami-Tensei-Controller.genruntimeconfig.cache
-/Users/cristobalmingo/Downloads/8º semestre/Diseño detallado/Copia E1 copia/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/obj/Debug/net8.0/ref/Shin-Megami-Tensei-Controller.dll
+/Users/cristobalmingo/Downloads/8º semestre/Diseño detallado/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/obj/Debug/net8.0/Shin-Megami-Tensei-Controller.csproj.AssemblyReference.cache
+/Users/cristobalmingo/Downloads/8º semestre/Diseño detallado/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/obj/Debug/net8.0/Shin-Megami-Tensei-Controller.GeneratedMSBuildEditorConfig.editorconfig
+/Users/cristobalmingo/Downloads/8º semestre/Diseño detallado/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/obj/Debug/net8.0/Shin-Megami-Tensei-Controller.AssemblyInfoInputs.cache
+/Users/cristobalmingo/Downloads/8º semestre/Diseño detallado/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/obj/Debug/net8.0/Shin-Megami-Tensei-Controller.AssemblyInfo.cs
+/Users/cristobalmingo/Downloads/8º semestre/Diseño detallado/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/obj/Debug/net8.0/Shin-Megami-Tensei-Controller.csproj.CoreCompileInputs.cache
+/Users/cristobalmingo/Downloads/8º semestre/Diseño detallado/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/obj/Debug/net8.0/Shin-Megami-Tensei-Controller.sourcelink.json
+/Users/cristobalmingo/Downloads/8º semestre/Diseño detallado/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/bin/Debug/net8.0/Shin-Megami-Tensei-Controller
+/Users/cristobalmingo/Downloads/8º semestre/Diseño detallado/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/bin/Debug/net8.0/Shin-Megami-Tensei-Controller.deps.json
+/Users/cristobalmingo/Downloads/8º semestre/Diseño detallado/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/bin/Debug/net8.0/Shin-Megami-Tensei-Controller.runtimeconfig.json
+/Users/cristobalmingo/Downloads/8º semestre/Diseño detallado/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/bin/Debug/net8.0/Shin-Megami-Tensei-Controller.dll
+/Users/cristobalmingo/Downloads/8º semestre/Diseño detallado/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/bin/Debug/net8.0/Shin-Megami-Tensei-Controller.pdb
+/Users/cristobalmingo/Downloads/8º semestre/Diseño detallado/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/bin/Debug/net8.0/Shin-Megami-Tensei-Model.dll
+/Users/cristobalmingo/Downloads/8º semestre/Diseño detallado/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/bin/Debug/net8.0/Shin-Megami-Tensei-View.dll
+/Users/cristobalmingo/Downloads/8º semestre/Diseño detallado/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/bin/Debug/net8.0/Shin-Megami-Tensei-View.pdb
+/Users/cristobalmingo/Downloads/8º semestre/Diseño detallado/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/bin/Debug/net8.0/Shin-Megami-Tensei-Model.pdb
+/Users/cristobalmingo/Downloads/8º semestre/Diseño detallado/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/obj/Debug/net8.0/Shin-Meg.3F350B1A.Up2Date
+/Users/cristobalmingo/Downloads/8º semestre/Diseño detallado/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/obj/Debug/net8.0/Shin-Megami-Tensei-Controller.dll
+/Users/cristobalmingo/Downloads/8º semestre/Diseño detallado/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/obj/Debug/net8.0/refint/Shin-Megami-Tensei-Controller.dll
+/Users/cristobalmingo/Downloads/8º semestre/Diseño detallado/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/obj/Debug/net8.0/Shin-Megami-Tensei-Controller.pdb
+/Users/cristobalmingo/Downloads/8º semestre/Diseño detallado/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/obj/Debug/net8.0/Shin-Megami-Tensei-Controller.genruntimeconfig.cache
+/Users/cristobalmingo/Downloads/8º semestre/Diseño detallado/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/obj/Debug/net8.0/ref/Shin-Megami-Tensei-Controller.dll

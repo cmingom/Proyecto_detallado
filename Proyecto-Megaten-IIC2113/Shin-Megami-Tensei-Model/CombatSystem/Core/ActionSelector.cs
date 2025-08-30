@@ -10,15 +10,15 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
     {
         private readonly IBattleView battleView;
         private readonly SurrenderProcessor surrenderHandler;
-        private readonly AttackExecutor attackExecutor;
-        private readonly SkillManager skillManager;
+        private readonly AttackProcessor attackExecutor;
+        private readonly SkillProcessor skillManager;
 
         public ActionSelector(IBattleView battleView, SurrenderProcessor surrenderHandler, Dictionary<string, Skill> skillData)
         {
             this.battleView = battleView;
             this.surrenderHandler = surrenderHandler;
-            this.attackExecutor = new AttackExecutor(battleView);
-            this.skillManager = new SkillManager(battleView, skillData);
+            this.attackExecutor = new AttackProcessor(battleView);
+            this.skillManager = new SkillProcessor(battleView, skillData);
         }
 
         public bool ExecuteSelectedAction(UnitInstance actingUnit, BattleState battleState, string selectedAction, string player1Name, string player2Name)

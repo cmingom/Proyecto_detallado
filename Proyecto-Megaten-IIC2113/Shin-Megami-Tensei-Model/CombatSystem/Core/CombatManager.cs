@@ -9,18 +9,18 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 {
     public class CombatManager
     {
-        private readonly UnitActionManager unitActionManager;
+        private readonly UnitActionProcessor unitActionManager;
         private readonly ActionCoordinator actionExecutor;
         private readonly BattleStateProcessor battleStateManager;
-        private readonly SkillManager skillManager;
+        private readonly SkillProcessor skillManager;
 
         public CombatManager(Dictionary<string, Skill> skillData, IBattleView battleView)
         {
             var surrenderHandler = new SurrenderProcessor(battleView);
             this.actionExecutor = new ActionCoordinator(battleView, surrenderHandler, skillData);
-            this.unitActionManager = new UnitActionManager(battleView, this.actionExecutor);
+            this.unitActionManager = new UnitActionProcessor(battleView, this.actionExecutor);
             this.battleStateManager = new BattleStateProcessor(battleView);
-            this.skillManager = new SkillManager(battleView, skillData);
+            this.skillManager = new SkillProcessor(battleView, skillData);
         }
 
         public List<UnitInstance> CalculateActionOrder(TeamState team)

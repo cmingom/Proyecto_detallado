@@ -6,13 +6,13 @@ using Shin_Megami_Tensei_Model.CombatSystem.Core;
 
 namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 {
-    public class AttackExecutor
+    public class AttackProcessor
     {
         private readonly IBattleView battleView;
         private readonly TargetSelector targetSelector;
         private readonly DamageCalculator damageCalculator;
 
-        public AttackExecutor(IBattleView battleView)
+        public AttackProcessor(IBattleView battleView)
         {
             this.battleView = battleView;
             this.targetSelector = new TargetSelector(battleView);

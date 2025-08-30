@@ -8,26 +8,26 @@ namespace Shin_Megami_Tensei
     public class Game
     {
         private readonly View view;
-        private readonly TeamFileCoordinator teamFileManager;
+        private readonly TeamFileCoordinator teamFileCoordinator;
         private readonly BattleStateFactory battleStateFactory;
-        private readonly PlayerNameResolver playerNameExtractor;
-        private readonly GameManager gameService;
+        private readonly PlayerNameResolver playerNameResolver;
+        private readonly GameManager gameManager;
 
         public Game(View view, string teamsPath)
         {
             this.view = view;
-            this.teamFileManager = new TeamFileCoordinator(view);
-            this.gameService = new GameManager();
-            this.battleStateFactory = new BattleStateFactory(gameService);
-            this.playerNameExtractor = new PlayerNameResolver(gameService);
+            this.teamFileCoordinator = new TeamFileCoordinator(view);
+            this.gameManager = new GameManager();
+            this.battleStateFactory = new BattleStateFactory(gameManager);
+            this.playerNameResolver = new PlayerNameResolver(gameManager);
             
-            this.teamFileManager.InitializeTeamsPath(teamsPath);
-            this.gameService.LoadReferenceData();
+            this.teamFileCoordinator.InitializeTeamsPath(teamsPath);
+            this.gameManager.LoadReferenceData();
         }
 
         public void Play()
         {
-            var file = teamFileManager.GetTeamsFile();
+            var file = teamFileCoordinator.GetTeamsFile();
             if (IsInvalid(file))
             {
                 ShowInvalidFileMessage();
@@ -35,7 +35,7 @@ namespace Shin_Megami_Tensei
             }
             
             var battleState = battleStateFactory.CreateBattleState(file);
-            var playerNames = playerNameExtractor.GetPlayerNames(file);
+            var playerNames = playerNameResolver.GetPlayerNames(file);
             
             StartBattle(battleState, playerNames);
         }
@@ -69,7 +69,7 @@ namespace Shin_Megami_Tensei
 
         private BattleEngine CreateBattleEngine()
         {
-            return new BattleEngine(view, gameService.GetSkillData());
+            return new BattleEngine(view, gameManager.GetSkillData());
         }
     }
 }

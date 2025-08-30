@@ -6,7 +6,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 {
     public class GameManager
     {
-        private readonly DataLoader dataLoader;
+        private readonly GameDataLoader dataLoader;
         private readonly TeamParser teamParser;
         private TeamValidator teamValidator;
         private bool UnitExists(string unitName) => dataLoader.GetUnitData().ContainsKey(unitName);
@@ -14,7 +14,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 
         public GameManager()
         {
-            this.dataLoader = new DataLoader();
+            this.dataLoader = new GameDataLoader();
             this.teamParser = new TeamParser(new UnitParser());
             this.teamValidator = new TeamValidator(UnitExists, SkillExists);
         }

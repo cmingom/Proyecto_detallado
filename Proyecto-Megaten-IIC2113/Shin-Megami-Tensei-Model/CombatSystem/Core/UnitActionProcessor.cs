@@ -7,13 +7,13 @@ using Shin_Megami_Tensei_Model.CombatSystem.Core;
 
 namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 {
-    public class UnitActionManager
+    public class UnitActionProcessor
     {
         private readonly IBattleView battleView;
         private readonly ActionCoordinator actionExecutor;
         private string lastSelectedAction;
 
-        public UnitActionManager(IBattleView battleView, ActionCoordinator actionExecutor)
+        public UnitActionProcessor(IBattleView battleView, ActionCoordinator actionExecutor)
         {
             this.battleView = battleView;
             this.actionExecutor = actionExecutor;

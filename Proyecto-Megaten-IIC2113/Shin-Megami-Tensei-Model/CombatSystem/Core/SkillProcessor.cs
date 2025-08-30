@@ -1,9 +1,13 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using Shin_Megami_Tensei_Model.Domain.States;
 using Shin_Megami_Tensei_Model.Domain.Entities;
+using Shin_Megami_Tensei_Model.CombatSystem.Core;
 
 namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 {
-    public class SkillProcessor : IActionHandler
+    public class SkillProcessor
     {
         private readonly IBattleView battleView;
         private readonly Dictionary<string, Skill> skillData;
@@ -14,28 +18,53 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             this.skillData = skillData;
         }
 
-        public bool Execute(UnitInstance actingUnit, BattleState battleState, string player1Name, string player2Name)
-        {
-            return ProcessUseSkill(actingUnit, battleState);
-        }
-
-        private bool ProcessUseSkill(UnitInstance unit, BattleState battleState)
+        public bool ProcessUseSkill(UnitInstance unit, BattleState battleState)
         {
             var availableSkills = GetAvailableSkills(unit);
-            battleView.ShowSkillSelection(unit, availableSkills);
+            ShowSkillSelection(unit, availableSkills);
 
-            var skillChoice = battleView.GetSkillChoice(availableSkills.Count);
-            return !IsInvalidSkillChoice(skillChoice, availableSkills.Count);
+            var skillChoice = GetSkillChoice(availableSkills.Count);
+            return IsValidSkillChoice(skillChoice, availableSkills.Count);
         }
 
-        private List<Skill> GetAvailableSkills(UnitInstance unit)
+        private void ShowSkillSelection(UnitInstance unit, List<Skill> availableSkills)
         {
-            var availableSkills = new List<Skill>();
+            battleView.ShowSkillSelection(unit, availableSkills);
+        }
+
+        private int GetSkillChoice(int skillCount)
+        {
+            return battleView.GetSkillChoice(skillCount);
+        }
+
+        private bool IsValidSkillChoice(int skillChoice, int skillCount)
+        {
+            return !IsInvalidSkillChoice(skillChoice, skillCount);
+        }
+
+        private bool IsInvalidSkillChoice(int skillChoice, int skillCount)
+        {
+            return skillChoice == -1 || skillChoice == skillCount + 1;
+        }
+
+        public List<Skill> GetAvailableSkills(UnitInstance unit)
+        {
+            var availableSkills = CreateEmptySkillList();
+            PopulateAffordableSkills(availableSkills, unit);
+            return availableSkills;
+        }
+
+        private List<Skill> CreateEmptySkillList()
+        {
+            return new List<Skill>();
+        }
+
+        private void PopulateAffordableSkills(List<Skill> availableSkills, UnitInstance unit)
+        {
             foreach (var skillName in unit.Skills)
             {
                 AddSkillIfAffordable(availableSkills, skillName, unit.MP);
             }
-            return availableSkills;
         }
 
         private void AddSkillIfAffordable(List<Skill> availableSkills, string skillName, int unitMP)
@@ -44,11 +73,6 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             {
                 availableSkills.Add(skill);
             }
-        }
-
-        private bool IsInvalidSkillChoice(int skillChoice, int skillCount)
-        {
-            return skillChoice == -1 || skillChoice == skillCount + 1;
         }
     }
 }

@@ -7,14 +7,14 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
     public class ActionCoordinator
     {
         private readonly ActionSelector actionSelector;
-        private readonly AttackExecutor attackExecutor;
-        private readonly SkillManager skillManager;
+        private readonly AttackProcessor attackExecutor;
+        private readonly SkillProcessor skillManager;
 
         public ActionCoordinator(IBattleView battleView, SurrenderProcessor surrenderProcessor, Dictionary<string, Skill> skillData)
         {
             this.actionSelector = new ActionSelector(battleView, surrenderProcessor, skillData);
-            this.attackExecutor = new AttackExecutor(battleView);
-            this.skillManager = new SkillManager(battleView, skillData);
+            this.attackExecutor = new AttackProcessor(battleView);
+            this.skillManager = new SkillProcessor(battleView, skillData);
         }
 
         public bool ExecuteSelectedAction(UnitInstance actingUnit, BattleState battleState, string selectedAction, string player1Name, string player2Name)

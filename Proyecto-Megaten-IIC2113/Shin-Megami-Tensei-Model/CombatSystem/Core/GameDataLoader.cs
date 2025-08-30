@@ -7,7 +7,7 @@ using Shin_Megami_Tensei_Model.Domain.Entities;
 
 namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 {
-    public class DataLoader
+    public class GameDataLoader
     {
         private Dictionary<string, Unit> unitData = new(StringComparer.Ordinal);
         private Dictionary<string, Skill> skillData = new(StringComparer.Ordinal);

@@ -1,26 +1,28 @@
+using System;
 using Shin_Megami_Tensei_Model.Domain.States;
 using Shin_Megami_Tensei_Model.Domain.Entities;
+using Shin_Megami_Tensei_Model.CombatSystem.Core;
 
 namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 {
-    public class SurrenderExecutor : IActionExecutor
+    public class SurrenderHandler
     {
         private readonly IBattleView battleView;
 
-        public SurrenderExecutor(IBattleView battleView)
+        public SurrenderHandler(IBattleView battleView)
         {
             this.battleView = battleView;
         }
 
-        public bool Execute(UnitInstance actingUnit, BattleState battleState, string player1Name, string player2Name)
+        public bool ProcessSurrender(BattleState battleState, string player1Name, string player2Name)
         {
-            ProcessSurrender(battleState, player1Name, player2Name);
+            var surrenderInfo = CreateSurrenderInfo(battleState, player1Name, player2Name);
+            ShowSurrenderInfo(surrenderInfo);
             return true;
         }
 
-        private void ProcessSurrender(BattleState battleState, string player1Name, string player2Name)
+        private void ShowSurrenderInfo(SurrenderInfo surrenderInfo)
         {
-            var surrenderInfo = CreateSurrenderInfo(battleState, player1Name, player2Name);
             battleView.ShowSurrender(surrenderInfo.SurrenderingPlayerName, surrenderInfo.SurrenderingPlayerNumber, 
                                    surrenderInfo.WinnerName, surrenderInfo.WinnerNumber);
         }

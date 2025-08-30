@@ -1,0 +1,81 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using Shin_Megami_Tensei_Model.Domain.States;
+using Shin_Megami_Tensei_Model.Domain.Entities;
+using Shin_Megami_Tensei_Model.CombatSystem.Core;
+
+namespace Shin_Megami_Tensei_Model.CombatSystem.Core
+{
+    public class BattleStateManager
+    {
+        private readonly IBattleView battleView;
+
+        public BattleStateManager(IBattleView battleView)
+        {
+            this.battleView = battleView;
+        }
+
+        public List<UnitInstance> CalculateActionOrder(TeamState team)
+        {
+            return team.AliveUnits.OrderByDescending(u => u.Spd).ToList();
+        }
+
+        public int CalculateNextTurnCount(TeamState team)
+        {
+            return team.AliveUnits.Count();
+        }
+
+        public List<UnitInstance> GetTargets(TeamState enemyTeam)
+        {
+            return enemyTeam.AliveUnits.ToList();
+        }
+
+        public void ConsumeTurn(BattleState battleState)
+        {
+            ShowTurnConsumption();
+            DecreaseFullTurns(battleState);
+        }
+
+        private void ShowTurnConsumption()
+        {
+            battleView.ShowTurnConsumption();
+        }
+
+        private void DecreaseFullTurns(BattleState battleState)
+        {
+            var newTurnCount = CalculateNewTurnCount(battleState.FullTurns);
+            battleState.FullTurns = newTurnCount;
+        }
+
+        private int CalculateNewTurnCount(int currentTurns)
+        {
+            return Math.Max(0, currentTurns - 1);
+        }
+
+        public bool IsBattleOver(BattleState battleState)
+        {
+            return IsTeamDefeated(battleState.Team1) || IsTeamDefeated(battleState.Team2);
+        }
+
+        private bool IsTeamDefeated(TeamState team)
+        {
+            return !team.AliveUnits.Any();
+        }
+
+        public string GetWinner(BattleState battleState, string player1Name, string player2Name)
+        {
+            return IsTeam1Defeated(battleState) ? player2Name : player1Name;
+        }
+
+        private bool IsTeam1Defeated(BattleState battleState)
+        {
+            return !battleState.Team1.AliveUnits.Any();
+        }
+
+        public string GetWinnerNumber(BattleState battleState)
+        {
+            return IsTeam1Defeated(battleState) ? "J2" : "J1";
+        }
+    }
+}

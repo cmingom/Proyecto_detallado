@@ -131,20 +131,32 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 
         private (string? name, List<string>? skills) ParseSamuraiWithSkills(string rest, int openParen)
         {
-            int closeParen = rest.IndexOf(')', openParen + 1);
+            var closeParen = FindCloseParenthesis(rest, openParen);
             if (closeParen < 0) return (null, null);
 
-            var name = rest.Substring(0, openParen).Trim();
-            var skillsText = ExtractSkillsText(rest, openParen, closeParen);
+            var name = ExtractName(rest, openParen);
+            var skills = ParseSkillsFromText(rest, openParen, closeParen);
             
-            if (!IsValidSkillsText(skillsText)) return (null, null);
-            
-            var skills = ParseSkillList(skillsText);
-            if (skills == null) return (null, null);
-
-            if (HasRemainingTextAfterSkills(rest, closeParen)) return (null, null);
+            if (skills == null || HasRemainingTextAfterSkills(rest, closeParen)) return (null, null);
 
             return (name, skills);
+        }
+
+        private int FindCloseParenthesis(string rest, int openParen)
+        {
+            return rest.IndexOf(')', openParen + 1);
+        }
+
+        private string ExtractName(string rest, int openParen)
+        {
+            return rest.Substring(0, openParen).Trim();
+        }
+
+        private List<string>? ParseSkillsFromText(string rest, int openParen, int closeParen)
+        {
+            var skillsText = ExtractSkillsText(rest, openParen, closeParen);
+            if (!IsValidSkillsText(skillsText)) return null;
+            return ParseSkillList(skillsText);
         }
 
         private string ExtractSkillsText(string rest, int openParen, int closeParen)

@@ -4,15 +4,15 @@ using Shin_Megami_Tensei_Model.Domain.Entities;
 
 namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 {
-    public class ActionExecutor
+    public class ActionCoordinator
     {
         private readonly ActionSelector actionSelector;
         private readonly AttackExecutor attackExecutor;
         private readonly SkillManager skillManager;
 
-        public ActionExecutor(IBattleView battleView, SurrenderHandler surrenderHandler, Dictionary<string, Skill> skillData)
+        public ActionCoordinator(IBattleView battleView, SurrenderProcessor surrenderProcessor, Dictionary<string, Skill> skillData)
         {
-            this.actionSelector = new ActionSelector(battleView, surrenderHandler, skillData);
+            this.actionSelector = new ActionSelector(battleView, surrenderProcessor, skillData);
             this.attackExecutor = new AttackExecutor(battleView);
             this.skillManager = new SkillManager(battleView, skillData);
         }

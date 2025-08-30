@@ -7,11 +7,11 @@ using Shin_Megami_Tensei_Model.CombatSystem.Core;
 
 namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 {
-    public class BattleStateManager
+    public class BattleStateProcessor
     {
         private readonly IBattleView battleView;
 
-        public BattleStateManager(IBattleView battleView)
+        public BattleStateProcessor(IBattleView battleView)
         {
             this.battleView = battleView;
         }

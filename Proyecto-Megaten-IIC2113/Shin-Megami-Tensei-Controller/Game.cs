@@ -8,18 +8,18 @@ namespace Shin_Megami_Tensei
     public class Game
     {
         private readonly View view;
-        private readonly TeamFileManager teamFileManager;
+        private readonly TeamFileCoordinator teamFileManager;
         private readonly BattleStateFactory battleStateFactory;
-        private readonly PlayerNameExtractor playerNameExtractor;
+        private readonly PlayerNameResolver playerNameExtractor;
         private readonly GameManager gameService;
 
         public Game(View view, string teamsPath)
         {
             this.view = view;
-            this.teamFileManager = new TeamFileManager(view);
+            this.teamFileManager = new TeamFileCoordinator(view);
             this.gameService = new GameManager();
             this.battleStateFactory = new BattleStateFactory(gameService);
-            this.playerNameExtractor = new PlayerNameExtractor(gameService);
+            this.playerNameExtractor = new PlayerNameResolver(gameService);
             
             this.teamFileManager.InitializeTeamsPath(teamsPath);
             this.gameService.LoadReferenceData();

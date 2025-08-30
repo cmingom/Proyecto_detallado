@@ -9,11 +9,11 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
     public class ActionSelector
     {
         private readonly IBattleView battleView;
-        private readonly SurrenderHandler surrenderHandler;
+        private readonly SurrenderProcessor surrenderHandler;
         private readonly AttackExecutor attackExecutor;
         private readonly SkillManager skillManager;
 
-        public ActionSelector(IBattleView battleView, SurrenderHandler surrenderHandler, Dictionary<string, Skill> skillData)
+        public ActionSelector(IBattleView battleView, SurrenderProcessor surrenderHandler, Dictionary<string, Skill> skillData)
         {
             this.battleView = battleView;
             this.surrenderHandler = surrenderHandler;

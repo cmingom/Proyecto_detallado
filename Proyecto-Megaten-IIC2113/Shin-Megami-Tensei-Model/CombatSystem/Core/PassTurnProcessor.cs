@@ -3,7 +3,7 @@ using Shin_Megami_Tensei_Model.Domain.Entities;
 
 namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 {
-    public class PassTurnHandler : IActionHandler
+    public class PassTurnProcessor : IActionHandler
     {
         public bool Execute(UnitInstance actingUnit, BattleState battleState, string player1Name, string player2Name)
         {

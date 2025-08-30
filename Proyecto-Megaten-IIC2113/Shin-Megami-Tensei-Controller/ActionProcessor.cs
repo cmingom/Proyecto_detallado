@@ -19,7 +19,7 @@ namespace Shin_Megami_Tensei
             this.combatService = combatService;
         }
 
-        public bool ProcessActionOrder(BattleParameters battleParams, List<UnitInstance> actionOrder, TeamState currentTeam)
+        public bool ProcessActionOrder(BattleContext battleParams, List<UnitInstance> actionOrder, TeamState currentTeam)
         {
             while (ShouldContinueProcessingActions(battleParams))
             {
@@ -29,13 +29,13 @@ namespace Shin_Megami_Tensei
             return false;
         }
 
-        private bool ShouldContinueProcessingActions(BattleParameters battleParams)
+        private bool ShouldContinueProcessingActions(BattleContext battleParams)
         {
             const int ZERO_TURNS = 0;
             return battleParams.BattleState.FullTurns > ZERO_TURNS && !combatService.IsBattleOver(battleParams.BattleState);
         }
 
-        private bool ProcessSingleActionIteration(BattleParameters battleParams, List<UnitInstance> actionOrder, TeamState currentTeam)
+        private bool ProcessSingleActionIteration(BattleContext battleParams, List<UnitInstance> actionOrder, TeamState currentTeam)
         {
             ShowBattleStatus(battleParams, actionOrder);
             if (IsActionOrderEmpty(actionOrder)) 
@@ -49,7 +49,7 @@ namespace Shin_Megami_Tensei
             return false;
         }
 
-        private void ShowBattleStatus(BattleParameters battleParams, List<UnitInstance> actionOrder)
+        private void ShowBattleStatus(BattleContext battleParams, List<UnitInstance> actionOrder)
         {
             battleView.ShowBattlefield(battleParams.BattleState, battleParams.Player1Name, battleParams.Player2Name);
             battleView.ShowTurnCounters(battleParams.BattleState);
@@ -68,7 +68,7 @@ namespace Shin_Megami_Tensei
             return actionOrder[FIRST_UNIT_INDEX];
         }
 
-        private bool ProcessSingleUnitAction(UnitInstance currentUnit, BattleParameters battleParams)
+        private bool ProcessSingleUnitAction(UnitInstance currentUnit, BattleContext battleParams)
         {
             if (IsUnitActionSuccessful(currentUnit, battleParams))
                 return true;
@@ -78,12 +78,12 @@ namespace Shin_Megami_Tensei
             return CheckAndHandleBattleEnd(battleParams);
         }
 
-        private bool IsUnitActionSuccessful(UnitInstance currentUnit, BattleParameters battleParams)
+        private bool IsUnitActionSuccessful(UnitInstance currentUnit, BattleContext battleParams)
         {
             return combatService.ProcessUnitAction(currentUnit, battleParams.BattleState, battleParams.Player1Name, battleParams.Player2Name);
         }
 
-        private bool CheckAndHandleBattleEnd(BattleParameters battleParams)
+        private bool CheckAndHandleBattleEnd(BattleContext battleParams)
         {
             if (combatService.IsBattleOver(battleParams.BattleState))
             {

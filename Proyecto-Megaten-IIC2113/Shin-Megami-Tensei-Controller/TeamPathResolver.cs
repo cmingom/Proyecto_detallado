@@ -3,7 +3,7 @@ using System.IO;
 
 namespace Shin_Megami_Tensei
 {
-    public class TeamPathManager
+    public class TeamPathResolver
     {
         private string teamsFolder;
         private string? specificTeamsFile;

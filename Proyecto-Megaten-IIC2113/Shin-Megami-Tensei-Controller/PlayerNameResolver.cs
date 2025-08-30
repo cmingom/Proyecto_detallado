@@ -5,11 +5,11 @@ using Shin_Megami_Tensei_Model.Domain.Entities;
 
 namespace Shin_Megami_Tensei
 {
-    public class PlayerNameExtractor
+    public class PlayerNameResolver
     {
         private readonly GameManager gameService;
 
-        public PlayerNameExtractor(GameManager gameService)
+        public PlayerNameResolver(GameManager gameService)
         {
             this.gameService = gameService;
         }

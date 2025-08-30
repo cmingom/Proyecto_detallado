@@ -6,17 +6,17 @@ using Shin_Megami_Tensei_View;
 
 namespace Shin_Megami_Tensei
 {
-    public class TeamFileManager
+    public class TeamFileCoordinator
     {
         private readonly View view;
-        private readonly TeamPathManager teamPathManager;
-        private readonly TeamFileDisplay teamFileDisplay;
+        private readonly TeamPathResolver teamPathManager;
+        private readonly TeamFileSelector teamFileDisplay;
 
-        public TeamFileManager(View view)
+        public TeamFileCoordinator(View view)
         {
             this.view = view;
-            this.teamPathManager = new TeamPathManager();
-            this.teamFileDisplay = new TeamFileDisplay(view);
+            this.teamPathManager = new TeamPathResolver();
+            this.teamFileDisplay = new TeamFileSelector(view);
         }
 
         public void InitializeTeamsPath(string teamsPath)

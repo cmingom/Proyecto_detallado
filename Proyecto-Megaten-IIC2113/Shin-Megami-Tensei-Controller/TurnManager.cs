@@ -29,7 +29,7 @@ namespace Shin_Megami_Tensei
             var currentTeam = GetCurrentTeam(battleState);
             ShowPlayerTurnHeader(battleState, player1Name, player2Name);
             var actionOrder = combatService.CalculateActionOrder(currentTeam);
-            var battleParams = new BattleParameters { BattleState = battleState, Player1Name = player1Name, Player2Name = player2Name };
+            var battleParams = new BattleContext { BattleState = battleState, Player1Name = player1Name, Player2Name = player2Name };
             var shouldEndBattle = actionProcessor.ProcessActionOrder(battleParams, actionOrder, currentTeam);
             HandlePlayerTurnEnd(battleState, currentTeam, shouldEndBattle);
             return shouldEndBattle;

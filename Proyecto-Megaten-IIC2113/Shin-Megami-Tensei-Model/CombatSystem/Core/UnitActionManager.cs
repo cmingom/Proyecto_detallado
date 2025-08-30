@@ -10,10 +10,10 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
     public class UnitActionManager
     {
         private readonly IBattleView battleView;
-        private readonly ActionExecutor actionExecutor;
+        private readonly ActionCoordinator actionExecutor;
         private string lastSelectedAction;
 
-        public UnitActionManager(IBattleView battleView, ActionExecutor actionExecutor)
+        public UnitActionManager(IBattleView battleView, ActionCoordinator actionExecutor)
         {
             this.battleView = battleView;
             this.actionExecutor = actionExecutor;

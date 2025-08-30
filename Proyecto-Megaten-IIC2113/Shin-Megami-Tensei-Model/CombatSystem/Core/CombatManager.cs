@@ -10,16 +10,16 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
     public class CombatManager
     {
         private readonly UnitActionManager unitActionManager;
-        private readonly ActionExecutor actionExecutor;
-        private readonly BattleStateManager battleStateManager;
+        private readonly ActionCoordinator actionExecutor;
+        private readonly BattleStateProcessor battleStateManager;
         private readonly SkillManager skillManager;
 
         public CombatManager(Dictionary<string, Skill> skillData, IBattleView battleView)
         {
-            var surrenderHandler = new SurrenderHandler(battleView);
-            this.actionExecutor = new ActionExecutor(battleView, surrenderHandler, skillData);
+            var surrenderHandler = new SurrenderProcessor(battleView);
+            this.actionExecutor = new ActionCoordinator(battleView, surrenderHandler, skillData);
             this.unitActionManager = new UnitActionManager(battleView, this.actionExecutor);
-            this.battleStateManager = new BattleStateManager(battleView);
+            this.battleStateManager = new BattleStateProcessor(battleView);
             this.skillManager = new SkillManager(battleView, skillData);
         }
 

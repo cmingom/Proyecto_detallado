@@ -5,11 +5,11 @@ using Shin_Megami_Tensei_View;
 
 namespace Shin_Megami_Tensei
 {
-    public class TeamFileDisplay
+    public class TeamFileSelector
     {
         private readonly View view;
 
-        public TeamFileDisplay(View view)
+        public TeamFileSelector(View view)
         {
             this.view = view;
         }

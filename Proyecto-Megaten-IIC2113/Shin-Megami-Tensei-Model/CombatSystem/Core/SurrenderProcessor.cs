@@ -5,11 +5,11 @@ using Shin_Megami_Tensei_Model.CombatSystem.Core;
 
 namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 {
-    public class SurrenderHandler
+    public class SurrenderProcessor
     {
         private readonly IBattleView battleView;
 
-        public SurrenderHandler(IBattleView battleView)
+        public SurrenderProcessor(IBattleView battleView)
         {
             this.battleView = battleView;
         }

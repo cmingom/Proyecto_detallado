@@ -3,12 +3,12 @@ using Shin_Megami_Tensei_Model.Domain.Entities;
 
 namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 {
-    public class SkillExecutor : IActionHandler
+    public class SkillProcessor : IActionHandler
     {
         private readonly IBattleView battleView;
         private readonly Dictionary<string, Skill> skillData;
 
-        public SkillExecutor(IBattleView battleView, Dictionary<string, Skill> skillData)
+        public SkillProcessor(IBattleView battleView, Dictionary<string, Skill> skillData)
         {
             this.battleView = battleView;
             this.skillData = skillData;

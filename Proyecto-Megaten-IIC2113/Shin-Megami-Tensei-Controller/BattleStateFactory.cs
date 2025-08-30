@@ -8,11 +8,11 @@ namespace Shin_Megami_Tensei
 {
     public class BattleStateFactory
     {
-        private readonly GameManager gameService;
+        private readonly GameManager gameManager;
 
-        public BattleStateFactory(GameManager gameService)
+        public BattleStateFactory(GameManager gameManager)
         {
-            this.gameService = gameService;
+            this.gameManager = gameManager;
         }
 
         public BattleState CreateBattleState(string file)
@@ -41,13 +41,13 @@ namespace Shin_Megami_Tensei
 
         private bool AreTeamsValid(List<string> team1, List<string> team2)
         {
-            return gameService.ValidateTeams(team1, team2);
+            return gameManager.ValidateTeams(team1, team2);
         }
 
         private BattleState CreateBattleStateFromValidTeams(string file)
         {
-            var (parsedTeam1, parsedTeam2) = gameService.ParseTeamsFromFile(file);
-            var unitData = gameService.GetUnitData();
+            var (parsedTeam1, parsedTeam2) = gameManager.ParseTeamsFromFile(file);
+            var unitData = gameManager.GetUnitData();
             
             var team1Units = CreateTeamUnits(parsedTeam1, unitData);
             var team2Units = CreateTeamUnits(parsedTeam2, unitData);

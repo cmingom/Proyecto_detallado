@@ -11,12 +11,12 @@ namespace Shin_Megami_Tensei
     public class ActionProcessor
     {
         private readonly BattleView battleView;
-        private readonly CombatManager combatService;
+        private readonly CombatManager combatManager;
 
-        public ActionProcessor(BattleView battleView, CombatManager combatService)
+        public ActionProcessor(BattleView battleView, CombatManager combatManager)
         {
             this.battleView = battleView;
-            this.combatService = combatService;
+            this.combatManager = combatManager;
         }
 
         public bool ProcessActionOrder(BattleContext battleParams, List<UnitInstance> actionOrder, TeamState currentTeam)
@@ -32,7 +32,7 @@ namespace Shin_Megami_Tensei
         private bool ShouldContinueProcessingActions(BattleContext battleParams)
         {
             const int ZERO_TURNS = 0;
-            return battleParams.BattleState.FullTurns > ZERO_TURNS && !combatService.IsBattleOver(battleParams.BattleState);
+            return battleParams.BattleState.FullTurns > ZERO_TURNS && !combatManager.IsBattleOver(battleParams.BattleState);
         }
 
         private bool ProcessSingleActionIteration(BattleContext battleParams, List<UnitInstance> actionOrder, TeamState currentTeam)
@@ -73,19 +73,19 @@ namespace Shin_Megami_Tensei
             if (IsUnitActionSuccessful(currentUnit, battleParams))
                 return true;
             
-            combatService.ConsumeTurn(battleParams.BattleState);
+            combatManager.ConsumeTurn(battleParams.BattleState);
             
             return CheckAndHandleBattleEnd(battleParams);
         }
 
         private bool IsUnitActionSuccessful(UnitInstance currentUnit, BattleContext battleParams)
         {
-            return combatService.ProcessUnitAction(currentUnit, battleParams.BattleState, battleParams.Player1Name, battleParams.Player2Name);
+            return combatManager.ProcessUnitAction(currentUnit, battleParams.BattleState, battleParams.Player1Name, battleParams.Player2Name);
         }
 
         private bool CheckAndHandleBattleEnd(BattleContext battleParams)
         {
-            if (combatService.IsBattleOver(battleParams.BattleState))
+            if (combatManager.IsBattleOver(battleParams.BattleState))
             {
                 AnnounceWinner(battleParams.BattleState, battleParams.Player1Name, battleParams.Player2Name);
                 return true;
@@ -105,8 +105,8 @@ namespace Shin_Megami_Tensei
 
         private void AnnounceWinner(BattleState battleState, string player1Name, string player2Name)
         {
-            var winnerName = combatService.GetWinner(battleState, player1Name, player2Name);
-            var winnerNumber = combatService.GetWinnerNumber(battleState);
+            var winnerName = combatManager.GetWinner(battleState, player1Name, player2Name);
+            var winnerNumber = combatManager.GetWinnerNumber(battleState);
             battleView.ShowWinner(winnerName, winnerNumber);
         }
     }

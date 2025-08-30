@@ -18,25 +18,51 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
         public void LoadReferenceData()
         {
             unitData.Clear();
+            LoadAllUnits();
+            LoadAllSkills();
+        }
 
+        private void LoadAllUnits()
+        {
             var samurais = LoadUnitsFromJson("data/samurai.json");
             var monsters = LoadUnitsFromJson("data/monsters.json");
+            AddValidUnitsToDictionary(samurais.Concat(monsters));
+        }
 
-            foreach (var unit in samurais.Concat(monsters))
+        private void LoadAllSkills()
+        {
+            var skills = LoadSkillsFromJson("data/skills.json");
+            BuildSkillSet(skills);
+            AddValidSkillsToDictionary(skills);
+        }
+
+        private void AddValidUnitsToDictionary(IEnumerable<Unit> units)
+        {
+            foreach (var unit in units)
             {
-                if (!string.IsNullOrWhiteSpace(unit.Name))
+                if (IsValidUnitName(unit.Name))
                     unitData[unit.Name] = unit;
             }
+        }
 
-            var skills = LoadSkillsFromJson("data/skills.json");
-            skillSet = new(skills.Where(s => !string.IsNullOrWhiteSpace(s.Name))
+        private void BuildSkillSet(List<Skill> skills)
+        {
+            skillSet = new(skills.Where(s => IsValidUnitName(s.Name))
                                .Select(s => s.Name), StringComparer.Ordinal);
-            
+        }
+
+        private void AddValidSkillsToDictionary(List<Skill> skills)
+        {
             foreach (var skill in skills)
             {
-                if (!string.IsNullOrWhiteSpace(skill.Name))
+                if (IsValidUnitName(skill.Name))
                     skillData[skill.Name] = skill;
             }
+        }
+
+        private bool IsValidUnitName(string? name)
+        {
+            return !string.IsNullOrWhiteSpace(name);
         }
 
         private List<Unit> LoadUnitsFromJson(string filePath)
@@ -52,64 +78,88 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
         public List<UnitInfo> BuildUnitInfoList(List<string> teamLines)
         {
             var units = new List<UnitInfo>();
-            
             foreach (var line in teamLines)
             {
-                var unitInfo = ParseUnitDefinition(line);
-                if (unitInfo != null)
-                {
-                    units.Add(unitInfo);
-                }
+                AddValidUnitInfo(units, line);
             }
-            
             return units;
+        }
+
+        private void AddValidUnitInfo(List<UnitInfo> units, string line)
+        {
+            var unitInfo = ParseUnitDefinition(line);
+            if (unitInfo != null)
+            {
+                units.Add(unitInfo);
+            }
         }
 
         private UnitInfo? ParseUnitDefinition(string line)
         {
-            bool isSamurai = line.Contains("[Samurai]", StringComparison.Ordinal);
-            
-            if (isSamurai)
-            {
-                return ParseSamuraiDefinition(line);
-            }
-            else
-            {
-                return ParseMonsterDefinition(line);
-            }
+            return IsSamuraiLine(line) ? ParseSamuraiDefinition(line) : ParseMonsterDefinition(line);
+        }
+
+        private bool IsSamuraiLine(string line)
+        {
+            return line.Contains("[Samurai]", StringComparison.Ordinal);
         }
 
         private UnitInfo? ParseSamuraiDefinition(string line)
         {
-            var rest = line.Replace("[Samurai]", string.Empty).Trim();
-            var skills = new List<string>();
+            var rest = RemoveSamuraiTag(line);
+            var (name, skills) = ParseSamuraiNameAndSkills(rest);
+            
+            if (name == null) return null;
+            
+            return new UnitInfo(name, true, skills ?? new List<string>());
+        }
 
+        private string RemoveSamuraiTag(string line)
+        {
+            return line.Replace("[Samurai]", string.Empty).Trim();
+        }
+
+        private (string? name, List<string>? skills) ParseSamuraiNameAndSkills(string rest)
+        {
             int openParen = rest.IndexOf('(');
-            string name;
+            
+            if (openParen < 0)
+                return (rest, null);
 
-            if (openParen >= 0)
-            {
-                int closeParen = rest.IndexOf(')', openParen + 1);
-                if (closeParen < 0) return null;
+            return ParseSamuraiWithSkills(rest, openParen);
+        }
 
-                name = rest.Substring(0, openParen).Trim();
-                var skillsText = rest.Substring(openParen + 1, closeParen - openParen - 1);
-                
-                if (!string.IsNullOrWhiteSpace(skillsText))
-                {
-                    skills = ParseSkillList(skillsText);
-                    if (skills == null) return null;
-                }
+        private (string? name, List<string>? skills) ParseSamuraiWithSkills(string rest, int openParen)
+        {
+            int closeParen = rest.IndexOf(')', openParen + 1);
+            if (closeParen < 0) return (null, null);
 
-                if (!string.IsNullOrWhiteSpace(rest.Substring(closeParen + 1)))
-                    return null;
-            }
-            else
-            {
-                name = rest;
-            }
+            var name = rest.Substring(0, openParen).Trim();
+            var skillsText = ExtractSkillsText(rest, openParen, closeParen);
+            
+            if (!IsValidSkillsText(skillsText)) return (null, null);
+            
+            var skills = ParseSkillList(skillsText);
+            if (skills == null) return (null, null);
 
-            return new UnitInfo(name, true, skills);
+            if (HasRemainingTextAfterSkills(rest, closeParen)) return (null, null);
+
+            return (name, skills);
+        }
+
+        private string ExtractSkillsText(string rest, int openParen, int closeParen)
+        {
+            return rest.Substring(openParen + 1, closeParen - openParen - 1);
+        }
+
+        private bool IsValidSkillsText(string skillsText)
+        {
+            return !string.IsNullOrWhiteSpace(skillsText);
+        }
+
+        private bool HasRemainingTextAfterSkills(string rest, int closeParen)
+        {
+            return !string.IsNullOrWhiteSpace(rest.Substring(closeParen + 1));
         }
 
         private UnitInfo? ParseMonsterDefinition(string line)
@@ -125,18 +175,29 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             if (string.IsNullOrWhiteSpace(skillsText))
                 return new List<string>();
 
-            var skills = new List<string>();
             var parts = skillsText.Split(',');
-            
+            return ParseSkillParts(parts);
+        }
+
+        private List<string>? ParseSkillParts(string[] parts)
+        {
+            var skills = new List<string>();
             foreach (var part in parts)
             {
-                var skillName = part.Trim();
-                if (string.IsNullOrWhiteSpace(skillName))
+                if (!AddValidSkill(skills, part))
                     return null;
-                skills.Add(skillName);
             }
-            
             return skills;
+        }
+
+        private bool AddValidSkill(List<string> skills, string part)
+        {
+            var skillName = part.Trim();
+            if (string.IsNullOrWhiteSpace(skillName))
+                return false;
+            
+            skills.Add(skillName);
+            return true;
         }
 
         private static bool HasInvalidCharacters(string line)
@@ -144,21 +205,43 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 
         public bool ValidateTeams(List<string> team1, List<string> team2)
         {
-            var validator = new TeamValidator(
+            var validator = CreateTeamValidator();
+            return AreBothTeamsValid(validator, team1, team2);
+        }
+
+        private TeamValidator CreateTeamValidator()
+        {
+            return new TeamValidator(
                 unitName => unitData.ContainsKey(unitName),
                 skillName => skillSet.Contains(skillName));
+        }
 
+        private bool AreBothTeamsValid(TeamValidator validator, List<string> team1, List<string> team2)
+        {
             return validator.IsValidTeam(team1) && validator.IsValidTeam(team2);
         }
 
         public (List<UnitInfo>, List<UnitInfo>) ParseTeamsFromFile(string filePath)
         {
-            string[] lines = File.ReadAllLines(filePath);
-            var (team1, team2) = TeamParser.ParseTeams(lines);
+            var lines = ReadTeamFile(filePath);
+            var (team1, team2) = ParseTeamLines(lines);
+            return BuildBothTeams(team1, team2);
+        }
 
+        private string[] ReadTeamFile(string filePath)
+        {
+            return File.ReadAllLines(filePath);
+        }
+
+        private (List<string>, List<string>) ParseTeamLines(string[] lines)
+        {
+            return TeamParser.ParseTeams(lines);
+        }
+
+        private (List<UnitInfo>, List<UnitInfo>) BuildBothTeams(List<string> team1, List<string> team2)
+        {
             var parsedTeam1 = BuildUnitInfoList(team1);
             var parsedTeam2 = BuildUnitInfoList(team2);
-
             return (parsedTeam1, parsedTeam2);
         }
 

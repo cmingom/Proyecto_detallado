@@ -6,6 +6,7 @@ using Shin_Megami_Tensei_View;
 using Shin_Megami_Tensei_Model.CombatSystem.Core;
 using Shin_Megami_Tensei_Model.CombatSystem.Setup;
 using Shin_Megami_Tensei_Model.Domain.States;
+using Shin_Megami_Tensei_Model.Domain.Entities;
 
 namespace Shin_Megami_Tensei;
 
@@ -26,36 +27,76 @@ public class Game
     
     private void InitializeTeamsPath(string teamsPath)
     {
-        if (teamsPath.EndsWith(".txt"))
+        if (IsSpecificFile(teamsPath))
         {
-            this.specificTeamsFile = teamsPath;
-            this.teamsFolder = Path.GetDirectoryName(teamsPath) ?? "";
+            SetSpecificFileAndFolder(teamsPath);
         }
         else
         {
-            this.teamsFolder = teamsPath;
+            SetTeamsFolder(teamsPath);
         }
+    }
+
+    private bool IsSpecificFile(string teamsPath)
+    {
+        return teamsPath.EndsWith(".txt");
+    }
+
+    private void SetSpecificFileAndFolder(string teamsPath)
+    {
+        this.specificTeamsFile = teamsPath;
+        this.teamsFolder = Path.GetDirectoryName(teamsPath) ?? "";
+    }
+
+    private void SetTeamsFolder(string teamsPath)
+    {
+        this.teamsFolder = teamsPath;
     }
     
     private void ShowTeamFiles(string[] files)
     {
+        ShowTeamSelectionHeader();
+        ShowFileOptions(files);
+    }
+
+    private void ShowTeamSelectionHeader()
+    {
         view.WriteLine("Elige un archivo para cargar los equipos");
+    }
+
+    private void ShowFileOptions(string[] files)
+    {
         for (int i = 0; i < files.Length; i++)
         {
-            view.WriteLine($"{i}: {Path.GetFileName(files[i])}");
+            ShowFileOption(i, files[i]);
         }
+    }
+
+    private void ShowFileOption(int index, string filePath)
+    {
+        view.WriteLine($"{index}: {Path.GetFileName(filePath)}");
     }
 
     private bool TrySelectFile(string[] files, out string selectedFile)
     {
         selectedFile = string.Empty;
-        var input = view.ReadLine();
+        var input = GetUserInput();
         if (!IsValidFileIndex(input, files.Length))
         {
             return false;
         }
-        selectedFile = files[int.Parse(input)];
+        selectedFile = GetSelectedFile(files, input);
         return true;
+    }
+
+    private string GetUserInput()
+    {
+        return view.ReadLine();
+    }
+
+    private string GetSelectedFile(string[] files, string input)
+    {
+        return files[int.Parse(input)];
     }
     
     private bool IsValidFileIndex(string input, int filesLength)
@@ -66,9 +107,9 @@ public class Game
     public void Play()
     {
         var file = GetTeamsFile();
-        if (string.IsNullOrEmpty(file))
+        if (IsInvalidFile(file))
         {
-            view.WriteLine("Archivo de equipos inválido");
+            ShowInvalidFileMessage();
             return;
         }
         
@@ -77,14 +118,39 @@ public class Game
         
         StartBattle(battleState, playerNames);
     }
+
+    private bool IsInvalidFile(string file)
+    {
+        return string.IsNullOrEmpty(file);
+    }
+
+    private void ShowInvalidFileMessage()
+    {
+        view.WriteLine("Archivo de equipos inválido");
+    }
     
     private string GetTeamsFile()
     {
-        if (specificTeamsFile != null)
+        if (HasSpecificFile())
         {
-            return specificTeamsFile;
+            return GetSpecificFile();
         }
         
+        return GetFileFromUserSelection();
+    }
+
+    private bool HasSpecificFile()
+    {
+        return specificTeamsFile != null;
+    }
+
+    private string GetSpecificFile()
+    {
+        return specificTeamsFile;
+    }
+
+    private string GetFileFromUserSelection()
+    {
         var files = GetTeamFiles();
         ShowTeamFiles(files);
         
@@ -103,14 +169,34 @@ public class Game
     
     private BattleState CreateBattleState(string file)
     {
-        var lines = File.ReadAllLines(file);
-        var (team1, team2) = TeamParser.ParseTeams(lines);
+        var lines = ReadFileLines(file);
+        var (team1, team2) = ParseTeamsFromLines(lines);
         
-        if (!gameService.ValidateTeams(team1, team2))
+        if (!AreTeamsValid(team1, team2))
         {
             return null;
         }
         
+        return CreateBattleStateFromValidTeams(file);
+    }
+
+    private string[] ReadFileLines(string file)
+    {
+        return File.ReadAllLines(file);
+    }
+
+    private (List<string> team1, List<string> team2) ParseTeamsFromLines(string[] lines)
+    {
+        return TeamParser.ParseTeams(lines);
+    }
+
+    private bool AreTeamsValid(List<string> team1, List<string> team2)
+    {
+        return gameService.ValidateTeams(team1, team2);
+    }
+
+    private BattleState CreateBattleStateFromValidTeams(string file)
+    {
         var (parsedTeam1, parsedTeam2) = gameService.ParseTeamsFromFile(file);
         var gameSetup = new GameSetup(gameService.GetUnitData());
         
@@ -119,21 +205,41 @@ public class Game
     
     private (string player1Name, string player2Name) GetPlayerNames(string file)
     {
-        var (parsedTeam1, parsedTeam2) = gameService.ParseTeamsFromFile(file);
-        var gameSetup = new GameSetup(gameService.GetUnitData());
+        var (parsedTeam1, parsedTeam2) = ParseTeamsFromFile(file);
+        var gameSetup = CreateGameSetup();
         
         return gameSetup.GetPlayerNames(parsedTeam1, parsedTeam2);
+    }
+
+    private (List<UnitInfo> team1, List<UnitInfo> team2) ParseTeamsFromFile(string file)
+    {
+        return gameService.ParseTeamsFromFile(file);
+    }
+
+    private GameSetup CreateGameSetup()
+    {
+        return new GameSetup(gameService.GetUnitData());
     }
     
     private void StartBattle(BattleState battleState, (string player1Name, string player2Name) playerNames)
     {
-        if (battleState == null)
+        if (IsInvalidBattleState(battleState))
         {
-            view.WriteLine("Archivo de equipos inválido");
+            ShowInvalidFileMessage();
             return;
         }
         
-        var battleEngine = new BattleEngine(view, gameService.GetSkillData());
+        var battleEngine = CreateBattleEngine();
         battleEngine.StartBattle(battleState, playerNames.player1Name, playerNames.player2Name);
+    }
+
+    private bool IsInvalidBattleState(BattleState battleState)
+    {
+        return battleState == null;
+    }
+
+    private BattleEngine CreateBattleEngine()
+    {
+        return new BattleEngine(view, gameService.GetSkillData());
     }
 }

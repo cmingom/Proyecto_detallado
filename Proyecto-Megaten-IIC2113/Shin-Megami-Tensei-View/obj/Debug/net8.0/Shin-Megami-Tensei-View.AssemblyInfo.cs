@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Shin-Megami-Tensei-View")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+846a87814132b542c8c68a922aab4b45518029c9")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8cfa9595c31458ff12eced5c8f37beec430972d1")]
 [assembly: System.Reflection.AssemblyProductAttribute("Shin-Megami-Tensei-View")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Shin-Megami-Tensei-View")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

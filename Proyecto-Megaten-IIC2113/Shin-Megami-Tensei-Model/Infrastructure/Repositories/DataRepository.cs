@@ -67,7 +67,6 @@ namespace Shin_Megami_Tensei_Model.Infrastructure.Repositories
         bool ISkillRepo.Contains(string skillName) =>
             skillName != null && _skillNames.Contains(skillName);
 
-        private class UnitDTO { public string? name { get; set; } }
-        private class SkillDTO { public string? name { get; set; } }
+
     }
 }

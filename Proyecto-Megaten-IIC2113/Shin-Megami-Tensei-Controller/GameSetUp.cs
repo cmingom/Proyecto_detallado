@@ -16,7 +16,7 @@ namespace Shin_Megami_Tensei
             this.unitData = unitData;
         }
         
-        public BattleState CreateBattleState(List<GameService.UnitInfo> team1, List<GameService.UnitInfo> team2)
+        public BattleState CreateBattleState(List<UnitInfo> team1, List<UnitInfo> team2)
         {
             var team1Units = CreateTeamUnits(team1);
             var team2Units = CreateTeamUnits(team2);
@@ -27,7 +27,7 @@ namespace Shin_Megami_Tensei
             return new BattleState(battleTeam1, battleTeam2);
         }
         
-        private List<UnitInstance> CreateTeamUnits(List<GameService.UnitInfo> team)
+        private List<UnitInstance> CreateTeamUnits(List<UnitInfo> team)
         {
             var units = new List<UnitInstance>();
             var positions = GetTeamPositions();
@@ -38,7 +38,7 @@ namespace Shin_Megami_Tensei
             return units;
         }
         
-        private void PopulateTeamUnits(List<UnitInstance> units, List<GameService.UnitInfo> team, char[] positions, int teamSize)
+        private void PopulateTeamUnits(List<UnitInstance> units, List<UnitInfo> team, char[] positions, int teamSize)
         {
             for (int i = 0; i < teamSize; i++)
             {
@@ -55,12 +55,12 @@ namespace Shin_Megami_Tensei
             return new char[] { 'A', 'B', 'C', 'D' };
         }
         
-        private int GetTeamSize(List<GameService.UnitInfo> team)
+        private int GetTeamSize(List<UnitInfo> team)
         {
             return Math.Min(team.Count, 4);
         }
         
-        private UnitInstance? CreateUnitInstance(GameService.UnitInfo unitInfo, char position)
+        private UnitInstance? CreateUnitInstance(UnitInfo unitInfo, char position)
         {
             if (!unitData.TryGetValue(unitInfo.Name, out var unitTemplate))
             {
@@ -80,12 +80,12 @@ namespace Shin_Megami_Tensei
             );
         }
         
-        private List<string> GetUnitSkills(GameService.UnitInfo unitInfo, Unit unitTemplate)
+        private List<string> GetUnitSkills(UnitInfo unitInfo, Unit unitTemplate)
         {
             return unitInfo.IsSamurai ? unitInfo.Skills : unitTemplate.Skills;
         }
         
-        public (string player1Name, string player2Name) GetPlayerNames(List<GameService.UnitInfo> team1, List<GameService.UnitInfo> team2)
+        public (string player1Name, string player2Name) GetPlayerNames(List<UnitInfo> team1, List<UnitInfo> team2)
         {
             var player1Name = team1.FirstOrDefault(u => u.IsSamurai)?.Name ?? team1.FirstOrDefault()?.Name ?? "Player1";
             var player2Name = team2.FirstOrDefault(u => u.IsSamurai)?.Name ?? team2.FirstOrDefault()?.Name ?? "Player2";

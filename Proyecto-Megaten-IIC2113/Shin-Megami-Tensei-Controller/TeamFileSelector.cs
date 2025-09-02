@@ -7,6 +7,9 @@ namespace Shin_Megami_Tensei
 {
     public class TeamFileSelector
     {
+        private const string TEAM_SELECTION_MESSAGE = "Elige un archivo para cargar los equipos";
+        private const string FILE_OPTION_FORMAT = "{0}: {1}";
+        
         private readonly View view;
 
         public TeamFileSelector(View view)
@@ -22,7 +25,7 @@ namespace Shin_Megami_Tensei
 
         private void ShowTeamSelectionHeader()
         {
-            view.WriteLine("Elige un archivo para cargar los equipos");
+            view.WriteLine(TEAM_SELECTION_MESSAGE);
         }
 
         private void ShowFileOptions(string[] files)
@@ -35,7 +38,7 @@ namespace Shin_Megami_Tensei
 
         private void ShowFileOption(int index, string filePath)
         {
-            view.WriteLine($"{index}: {Path.GetFileName(filePath)}");
+            view.WriteLine(string.Format(FILE_OPTION_FORMAT, index, Path.GetFileName(filePath)));
         }
     }
 }

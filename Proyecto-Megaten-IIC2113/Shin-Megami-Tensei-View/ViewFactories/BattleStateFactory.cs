@@ -10,7 +10,11 @@ namespace Shin_Megami_Tensei
     public class BattleStateFactory
     {
         private const int MAX_UNITS_IN_BATTLE = 4;
-        private static readonly char[] TEAM_POSITIONS = { 'A', 'B', 'C', 'D' };
+        private const char POSITION_A = 'A';
+        private const char POSITION_B = 'B';
+        private const char POSITION_C = 'C';
+        private const char POSITION_D = 'D';
+        private static readonly char[] TEAM_POSITIONS = { POSITION_A, POSITION_B, POSITION_C, POSITION_D };
 
         private readonly GameManager gameManager;
 

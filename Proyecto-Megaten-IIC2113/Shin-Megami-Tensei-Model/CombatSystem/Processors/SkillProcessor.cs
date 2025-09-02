@@ -9,6 +9,9 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 {
     public class SkillProcessor
     {
+        private const int INVALID_SKILL_CHOICE = -1;
+        private const int CANCEL_SKILL_CHOICE_OFFSET = 1;
+        
         private readonly IBattleView battleView;
         private readonly Dictionary<string, Skill> skillData;
 
@@ -25,26 +28,6 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 
             var skillChoice = GetSkillChoice(availableSkills.Count);
             return IsValidSkillChoice(skillChoice, availableSkills.Count);
-        }
-
-        private void ShowSkillSelection(UnitInstance unit, List<Skill> availableSkills)
-        {
-            battleView.ShowSkillSelection(unit, availableSkills);
-        }
-
-        private int GetSkillChoice(int skillCount)
-        {
-            return battleView.GetSkillChoice(skillCount);
-        }
-
-        private bool IsValidSkillChoice(int skillChoice, int skillCount)
-        {
-            return !IsInvalidSkillChoice(skillChoice, skillCount);
-        }
-
-        private bool IsInvalidSkillChoice(int skillChoice, int skillCount)
-        {
-            return skillChoice == -1 || skillChoice == skillCount + 1;
         }
 
         public List<Skill> GetAvailableSkills(UnitInstance unit)
@@ -73,6 +56,26 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             {
                 availableSkills.Add(skill);
             }
+        }
+
+        private void ShowSkillSelection(UnitInstance unit, List<Skill> availableSkills)
+        {
+            battleView.ShowSkillSelection(unit, availableSkills);
+        }
+
+        private int GetSkillChoice(int skillCount)
+        {
+            return battleView.GetSkillChoice(skillCount);
+        }
+
+        private bool IsValidSkillChoice(int skillChoice, int skillCount)
+        {
+            return !IsInvalidSkillChoice(skillChoice, skillCount);
+        }
+
+        private bool IsInvalidSkillChoice(int skillChoice, int skillCount)
+        {
+            return skillChoice == INVALID_SKILL_CHOICE || skillChoice == skillCount + CANCEL_SKILL_CHOICE_OFFSET;
         }
     }
 }

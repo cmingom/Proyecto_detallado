@@ -9,6 +9,15 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 {
     public class UnitActionProcessor
     {
+        private const int INVALID_ACTION_CHOICE = -1;
+        private const int ACTION_INDEX_OFFSET = 1;
+        private const string ATTACK_ACTION = "Atacar";
+        private const string GUN_ACTION = "Disparar";
+        private const string SKILL_ACTION = "Usar Habilidad";
+        private const string SUMMON_ACTION = "Invocar";
+        private const string PASS_TURN_ACTION = "Pasar Turno";
+        private const string SURRENDER_ACTION = "Rendirse";
+        
         private readonly IBattleView battleView;
         private readonly ActionCoordinator actionExecutor;
         private string lastSelectedAction;
@@ -36,11 +45,6 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             return false;
         }
 
-        private bool ShouldStopProcessing()
-        {
-            return IsPlayerSurrendering(GetLastSelectedAction());
-        }
-
         private bool ProcessSingleAction(UnitInstance actingUnit, BattleState battleState, string player1Name, string player2Name)
         {
             var availableActions = GetAvailableActions(actingUnit);
@@ -53,13 +57,33 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             return ExecuteSelectedAction(actingUnit, battleState, player1Name, player2Name, actionChoice);
         }
 
-        private bool ExecuteSelectedAction(UnitInstance actingUnit, BattleState battleState, string player1Name, string player2Name, int actionChoice)
+        public List<string> GetAvailableActions(UnitInstance unit)
         {
-            var availableActions = GetAvailableActions(actingUnit);
-            var selectedAction = GetSelectedAction(availableActions, actionChoice);
-            StoreLastSelectedAction(selectedAction);
-            
-            return actionExecutor.ExecuteSelectedAction(actingUnit, battleState, selectedAction, player1Name, player2Name);
+            return unit.IsSamurai ? GetSamuraiActions() : GetRegularActions();
+        }
+
+        private List<string> GetSamuraiActions()
+        {
+            return new List<string>
+            {
+                ATTACK_ACTION,
+                GUN_ACTION,
+                SKILL_ACTION,
+                SUMMON_ACTION,
+                PASS_TURN_ACTION,
+                SURRENDER_ACTION
+            };
+        }
+
+        private List<string> GetRegularActions()
+        {
+            return new List<string>
+            {
+                ATTACK_ACTION,
+                SKILL_ACTION,
+                SUMMON_ACTION,
+                PASS_TURN_ACTION
+            };
         }
 
         private void ShowActionMenu(UnitInstance actingUnit, List<string> availableActions)
@@ -74,17 +98,31 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 
         private bool IsInvalidActionChoice(int actionChoice)
         {
-            return actionChoice == -1;
+            return actionChoice == INVALID_ACTION_CHOICE;
+        }
+
+        private bool ExecuteSelectedAction(UnitInstance actingUnit, BattleState battleState, string player1Name, string player2Name, int actionChoice)
+        {
+            var availableActions = GetAvailableActions(actingUnit);
+            var selectedAction = GetSelectedAction(availableActions, actionChoice);
+            StoreLastSelectedAction(selectedAction);
+            
+            return actionExecutor.ExecuteSelectedAction(actingUnit, battleState, selectedAction, player1Name, player2Name);
         }
 
         private string GetSelectedAction(List<string> availableActions, int actionChoice)
         {
-            return availableActions[actionChoice - 1];
+            return availableActions[actionChoice - ACTION_INDEX_OFFSET];
         }
 
         private void StoreLastSelectedAction(string action)
         {
             lastSelectedAction = action;
+        }
+
+        private bool ShouldStopProcessing()
+        {
+            return IsPlayerSurrendering(GetLastSelectedAction());
         }
 
         private string GetLastSelectedAction()
@@ -94,36 +132,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 
         private bool IsPlayerSurrendering(string selectedAction)
         {
-            return selectedAction == "Rendirse";
-        }
-
-        public List<string> GetAvailableActions(UnitInstance unit)
-        {
-            return unit.IsSamurai ? GetSamuraiActions() : GetRegularActions();
-        }
-
-        private List<string> GetSamuraiActions()
-        {
-            return new List<string>
-            {
-                "Atacar",
-                "Disparar",
-                "Usar Habilidad",
-                "Invocar",
-                "Pasar Turno",
-                "Rendirse"
-            };
-        }
-
-        private List<string> GetRegularActions()
-        {
-            return new List<string>
-            {
-                "Atacar",
-                "Usar Habilidad",
-                "Invocar",
-                "Pasar Turno"
-            };
+            return selectedAction == SURRENDER_ACTION;
         }
     }
 }

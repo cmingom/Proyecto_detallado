@@ -9,6 +9,11 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 {
     public class BattleStateProcessor
     {
+        private const int MINIMUM_TURNS = 0;
+        private const int TURN_DECREMENT = 1;
+        private const string PLAYER_1_LABEL = "J1";
+        private const string PLAYER_2_LABEL = "J2";
+        
         private readonly IBattleView battleView;
 
         public BattleStateProcessor(IBattleView battleView)
@@ -50,7 +55,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 
         private int CalculateNewTurnCount(int currentTurns)
         {
-            return Math.Max(0, currentTurns - 1);
+            return Math.Max(MINIMUM_TURNS, currentTurns - TURN_DECREMENT);
         }
 
         public bool IsBattleOver(BattleState battleState)
@@ -75,7 +80,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 
         public string GetWinnerNumber(BattleState battleState)
         {
-            return IsTeam1Defeated(battleState) ? "J2" : "J1";
+            return IsTeam1Defeated(battleState) ? PLAYER_2_LABEL : PLAYER_1_LABEL;
         }
     }
 }

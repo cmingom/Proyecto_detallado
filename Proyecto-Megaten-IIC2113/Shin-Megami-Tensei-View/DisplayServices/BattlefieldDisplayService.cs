@@ -8,6 +8,12 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
     public class BattlefieldDisplayService
     {
         private const int MAX_POSITIONS = 4;
+        private const int MINIMUM_HP = 0;
+        private const int INDEX_OFFSET = 1;
+        private const char POSITION_A = 'A';
+        private const char POSITION_B = 'B';
+        private const char POSITION_C = 'C';
+        private const char POSITION_D = 'D';
         private const string SEPARATOR = "----------------------------------------";
         private const string TEAM_HEADER_FORMAT = "Equipo de {0} ({1})";
         private const string UNIT_INFO_FORMAT = "{0}-{1} HP:{2}/{3} MP:{4}/{5}";
@@ -60,7 +66,7 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
 
         private char[] GetPositions()
         {
-            return new char[] { 'A', 'B', 'C', 'D' };
+            return new char[] { POSITION_A, POSITION_B, POSITION_C, POSITION_D };
         }
 
         private void ShowSingleUnitPosition(UnitInstance? unit, char position)
@@ -83,7 +89,7 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
 
         private bool ShouldShowUnitInfo(UnitInstance unit)
         {
-            return unit.IsSamurai || unit.HP > 0;
+            return unit.IsSamurai || unit.HP > MINIMUM_HP;
         }
 
         private void ShowUnitInfo(UnitInstance unit, char position)
@@ -129,7 +135,7 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
         {
             for (int i = 0; i < actionOrder.Count; i++)
             {
-                ShowOrderItem(i + 1, actionOrder[i].Name);
+                ShowOrderItem(i + INDEX_OFFSET, actionOrder[i].Name);
             }
         }
 

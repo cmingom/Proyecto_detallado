@@ -7,6 +7,13 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 {
     public class UnitParser
     {
+        private const string SAMURAI_TAG = "[Samurai]";
+        private const char OPEN_PARENTHESIS = '(';
+        private const char CLOSE_PARENTHESIS = ')';
+        private const char COLON = ':';
+        private const char COMMA = ',';
+        private const int PARENTHESIS_OFFSET = 1;
+        
         public UnitInfo? ParseUnitDefinition(string line)
         {
             return IsSamuraiLine(line) ? ParseSamuraiDefinition(line) : ParseMonsterDefinition(line);
@@ -14,7 +21,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 
         private bool IsSamuraiLine(string line)
         {
-            return line.Contains("[Samurai]", StringComparison.Ordinal);
+            return line.Contains(SAMURAI_TAG, StringComparison.Ordinal);
         }
 
         private UnitInfo? ParseSamuraiDefinition(string line)
@@ -29,12 +36,12 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 
         private string RemoveSamuraiTag(string line)
         {
-            return line.Replace("[Samurai]", string.Empty).Trim();
+            return line.Replace(SAMURAI_TAG, string.Empty).Trim();
         }
 
         private (string? name, List<string>? skills) ParseSamuraiNameAndSkills(string rest)
         {
-            int openParen = rest.IndexOf('(');
+            int openParen = rest.IndexOf(OPEN_PARENTHESIS);
             
             if (openParen < 0)
                 return (rest, null);
@@ -63,7 +70,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 
         private int FindCloseParenthesis(string rest, int openParen)
         {
-            return rest.IndexOf(')', openParen + 1);
+            return rest.IndexOf(CLOSE_PARENTHESIS, openParen + PARENTHESIS_OFFSET);
         }
 
         private string ExtractName(string rest, int openParen)
@@ -80,7 +87,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 
         private string ExtractSkillsText(string rest, int openParen, int closeParen)
         {
-            return rest.Substring(openParen + 1, closeParen - openParen - 1);
+            return rest.Substring(openParen + PARENTHESIS_OFFSET, closeParen - openParen - PARENTHESIS_OFFSET);
         }
 
         private bool IsValidSkillsText(string skillsText)
@@ -90,15 +97,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 
         private bool HasRemainingTextAfterSkills(string rest, int closeParen)
         {
-            return !string.IsNullOrWhiteSpace(rest.Substring(closeParen + 1));
-        }
-
-        private UnitInfo? ParseMonsterDefinition(string line)
-        {
-            if (HasInvalidCharacters(line))
-                return null;
-            
-            return new UnitInfo(line, false, new List<string>());
+            return !string.IsNullOrWhiteSpace(rest.Substring(closeParen + PARENTHESIS_OFFSET));
         }
 
         private List<string>? ParseSkillList(string skillsText)
@@ -106,7 +105,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             if (string.IsNullOrWhiteSpace(skillsText))
                 return new List<string>();
 
-            var parts = skillsText.Split(',');
+            var parts = skillsText.Split(COMMA);
             return ParseSkillParts(parts);
         }
 
@@ -131,7 +130,15 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             return true;
         }
 
+        private UnitInfo? ParseMonsterDefinition(string line)
+        {
+            if (HasInvalidCharacters(line))
+                return null;
+            
+            return new UnitInfo(line, false, new List<string>());
+        }
+
         private static bool HasInvalidCharacters(string line)
-            => line.Contains('(') || line.Contains(')') || line.Contains(':');
+            => line.Contains(OPEN_PARENTHESIS) || line.Contains(CLOSE_PARENTHESIS) || line.Contains(COLON);
     }
 }

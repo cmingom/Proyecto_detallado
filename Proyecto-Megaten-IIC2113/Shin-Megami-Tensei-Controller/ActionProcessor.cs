@@ -10,6 +10,10 @@ namespace Shin_Megami_Tensei
 {
     public class ActionProcessor
     {
+        private const int NO_TURNS_REMAINING = 0;
+        private const int EMPTY_LIST_COUNT = 0;
+        private const int FIRST_UNIT_INDEX = 0;
+        
         private readonly BattleView battleView;
         private readonly CombatManager combatManager;
 
@@ -29,17 +33,6 @@ namespace Shin_Megami_Tensei
             return false;
         }
 
-        private void ShowBattleStatus(BattleContext battleContext, List<UnitInstance> actionOrder)
-        {
-            battleView.ShowBattlefield(battleContext.BattleState, battleContext.Player1Name, battleContext.Player2Name);
-            battleView.ShowTurnCounters(battleContext.BattleState);
-            battleView.ShowActionOrderBySpeed(actionOrder);
-        }
-
-        private const int NO_TURNS_REMAINING = 0;
-        private const int EMPTY_LIST_COUNT = 0;
-        private const int FIRST_UNIT_INDEX = 0;
-
         private bool ShouldContinueProcessingActions(BattleContext battleContext)
         {
             return battleContext.BattleState.FullTurns > NO_TURNS_REMAINING && !combatManager.IsBattleOver(battleContext.BattleState);
@@ -55,6 +48,18 @@ namespace Shin_Megami_Tensei
             return ProcessCurrentUnit(battleContext, actionOrder, currentTeam);
         }
 
+        private void ShowBattleStatus(BattleContext battleContext, List<UnitInstance> actionOrder)
+        {
+            battleView.ShowBattlefield(battleContext.BattleState, battleContext.Player1Name, battleContext.Player2Name);
+            battleView.ShowTurnCounters(battleContext.BattleState);
+            battleView.ShowActionOrderBySpeed(actionOrder);
+        }
+
+        private bool IsActionOrderEmpty(List<UnitInstance> actionOrder)
+        {
+            return actionOrder.Count == EMPTY_LIST_COUNT;
+        }
+
         private bool ProcessCurrentUnit(BattleContext battleContext, List<UnitInstance> actionOrder, TeamState currentTeam)
         {
             var currentUnit = GetCurrentUnit(actionOrder);
@@ -64,11 +69,6 @@ namespace Shin_Megami_Tensei
             
             ProcessUnitTurnEnd(actionOrder, currentTeam, currentUnit);
             return false;
-        }
-
-        private bool IsActionOrderEmpty(List<UnitInstance> actionOrder)
-        {
-            return actionOrder.Count == EMPTY_LIST_COUNT;
         }
 
         private UnitInstance GetCurrentUnit(List<UnitInstance> actionOrder)
@@ -101,6 +101,13 @@ namespace Shin_Megami_Tensei
             return false;
         }
 
+        private void AnnounceWinner(BattleState battleState, string player1Name, string player2Name)
+        {
+            var winnerName = combatManager.GetWinner(battleState, player1Name, player2Name);
+            var winnerNumber = combatManager.GetWinnerNumber(battleState);
+            battleView.ShowWinner(winnerName, winnerNumber);
+        }
+
         private void ProcessUnitTurnEnd(List<UnitInstance> actionOrder, TeamState currentTeam, UnitInstance currentUnit)
         {
             actionOrder.RemoveAt(FIRST_UNIT_INDEX);
@@ -108,13 +115,6 @@ namespace Shin_Megami_Tensei
             {
                 actionOrder.Add(currentUnit);
             }
-        }
-
-        private void AnnounceWinner(BattleState battleState, string player1Name, string player2Name)
-        {
-            var winnerName = combatManager.GetWinner(battleState, player1Name, player2Name);
-            var winnerNumber = combatManager.GetWinnerNumber(battleState);
-            battleView.ShowWinner(winnerName, winnerNumber);
         }
     }
 }

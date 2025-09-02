@@ -8,6 +8,13 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 {
     public class ActionSelector
     {
+        private const string ATTACK_ACTION = "Atacar";
+        private const string GUN_ACTION = "Disparar";
+        private const string SKILL_ACTION = "Usar Habilidad";
+        private const string SUMMON_ACTION = "Invocar";
+        private const string PASS_TURN_ACTION = "Pasar Turno";
+        private const string SURRENDER_ACTION = "Rendirse";
+        
         private readonly IBattleView battleView;
         private readonly SurrenderProcessor surrenderHandler;
         private readonly AttackProcessor attackExecutor;
@@ -30,12 +37,12 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
         {
             return selectedAction switch
             {
-                "Atacar" => attackExecutor.ExecutePhysicalAttack(actingUnit, battleState),
-                "Disparar" => attackExecutor.ExecuteGunAttack(actingUnit, battleState),
-                "Usar Habilidad" => skillManager.ProcessUseSkill(actingUnit, battleState),
-                "Invocar" => GetSummonResult(),
-                "Pasar Turno" => GetPassTurnResult(),
-                "Rendirse" => GetSurrenderResult(battleState, player1Name, player2Name),
+                ATTACK_ACTION => attackExecutor.ExecutePhysicalAttack(actingUnit, battleState),
+                GUN_ACTION => attackExecutor.ExecuteGunAttack(actingUnit, battleState),
+                SKILL_ACTION => skillManager.ProcessUseSkill(actingUnit, battleState),
+                SUMMON_ACTION => GetSummonResult(),
+                PASS_TURN_ACTION => GetPassTurnResult(),
+                SURRENDER_ACTION => GetSurrenderResult(battleState, player1Name, player2Name),
                 _ => GetDefaultResult()
             };
         }

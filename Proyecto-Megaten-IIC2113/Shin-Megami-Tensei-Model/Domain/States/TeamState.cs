@@ -8,6 +8,17 @@ namespace Shin_Megami_Tensei_Model.Domain.States
     public class TeamState
     {
         private const int MAX_TEAM_SIZE = 4;
+        private const int MINIMUM_HP = 0;
+        private const int POSITION_A_INDEX = 0;
+        private const int POSITION_B_INDEX = 1;
+        private const int POSITION_C_INDEX = 2;
+        private const int POSITION_D_INDEX = 3;
+        private const int INVALID_POSITION_INDEX = -1;
+        private const char POSITION_A = 'A';
+        private const char POSITION_B = 'B';
+        private const char POSITION_C = 'C';
+        private const char POSITION_D = 'D';
+        
         private readonly UnitInstance?[] unitsArray;
         public IReadOnlyList<UnitInstance?> Units { get; }
 
@@ -39,11 +50,11 @@ namespace Shin_Megami_Tensei_Model.Domain.States
         {
             return position switch
             {
-                'A' => 0,
-                'B' => 1,
-                'C' => 2,
-                'D' => 3,
-                _ => -1
+                POSITION_A => POSITION_A_INDEX,
+                POSITION_B => POSITION_B_INDEX,
+                POSITION_C => POSITION_C_INDEX,
+                POSITION_D => POSITION_D_INDEX,
+                _ => INVALID_POSITION_INDEX
             };
         }
 
@@ -62,7 +73,7 @@ namespace Shin_Megami_Tensei_Model.Domain.States
 
         private bool IsUnitAlive(UnitInstance? unit)
         {
-            return unit != null && unit.HP > 0;
+            return unit != null && unit.HP > MINIMUM_HP;
         }
 
         public void RemoveDeadUnits()
@@ -89,7 +100,7 @@ namespace Shin_Megami_Tensei_Model.Domain.States
 
         private bool IsUnitDead(UnitInstance? unit)
         {
-            return unit != null && unit.HP <= 0;
+            return unit != null && unit.HP <= MINIMUM_HP;
         }
     }
 }

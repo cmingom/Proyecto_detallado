@@ -7,6 +7,9 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 {
     public class TargetSelector
     {
+        private const int INVALID_CHOICE = -1;
+        private const int CANCEL_CHOICE_OFFSET = 1;
+        
         private readonly IBattleView battleView;
 
         public TargetSelector(IBattleView battleView)
@@ -51,14 +54,14 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             return battleView.GetTargetChoice(targetCount);
         }
 
+        private bool IsInvalidTargetChoice(int targetChoice, int targetCount)
+        {
+            return targetChoice == INVALID_CHOICE || targetChoice == targetCount + CANCEL_CHOICE_OFFSET;
+        }
+
         private UnitInstance GetSelectedTarget(List<UnitInstance> availableTargets, int targetChoice)
         {
             return availableTargets[targetChoice - 1];
-        }
-
-        private bool IsInvalidTargetChoice(int targetChoice, int targetCount)
-        {
-            return targetChoice == -1 || targetChoice == targetCount + 1;
         }
     }
 }

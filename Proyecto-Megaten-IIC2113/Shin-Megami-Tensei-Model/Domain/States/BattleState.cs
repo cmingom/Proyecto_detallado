@@ -5,6 +5,9 @@ namespace Shin_Megami_Tensei_Model.Domain.States
 {
     public class BattleState
     {
+        private const int INITIAL_BLINKING_TURNS = 0;
+        private const bool INITIAL_PLAYER_1_TURN = true;
+        
         public TeamState Team1 { get; }
         public TeamState Team2 { get; }
         public int FullTurns { get; set; }
@@ -16,8 +19,8 @@ namespace Shin_Megami_Tensei_Model.Domain.States
             Team1 = team1;
             Team2 = team2;
             FullTurns = team1.AliveUnits.Count();
-            BlinkingTurns = 0;
-            IsPlayer1Turn = true;
+            BlinkingTurns = INITIAL_BLINKING_TURNS;
+            IsPlayer1Turn = INITIAL_PLAYER_1_TURN;
         }
     }
 }

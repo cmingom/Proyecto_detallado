@@ -7,6 +7,9 @@ namespace Shin_Megami_Tensei
 {
     public class PlayerNameResolver
     {
+        private const string DEFAULT_PLAYER_1_NAME = "Player1";
+        private const string DEFAULT_PLAYER_2_NAME = "Player2";
+        
         private readonly GameManager gameService;
 
         public PlayerNameResolver(GameManager gameService)
@@ -28,10 +31,30 @@ namespace Shin_Megami_Tensei
 
         private (string player1Name, string player2Name) GetPlayerNamesFromTeams(List<UnitInfo> team1, List<UnitInfo> team2)
         {
-            var player1Name = team1.FirstOrDefault(u => u.IsSamurai)?.Name ?? team1.FirstOrDefault()?.Name ?? "Player1";
-            var player2Name = team2.FirstOrDefault(u => u.IsSamurai)?.Name ?? team2.FirstOrDefault()?.Name ?? "Player2";
+            var player1Name = GetPlayerNameFromTeam(team1, DEFAULT_PLAYER_1_NAME);
+            var player2Name = GetPlayerNameFromTeam(team2, DEFAULT_PLAYER_2_NAME);
             
             return (player1Name, player2Name);
+        }
+
+        private string GetPlayerNameFromTeam(List<UnitInfo> team, string defaultName)
+        {
+            var samuraiName = GetSamuraiNameFromTeam(team);
+            if (samuraiName != null)
+                return samuraiName;
+                
+            var firstUnitName = GetFirstUnitNameFromTeam(team);
+            return firstUnitName ?? defaultName;
+        }
+
+        private string? GetSamuraiNameFromTeam(List<UnitInfo> team)
+        {
+            return team.FirstOrDefault(u => u.IsSamurai)?.Name;
+        }
+
+        private string? GetFirstUnitNameFromTeam(List<UnitInfo> team)
+        {
+            return team.FirstOrDefault()?.Name;
         }
     }
 }

@@ -12,6 +12,7 @@ namespace Shin_Megami_Tensei
     {
         private const string PLAYER_1_LABEL = "J1";
         private const string PLAYER_2_LABEL = "J2";
+        private const int ZERO_TURNS = 0;
 
         private readonly BattleView battleView;
         private readonly CombatManager combatService;
@@ -35,21 +36,16 @@ namespace Shin_Megami_Tensei
             return shouldEndBattle;
         }
 
-        private bool ProcessPlayerActions(BattleState battleState, TeamState currentTeam, string player1Name, string player2Name)
-        {
-            var actionOrder = combatService.CalculateActionOrder(currentTeam);
-            var battleContext = CreateBattleContext(battleState, player1Name, player2Name);
-            return actionProcessor.ProcessActionOrder(battleContext, actionOrder, currentTeam);
-        }
-
-        private BattleContext CreateBattleContext(BattleState battleState, string player1Name, string player2Name)
-        {
-            return new BattleContext { BattleState = battleState, Player1Name = player1Name, Player2Name = player2Name };
-        }
-
         private TeamState GetCurrentTeam(BattleState battleState)
         {
             return battleState.IsPlayer1Turn ? battleState.Team1 : battleState.Team2;
+        }
+
+        private void ShowPlayerTurnHeader(BattleState battleState, string player1Name, string player2Name)
+        {
+            var currentPlayerName = GetCurrentPlayerName(battleState, player1Name, player2Name);
+            var playerNumber = GetCurrentPlayerNumber(battleState);
+            battleView.ShowRoundHeader(currentPlayerName, playerNumber);
         }
 
         private string GetCurrentPlayerName(BattleState battleState, string player1Name, string player2Name)
@@ -62,32 +58,56 @@ namespace Shin_Megami_Tensei
             return battleState.IsPlayer1Turn ? PLAYER_1_LABEL : PLAYER_2_LABEL;
         }
 
-        private void ShowPlayerTurnHeader(BattleState battleState, string player1Name, string player2Name)
+        private bool ProcessPlayerActions(BattleState battleState, TeamState currentTeam, string player1Name, string player2Name)
         {
-            var currentPlayerName = GetCurrentPlayerName(battleState, player1Name, player2Name);
-            var playerNumber = GetCurrentPlayerNumber(battleState);
-            battleView.ShowRoundHeader(currentPlayerName, playerNumber);
+            var actionOrder = combatService.CalculateActionOrder(currentTeam);
+            var battleContext = CreateBattleContext(battleState, player1Name, player2Name);
+            return actionProcessor.ProcessActionOrder(battleContext, actionOrder, currentTeam);
+        }
+
+        private BattleContext CreateBattleContext(BattleState battleState, string player1Name, string player2Name)
+        {
+            return new BattleContext { BattleState = battleState, Player1Name = player1Name, Player2Name = player2Name };
         }
 
         private void HandlePlayerTurnEnd(BattleState battleState, TeamState currentTeam, bool shouldEndBattle)
         {
-            if (!shouldEndBattle)
+            if (ShouldSwitchTurn(shouldEndBattle))
             {
                 SwitchPlayerTurn(battleState, currentTeam);
             }
         }
 
+        private bool ShouldSwitchTurn(bool shouldEndBattle)
+        {
+            return !shouldEndBattle;
+        }
+
         private void SwitchPlayerTurn(BattleState battleState, TeamState currentTeam)
         {
-            battleState.IsPlayer1Turn = !battleState.IsPlayer1Turn;
+            TogglePlayerTurn(battleState);
             var newCurrentTeam = GetCurrentTeam(battleState);
             UpdateTurnCounters(battleState, newCurrentTeam);
         }
 
+        private void TogglePlayerTurn(BattleState battleState)
+        {
+            battleState.IsPlayer1Turn = !battleState.IsPlayer1Turn;
+        }
+
         private void UpdateTurnCounters(BattleState battleState, TeamState newCurrentTeam)
         {
-            const int ZERO_TURNS = 0;
+            SetFullTurns(battleState, newCurrentTeam);
+            ResetBlinkingTurns(battleState);
+        }
+
+        private void SetFullTurns(BattleState battleState, TeamState newCurrentTeam)
+        {
             battleState.FullTurns = combatService.CalculateNextTurnCount(newCurrentTeam);
+        }
+
+        private void ResetBlinkingTurns(BattleState battleState)
+        {
             battleState.BlinkingTurns = ZERO_TURNS;
         }
     }

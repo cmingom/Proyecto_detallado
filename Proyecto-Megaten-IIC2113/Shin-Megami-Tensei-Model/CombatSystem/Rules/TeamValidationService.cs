@@ -7,6 +7,11 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Rules
 {
     public class TeamValidationService
     {
+        private const int MAX_UNITS_PER_TEAM = 8;
+        private const int MAX_SKILLS_PER_SAMURAI = 8;
+        private const int REQUIRED_SAMURAI_COUNT = 1;
+        private const int EMPTY_LINE_LENGTH = 0;
+        
         private readonly Func<string, bool> _unitExists;
         private readonly Func<string, bool> _skillExists;
         private readonly UnitParser unitParser;
@@ -26,8 +31,6 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Rules
             return ProcessTeamLines(teamLines, validationContext);
         }
 
-        private const int MAX_UNITS_PER_TEAM = 8;
-
         private bool IsValidTeamInput(List<string>? teamLines)
         {
             if (teamLines == null) return false;
@@ -45,13 +48,13 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Rules
             {
                 if (!ProcessSingleTeamLine(rawLine, context)) return false;
             }
-            return context.SamuraiCount == 1;
+            return context.SamuraiCount == REQUIRED_SAMURAI_COUNT;
         }
 
         private bool ProcessSingleTeamLine(string rawLine, ValidationContext context)
         {
             var line = rawLine.Trim();
-            if (line.Length == 0) return true;
+            if (line.Length == EMPTY_LINE_LENGTH) return true;
 
             var unitInfo = unitParser.ParseUnitDefinition(line);
             if (unitInfo == null) return false;
@@ -78,8 +81,6 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Rules
             var uniqueSkills = new HashSet<string>(StringComparer.Ordinal);
             return ValidateAllSkills(skills, uniqueSkills);
         }
-
-        private const int MAX_SKILLS_PER_SAMURAI = 8;
 
         private bool IsValidSkillCount(List<string> skills)
         {

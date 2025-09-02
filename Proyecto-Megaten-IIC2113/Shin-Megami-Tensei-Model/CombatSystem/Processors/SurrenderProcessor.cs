@@ -8,6 +8,9 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 {
     public class SurrenderProcessor
     {
+        private const string PLAYER_1_LABEL = "J1";
+        private const string PLAYER_2_LABEL = "J2";
+        
         private readonly IBattleView battleView;
 
         public SurrenderProcessor(IBattleView battleView)
@@ -20,12 +23,6 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             var surrenderInfo = CreateSurrenderInfo(battleState, player1Name, player2Name);
             ShowSurrenderInfo(surrenderInfo);
             return true;
-        }
-
-        private void ShowSurrenderInfo(SurrenderInfo surrenderInfo)
-        {
-            battleView.ShowSurrender(surrenderInfo.SurrenderingPlayer.Name, surrenderInfo.SurrenderingPlayer.Number, 
-                                   surrenderInfo.Winner.Name, surrenderInfo.Winner.Number);
         }
 
         private SurrenderInfo CreateSurrenderInfo(BattleState battleState, string player1Name, string player2Name)
@@ -56,7 +53,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 
         private string GetSurrenderingPlayerNumber(BattleState battleState)
         {
-            return battleState.IsPlayer1Turn ? "J1" : "J2";
+            return battleState.IsPlayer1Turn ? PLAYER_1_LABEL : PLAYER_2_LABEL;
         }
 
         private string GetSurrenderWinnerName(BattleState battleState, string player1Name, string player2Name)
@@ -66,7 +63,13 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 
         private string GetSurrenderWinnerNumber(BattleState battleState)
         {
-            return battleState.IsPlayer1Turn ? "J2" : "J1";
+            return battleState.IsPlayer1Turn ? PLAYER_2_LABEL : PLAYER_1_LABEL;
+        }
+
+        private void ShowSurrenderInfo(SurrenderInfo surrenderInfo)
+        {
+            battleView.ShowSurrender(surrenderInfo.SurrenderingPlayer.Name, surrenderInfo.SurrenderingPlayer.Number, 
+                                   surrenderInfo.Winner.Name, surrenderInfo.Winner.Number);
         }
     }
 }

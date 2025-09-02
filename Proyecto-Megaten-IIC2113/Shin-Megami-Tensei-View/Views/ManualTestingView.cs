@@ -10,6 +10,8 @@ public class ManualTestingView : TestingView
     private const string ERROR_MESSAGE_TEMPLATE = "el valor esperado acá era: \"{0}\"";
     private const string INVALID_INPUT_MESSAGE = "No se debía pedir un input en este momento";
     private const char NEWLINE_CHAR = '\n';
+    private const int MINIMUM_TEXT_LENGTH = 0;
+    private const int NEWLINE_OFFSET = 1;
     
     private readonly string[] _expectedScript;
     private int _currentLine;
@@ -44,12 +46,12 @@ public class ManualTestingView : TestingView
 
     private bool HasTrailingNewline(string text)
     {
-        return text.Length > 0 && text[^1] == NEWLINE_CHAR;
+        return text.Length > MINIMUM_TEXT_LENGTH && text[^1] == NEWLINE_CHAR;
     }
 
     private string RemoveTrailingNewline(string text)
     {
-        return text.Remove(text.Length - 1);
+        return text.Remove(text.Length - NEWLINE_OFFSET);
     }
     
     private void CheckThatLinesMatchTheExpectedOutput(string[] lines)

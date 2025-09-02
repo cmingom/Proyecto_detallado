@@ -28,7 +28,7 @@ namespace Shin_Megami_Tensei
         public void Play()
         {
             var file = teamFileCoordinator.GetTeamsFile();
-            if (IsInvalid(file))
+            if (IsNullOrEmpty(file))
             {
                 ShowInvalidFileMessage();
                 return;
@@ -40,12 +40,7 @@ namespace Shin_Megami_Tensei
             StartBattle(battleState, playerNames);
         }
 
-        private bool IsInvalid<T>(T? item) where T : class
-        {
-            return item == null;
-        }
-
-        private bool IsInvalid(string? item)
+        private bool IsNullOrEmpty(string? item)
         {
             return string.IsNullOrEmpty(item);
         }
@@ -57,7 +52,7 @@ namespace Shin_Megami_Tensei
         
         private void StartBattle(BattleState battleState, (string player1Name, string player2Name) playerNames)
         {
-            if (IsInvalid(battleState))
+            if (IsNull(battleState))
             {
                 ShowInvalidFileMessage();
                 return;
@@ -65,6 +60,11 @@ namespace Shin_Megami_Tensei
             
             var battleEngine = CreateBattleEngine();
             battleEngine.StartBattle(battleState, playerNames.player1Name, playerNames.player2Name);
+        }
+
+        private bool IsNull<T>(T? item) where T : class
+        {
+            return item == null;
         }
 
         private BattleEngine CreateBattleEngine()

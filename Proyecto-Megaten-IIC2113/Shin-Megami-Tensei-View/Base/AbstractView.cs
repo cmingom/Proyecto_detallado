@@ -2,10 +2,12 @@
 
 public abstract class AbstractView
 {
+    private const string NEWLINE = "\n";
+    
     private readonly Script script = new();
     
     public void WriteLine(object text)
-        => Write($"{text}\n");
+        => Write($"{text}{NEWLINE}");
 
     protected virtual void Write(object text)
         => script.AddToScript(text.ToString());
@@ -23,5 +25,5 @@ public abstract class AbstractView
         => script.ExportScript(path);
 
     public string[] GetScript()
-        => script.GetScript().Split("\n");
+        => script.GetScript().Split(NEWLINE);
 }

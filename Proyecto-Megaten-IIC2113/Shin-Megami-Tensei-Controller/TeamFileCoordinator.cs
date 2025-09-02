@@ -8,27 +8,30 @@ namespace Shin_Megami_Tensei
 {
     public class TeamFileCoordinator
     {
+        private const int MINIMUM_INDEX = 0;
+        private const string TEXT_FILE_EXTENSION = "*.txt";
+        
         private readonly View view;
-        private readonly TeamPathResolver teamPathManager;
-        private readonly TeamFileSelector teamFileDisplay;
+        private readonly TeamPathResolver pathResolver;
+        private readonly TeamFileSelector fileSelector;
 
         public TeamFileCoordinator(View view)
         {
             this.view = view;
-            this.teamPathManager = new TeamPathResolver();
-            this.teamFileDisplay = new TeamFileSelector(view);
+            this.pathResolver = new TeamPathResolver();
+            this.fileSelector = new TeamFileSelector(view);
         }
 
         public void InitializeTeamsPath(string teamsPath)
         {
-            teamPathManager.InitializeTeamsPath(teamsPath);
+            pathResolver.InitializeTeamsPath(teamsPath);
         }
 
         public string GetTeamsFile()
         {
-            if (teamPathManager.HasSpecificFile())
+            if (pathResolver.HasSpecificFile())
             {
-                return teamPathManager.GetSpecificFile();
+                return pathResolver.GetSpecificFile();
             }
             
             return GetFileFromUserSelection();
@@ -38,40 +41,33 @@ namespace Shin_Megami_Tensei
         {
             var files = GetTeamFiles();
             DisplayFilesToUser(files);
-            
             return AttemptFileSelection(files);
-        }
-
-        private void DisplayFilesToUser(string[] files)
-        {
-            teamFileDisplay.ShowTeamFiles(files);
-        }
-
-        private string AttemptFileSelection(string[] files)
-        {
-            if (!TrySelectFile(files, out string selectedFile))
-            {
-                return string.Empty;
-            }
-            
-            return selectedFile;
         }
 
         private string[] GetTeamFiles()
         {
-            return Directory.GetFiles(teamPathManager.GetTeamsFolder(), "*.txt").OrderBy(f => f).ToArray();
+            return Directory.GetFiles(pathResolver.GetTeamsFolder(), TEXT_FILE_EXTENSION).OrderBy(f => f).ToArray();
         }
 
-        private bool TrySelectFile(string[] files, out string selectedFile)
+        private void DisplayFilesToUser(string[] files)
         {
-            selectedFile = string.Empty;
+            fileSelector.ShowTeamFiles(files);
+        }
+
+        private string AttemptFileSelection(string[] files)
+        {
+            var selectedFile = TrySelectFile(files);
+            return selectedFile ?? string.Empty;
+        }
+
+        private string? TrySelectFile(string[] files)
+        {
             var input = GetUserInput();
             if (!IsValidFileIndex(input, files.Length))
             {
-                return false;
+                return null;
             }
-            selectedFile = GetSelectedFile(files, input);
-            return true;
+            return GetSelectedFile(files, input);
         }
 
         private string GetUserInput()
@@ -79,14 +75,15 @@ namespace Shin_Megami_Tensei
             return view.ReadLine();
         }
 
-        private string GetSelectedFile(string[] files, string input)
-        {
-            return files[int.Parse(input)];
-        }
-        
         private bool IsValidFileIndex(string input, int filesLength)
         {
-            return int.TryParse(input, out int index) && index >= 0 && index < filesLength;
+            return int.TryParse(input, out int index) && index >= MINIMUM_INDEX && index < filesLength;
+        }
+
+        private string GetSelectedFile(string[] files, string input)
+        {
+            var fileIndex = int.Parse(input);
+            return files[fileIndex];
         }
     }
 }

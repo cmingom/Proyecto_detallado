@@ -7,6 +7,10 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 {
     public class TeamParser
     {
+        private const int EMPTY_LINE_LENGTH = 0;
+        private const string PLAYER_1_TEAM_HEADER = "Player 1 Team";
+        private const string PLAYER_2_TEAM_HEADER = "Player 2 Team";
+        
         private readonly UnitParser unitParser;
 
         public TeamParser(UnitParser unitParser)
@@ -66,17 +70,17 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 
         private bool IsEmptyLine(string line)
         {
-            return line.Length == 0;
+            return line.Length == EMPTY_LINE_LENGTH;
         }
 
         private bool IsTeamHeader(string line, out bool isTeam1)
         {
-            if (line.StartsWith("Player 1 Team", StringComparison.Ordinal))
+            if (line.StartsWith(PLAYER_1_TEAM_HEADER, StringComparison.Ordinal))
             {
                 isTeam1 = true;
                 return true;
             }
-            if (line.StartsWith("Player 2 Team", StringComparison.Ordinal))
+            if (line.StartsWith(PLAYER_2_TEAM_HEADER, StringComparison.Ordinal))
             {
                 isTeam1 = false;
                 return true;
@@ -97,13 +101,6 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             if (state.ReadingTeam2) team2.Add(line);
         }
 
-        private (List<UnitInfo>, List<UnitInfo>) BuildBothTeams(List<string> team1, List<string> team2)
-        {
-            var parsedTeam1 = BuildUnitInfoList(team1);
-            var parsedTeam2 = BuildUnitInfoList(team2);
-            return (parsedTeam1, parsedTeam2);
-        }
-
         public List<UnitInfo> BuildUnitInfoList(List<string> teamLines)
         {
             var units = new List<UnitInfo>();
@@ -121,6 +118,13 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             {
                 units.Add(unitInfo);
             }
+        }
+
+        private (List<UnitInfo>, List<UnitInfo>) BuildBothTeams(List<string> team1, List<string> team2)
+        {
+            var parsedTeam1 = BuildUnitInfoList(team1);
+            var parsedTeam2 = BuildUnitInfoList(team2);
+            return (parsedTeam1, parsedTeam2);
         }
 
         private class ParsingState

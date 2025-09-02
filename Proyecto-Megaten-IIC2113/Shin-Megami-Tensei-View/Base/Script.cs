@@ -2,11 +2,13 @@
 
 class Script
 {
-    private const string InputKeyword = "INPUT: ";
+    private const string INPUT_KEYWORD = "INPUT: ";
+    private const string NEWLINE = "\n";
+    
     private string scriptContent = "";
     
     public void AddInput(string inputFromUser)
-        => AddToScript($"{InputKeyword}{inputFromUser}\n");
+        => AddToScript($"{INPUT_KEYWORD}{inputFromUser}{NEWLINE}");
     
     public void AddToScript(string message)
         => scriptContent += message;

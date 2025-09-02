@@ -9,8 +9,8 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
         public int CalculateAttackDamage(AttackContext attackContext)
         {
             return IsGunAttack(attackContext.AttackType)
-                ? CalculateGunDamage(attackContext.Attacker.Skl)
-                : CalculatePhysicalDamage(attackContext.Attacker.Str);
+                ? CalculateGunDamage(attackContext.Attacker.Skill)
+                : CalculatePhysicalDamage(attackContext.Attacker.Strength);
         }
 
         private bool IsGunAttack(AttackType attackType)

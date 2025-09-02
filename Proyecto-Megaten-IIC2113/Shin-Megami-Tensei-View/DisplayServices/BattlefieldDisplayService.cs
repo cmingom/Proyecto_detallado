@@ -21,13 +21,15 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
             ShowTeamStatus(battleState.Team2, player2Name, "J2");
         }
 
+        private const int MAX_POSITIONS = 4;
+
         private void ShowTeamStatus(TeamState team, string playerName, string playerNumber)
         {
             view.WriteLine($"Equipo de {playerName} ({playerNumber})");
             
             char[] positions = { 'A', 'B', 'C', 'D' };
             
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < MAX_POSITIONS; i++)
             {
                 var unit = team.Units[i];
                 if (unit != null)

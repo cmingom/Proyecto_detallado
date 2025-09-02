@@ -73,11 +73,16 @@ namespace Shin_Megami_Tensei
         {
             for (int i = 0; i < teamSize; i++)
             {
-                var unitInstance = CreateUnitInstance(team[i], positions[i], unitData);
-                if (unitInstance != null)
-                {
-                    units.Add(unitInstance);
-                }
+                AddUnitToTeam(units, team[i], positions[i], unitData);
+            }
+        }
+
+        private void AddUnitToTeam(List<UnitInstance> units, UnitInfo unitInfo, char position, Dictionary<string, Unit> unitData)
+        {
+            var unitInstance = CreateUnitInstance(unitInfo, position, unitData);
+            if (unitInstance != null)
+            {
+                units.Add(unitInstance);
             }
         }
 
@@ -86,9 +91,11 @@ namespace Shin_Megami_Tensei
             return new char[] { 'A', 'B', 'C', 'D' };
         }
 
+        private const int MAX_UNITS_IN_BATTLE = 4;
+
         private int GetTeamSize(List<UnitInfo> team)
         {
-            return Math.Min(team.Count, 4);
+            return Math.Min(team.Count, MAX_UNITS_IN_BATTLE);
         }
 
         private UnitInstance? CreateUnitInstance(UnitInfo unitInfo, char position, Dictionary<string, Unit> unitData)
@@ -100,11 +107,11 @@ namespace Shin_Megami_Tensei
             
             return new UnitInstance(
                 name: unitInfo.Name,
-                maxHP: unitTemplate.Stats.HP,
-                maxMP: unitTemplate.Stats.MP,
-                str: unitTemplate.Stats.Str,
-                skl: unitTemplate.Stats.Skl,
-                spd: unitTemplate.Stats.Spd,
+                maxHP: unitTemplate.Stats.HealthPoints,
+                maxMP: unitTemplate.Stats.ManaPoints,
+                str: unitTemplate.Stats.Strength,
+                skl: unitTemplate.Stats.Skill,
+                spd: unitTemplate.Stats.Speed,
                 isSamurai: unitInfo.IsSamurai,
                 position: position,
                 skills: GetUnitSkills(unitInfo, unitTemplate)

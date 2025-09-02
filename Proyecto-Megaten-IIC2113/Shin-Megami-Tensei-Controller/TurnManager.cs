@@ -72,11 +72,12 @@ namespace Shin_Megami_Tensei
             UpdateTurnCounters(battleState, newCurrentTeam);
         }
 
+        private const int INITIAL_BLINKING_TURNS = 0;
+
         private void UpdateTurnCounters(BattleState battleState, TeamState newCurrentTeam)
         {
-            const int ZERO_TURNS = 0;
             battleState.FullTurns = combatService.CalculateNextTurnCount(newCurrentTeam);
-            battleState.BlinkingTurns = ZERO_TURNS;
+            battleState.BlinkingTurns = INITIAL_BLINKING_TURNS;
         }
     }
 }

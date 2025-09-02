@@ -26,11 +26,12 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Rules
             return ProcessTeamLines(teamLines, validationContext);
         }
 
+        private const int MAX_UNITS_PER_TEAM = 8;
+
         private bool IsValidTeamInput(List<string>? teamLines)
         {
             if (teamLines == null) return false;
-            const int maxUnits = 8;
-            return teamLines.Count <= maxUnits;
+            return teamLines.Count <= MAX_UNITS_PER_TEAM;
         }
 
         private ValidationContext CreateValidationContext()
@@ -78,9 +79,11 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Rules
             return ValidateAllSkills(skills, uniqueSkills);
         }
 
+        private const int MAX_SKILLS_PER_SAMURAI = 8;
+
         private bool IsValidSkillCount(List<string> skills)
         {
-            return skills.Count <= 8;
+            return skills.Count <= MAX_SKILLS_PER_SAMURAI;
         }
 
         private bool ValidateAllSkills(List<string> skills, HashSet<string> uniqueSkills)

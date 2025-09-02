@@ -10,9 +10,9 @@ namespace Shin_Megami_Tensei_Model.Domain.Entities
         public int HP { get; set; }
         public int MaxMP { get; init; }
         public int MP { get; set; }
-        public int Str { get; init; }
-        public int Skl { get; init; }
-        public int Spd { get; init; }
+        public int Strength { get; init; }
+        public int Skill { get; init; }
+        public int Speed { get; init; }
         public bool IsSamurai { get; init; }
         public char Position { get; init; }
         public List<string> Skills { get; init; } = new();
@@ -26,9 +26,9 @@ namespace Shin_Megami_Tensei_Model.Domain.Entities
             HP = maxHP;
             MaxMP = maxMP;
             MP = maxMP;
-            Str = str;
-            Skl = skl;
-            Spd = spd;
+            Strength = str;
+            Skill = skl;
+            Speed = spd;
             IsSamurai = isSamurai;
             Position = position;
             Skills = skills ?? new();

@@ -18,7 +18,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 
         public List<UnitInstance> CalculateActionOrder(TeamState team)
         {
-            return team.AliveUnits.OrderByDescending(u => u.Spd).ToList();
+            return team.AliveUnits.OrderByDescending(u => u.Speed).ToList();
         }
 
         public int CalculateNextTurnCount(TeamState team)

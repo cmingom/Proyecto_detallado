@@ -7,12 +7,13 @@ namespace Shin_Megami_Tensei_Model.Domain.States
 {
     public class TeamState
     {
+        private const int MAX_TEAM_SIZE = 4;
         private readonly UnitInstance?[] unitsArray;
         public IReadOnlyList<UnitInstance?> Units { get; }
 
         public TeamState(IEnumerable<UnitInstance> units)
         {
-            unitsArray = new UnitInstance?[4];
+            unitsArray = new UnitInstance?[MAX_TEAM_SIZE];
             foreach (var unit in units)
             {
                 int index = unit.Position switch

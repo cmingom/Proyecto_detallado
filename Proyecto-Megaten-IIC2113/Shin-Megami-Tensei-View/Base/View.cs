@@ -4,7 +4,7 @@ namespace Shin_Megami_Tensei_View;
 
 public class View
 {
-    private readonly AbstractView _view;
+    private readonly AbstractView viewImplementation;
 
     public static View BuildConsoleView()
         => new View(new ConsoleView());
@@ -17,16 +17,16 @@ public class View
     
     private View(AbstractView newView)
     {
-        _view = newView;
+        viewImplementation = newView;
     }
     
-    public string ReadLine() => _view.ReadLine();
+    public string ReadLine() => viewImplementation.ReadLine();
     
     public void WriteLine(string message)
     {
-        _view.WriteLine(message);
+        viewImplementation.WriteLine(message);
     }
     
     public string[] GetScript()
-        => _view.GetScript();
+        => viewImplementation.GetScript();
 }

@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Shin_Megami_Tensei_Model.Domain.Entities;
 using Shin_Megami_Tensei_Model.CombatSystem.Rules;
 
@@ -23,11 +22,6 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
         {
             dataLoader.LoadReferenceData();
             this.teamValidator = new TeamValidator(UnitExists, SkillExists);
-        }
-
-        public List<UnitInfo> BuildUnitInfoList(List<string> teamLines)
-        {
-            return teamParser.BuildUnitInfoList(teamLines);
         }
 
         public bool ValidateTeams(List<string> team1, List<string> team2)

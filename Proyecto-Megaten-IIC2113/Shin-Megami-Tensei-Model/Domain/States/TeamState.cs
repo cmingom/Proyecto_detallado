@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Shin_Megami_Tensei_Model.Domain.Entities;
 
 namespace Shin_Megami_Tensei_Model.Domain.States
@@ -76,31 +73,5 @@ namespace Shin_Megami_Tensei_Model.Domain.States
             return unit != null && unit.HP > MINIMUM_HP;
         }
 
-        public void RemoveDeadUnits()
-        {
-            ProcessAllUnits();
-        }
-
-        private void ProcessAllUnits()
-        {
-            for (int i = 0; i < unitsArray.Length; i++)
-            {
-                ProcessUnitAtIndex(i);
-            }
-        }
-
-        private void ProcessUnitAtIndex(int index)
-        {
-            var unit = unitsArray[index];
-            if (IsUnitDead(unit))
-            {
-                unitsArray[index] = null;
-            }
-        }
-
-        private bool IsUnitDead(UnitInstance? unit)
-        {
-            return unit != null && unit.HP <= MINIMUM_HP;
-        }
     }
 }

@@ -1,6 +1,3 @@
-using System;
-using System.IO;
-
 namespace Shin_Megami_Tensei
 {
     public class TeamPathResolver

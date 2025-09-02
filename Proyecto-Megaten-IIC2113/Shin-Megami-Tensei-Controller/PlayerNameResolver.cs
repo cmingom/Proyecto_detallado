@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Shin_Megami_Tensei_Model.CombatSystem.Core;
 
 using Shin_Megami_Tensei_Model.Domain.Entities;

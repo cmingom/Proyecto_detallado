@@ -1,6 +1,3 @@
-using System;
-using System.Linq;
-
 namespace Shin_Megami_Tensei_Model.Domain.States
 {
     public class BattleState

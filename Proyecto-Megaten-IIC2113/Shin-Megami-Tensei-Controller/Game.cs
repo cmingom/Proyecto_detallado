@@ -1,5 +1,4 @@
-﻿using System;
-using Shin_Megami_Tensei_View;
+﻿using Shin_Megami_Tensei_View;
 using Shin_Megami_Tensei_Model.CombatSystem.Core;
 using Shin_Megami_Tensei_Model.Domain.States;
 

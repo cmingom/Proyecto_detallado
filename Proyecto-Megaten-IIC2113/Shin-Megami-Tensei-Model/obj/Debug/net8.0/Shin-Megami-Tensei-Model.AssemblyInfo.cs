@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Shin-Megami-Tensei-Model")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ae336b7a296178d9222821922a635e78933d50f1")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8204cde9cd37458d539dee6988ed3dd2bd6525a9")]
 [assembly: System.Reflection.AssemblyProductAttribute("Shin-Megami-Tensei-Model")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Shin-Megami-Tensei-Model")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

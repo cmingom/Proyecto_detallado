@@ -1,9 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Shin_Megami_Tensei_Model.Domain.States;
 using Shin_Megami_Tensei_Model.Domain.Entities;
-using Shin_Megami_Tensei_Model.CombatSystem.Core;
 using Shin_Megami_Tensei_Model.CombatSystem.Contexts;
 
 namespace Shin_Megami_Tensei_Model.CombatSystem.Core
@@ -13,7 +9,6 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
         private readonly UnitActionProcessor unitActionManager;
         private readonly ActionCoordinator actionExecutor;
         private readonly BattleStateProcessor battleStateManager;
-        private readonly SkillProcessor skillManager;
 
         public CombatManager(Dictionary<string, Skill> skillData, IBattleView battleView)
         {
@@ -21,7 +16,6 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             this.actionExecutor = new ActionCoordinator(config);
             this.unitActionManager = new UnitActionProcessor(battleView, this.actionExecutor);
             this.battleStateManager = new BattleStateProcessor(battleView);
-            this.skillManager = new SkillProcessor(battleView, skillData);
         }
 
         private ActionCoordinatorConfig CreateActionCoordinatorConfig(IBattleView battleView, Dictionary<string, Skill> skillData)

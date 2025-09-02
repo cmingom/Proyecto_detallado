@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-
 namespace Shin_Megami_Tensei_Model.Domain.Entities
 {
     public class UnitInstance
@@ -35,7 +32,5 @@ namespace Shin_Megami_Tensei_Model.Domain.Entities
             Position = position;
             Skills = skills ?? new();
         }
-        
-        public bool IsAlive => HP > MINIMUM_HP;
     }
 }

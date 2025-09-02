@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace Shin_Megami_Tensei_Model.CombatSystem.Rules
 {
     public class ValidationContext

@@ -1,9 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Shin_Megami_Tensei_Model.Domain.States;
 using Shin_Megami_Tensei_Model.Domain.Entities;
-using Shin_Megami_Tensei_Model.CombatSystem.Core;
 
 namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 {
@@ -29,11 +25,6 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
         public int CalculateNextTurnCount(TeamState team)
         {
             return team.AliveUnits.Count();
-        }
-
-        public List<UnitInstance> GetTargets(TeamState enemyTeam)
-        {
-            return enemyTeam.AliveUnits.ToList();
         }
 
         public void ConsumeTurn(BattleState battleState)

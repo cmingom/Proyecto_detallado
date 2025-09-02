@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
 using Shin_Megami_Tensei_View;
 
 namespace Shin_Megami_Tensei

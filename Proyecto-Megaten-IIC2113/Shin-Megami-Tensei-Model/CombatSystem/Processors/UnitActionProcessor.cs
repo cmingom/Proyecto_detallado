@@ -50,6 +50,12 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             if (IsInvalidActionChoice(actionChoice))
                 return false;
 
+            return ExecuteSelectedAction(actingUnit, battleState, player1Name, player2Name, actionChoice);
+        }
+
+        private bool ExecuteSelectedAction(UnitInstance actingUnit, BattleState battleState, string player1Name, string player2Name, int actionChoice)
+        {
+            var availableActions = GetAvailableActions(actingUnit);
             var selectedAction = GetSelectedAction(availableActions, actionChoice);
             StoreLastSelectedAction(selectedAction);
             

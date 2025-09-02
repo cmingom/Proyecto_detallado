@@ -48,10 +48,17 @@ namespace Shin_Megami_Tensei
         private bool ProcessSingleActionIteration(BattleContext battleContext, List<UnitInstance> actionOrder, TeamState currentTeam)
         {
             ShowBattleStatus(battleContext, actionOrder);
+            
             if (IsActionOrderEmpty(actionOrder)) 
                 return false;
             
+            return ProcessCurrentUnit(battleContext, actionOrder, currentTeam);
+        }
+
+        private bool ProcessCurrentUnit(BattleContext battleContext, List<UnitInstance> actionOrder, TeamState currentTeam)
+        {
             var currentUnit = GetCurrentUnit(actionOrder);
+            
             if (ProcessSingleUnitAction(currentUnit, battleContext)) 
                 return true;
             

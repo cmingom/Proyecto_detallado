@@ -34,19 +34,36 @@ public class ManualTestingView : TestingView
     
     private void CheckThatLinesMatchTheExpectedOutput(string[] lines)
     {
+        ProcessEachLine(lines);
+    }
+    
+    private void ProcessEachLine(string[] lines)
+    {
         for(int i = 0; i < lines.Length; i++)
         {
-            if(IsThisLineDifferentFromTheExpectedValue(lines[i]))
+            if(IsLineDifferentFromExpected(lines[i]))
             {
-                IndicateThatThereIsAnErrorInThisLineAndChangeTheColorOfTheConsole();
+                HandleOutputError();
                 break;
             }
-            _currentLine++;
+            AdvanceToNextLine();
         }
     }
     
-    private bool IsThisLineDifferentFromTheExpectedValue(string line)
+    private bool IsLineDifferentFromExpected(string line)
         => GetExpectedLine() != line;
+
+    private void HandleOutputError()
+    {
+        _isOutputCorrectSoFar = false;
+        Console.ForegroundColor = ConsoleColor.Red;
+        Console.Write($"[ERROR] el valor esperado acá era: \"{GetExpectedLine()}\"");
+    }
+
+    private void AdvanceToNextLine()
+    {
+        _currentLine++;
+    }
 
     private string GetExpectedLine()
     {
@@ -57,13 +74,6 @@ public class ManualTestingView : TestingView
     
     private bool IsTheEndOfTheExpectedScript()
         => _currentLine == _expectedScript.Length;
-
-    private void IndicateThatThereIsAnErrorInThisLineAndChangeTheColorOfTheConsole()
-    {
-        _isOutputCorrectSoFar = false;
-        Console.ForegroundColor = ConsoleColor.Red;
-        Console.Write($"[ERROR] el valor esperado acá era: \"{GetExpectedLine()}\"");
-    }
 
     protected override string GetNextInput()
     {

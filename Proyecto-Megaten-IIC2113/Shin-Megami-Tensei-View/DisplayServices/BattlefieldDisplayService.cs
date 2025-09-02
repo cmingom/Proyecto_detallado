@@ -23,29 +23,61 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
 
         private void ShowTeamStatus(TeamState team, string playerName, string playerNumber)
         {
+            ShowTeamHeader(playerName, playerNumber);
+            ShowAllUnitPositions(team);
+        }
+
+        private void ShowTeamHeader(string playerName, string playerNumber)
+        {
             view.WriteLine($"Equipo de {playerName} ({playerNumber})");
-            
-            char[] positions = { 'A', 'B', 'C', 'D' };
+        }
+
+        private void ShowAllUnitPositions(TeamState team)
+        {
+            char[] positions = GetPositions();
             
             for (int i = 0; i < MAX_POSITIONS; i++)
             {
-                var unit = team.Units[i];
-                if (unit != null)
-                {
-                    if (unit.IsSamurai || unit.HP > 0)
-                    {
-                        view.WriteLine($"{positions[i]}-{unit.Name} HP:{unit.HP}/{unit.MaxHP} MP:{unit.MP}/{unit.MaxMP}");
-                    }
-                    else
-                    {
-                        view.WriteLine($"{positions[i]}-");
-                    }
-                }
-                else
-                {
-                    view.WriteLine($"{positions[i]}-");
-                }
+                ShowSingleUnitPosition(team.Units[i], positions[i]);
             }
+        }
+
+        private char[] GetPositions()
+        {
+            return new char[] { 'A', 'B', 'C', 'D' };
+        }
+
+        private void ShowSingleUnitPosition(UnitInstance? unit, char position)
+        {
+            if (unit == null)
+            {
+                ShowEmptyPosition(position);
+                return;
+            }
+
+            if (ShouldShowUnitInfo(unit))
+            {
+                ShowUnitInfo(unit, position);
+            }
+            else
+            {
+                ShowEmptyPosition(position);
+            }
+        }
+
+        private bool ShouldShowUnitInfo(UnitInstance unit)
+        {
+            return unit.IsSamurai || unit.HP > 0;
+        }
+
+        private void ShowUnitInfo(UnitInstance unit, char position)
+        {
+            view.WriteLine($"{position}-{unit.Name} HP:{unit.HP}/{unit.MaxHP} MP:{unit.MP}/{unit.MaxMP}");
+        }
+
+        private void ShowEmptyPosition(char position)
+        {
+            view.WriteLine($"{position}-");
         }
 
         private const int MAX_POSITIONS = 4;

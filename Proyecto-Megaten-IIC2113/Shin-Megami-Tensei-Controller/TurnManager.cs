@@ -28,11 +28,23 @@ namespace Shin_Megami_Tensei
         {
             var currentTeam = GetCurrentTeam(battleState);
             ShowPlayerTurnHeader(battleState, player1Name, player2Name);
-            var actionOrder = combatService.CalculateActionOrder(currentTeam);
-            var battleParams = new BattleContext { BattleState = battleState, Player1Name = player1Name, Player2Name = player2Name };
-            var shouldEndBattle = actionProcessor.ProcessActionOrder(battleParams, actionOrder, currentTeam);
+            
+            var shouldEndBattle = ProcessPlayerActions(battleState, currentTeam, player1Name, player2Name);
             HandlePlayerTurnEnd(battleState, currentTeam, shouldEndBattle);
+            
             return shouldEndBattle;
+        }
+
+        private bool ProcessPlayerActions(BattleState battleState, TeamState currentTeam, string player1Name, string player2Name)
+        {
+            var actionOrder = combatService.CalculateActionOrder(currentTeam);
+            var battleContext = CreateBattleContext(battleState, player1Name, player2Name);
+            return actionProcessor.ProcessActionOrder(battleContext, actionOrder, currentTeam);
+        }
+
+        private BattleContext CreateBattleContext(BattleState battleState, string player1Name, string player2Name)
+        {
+            return new BattleContext { BattleState = battleState, Player1Name = player1Name, Player2Name = player2Name };
         }
 
         private TeamState GetCurrentTeam(BattleState battleState)

@@ -37,8 +37,18 @@ namespace Shin_Megami_Tensei
         private string GetFileFromUserSelection()
         {
             var files = GetTeamFiles();
-            teamFileDisplay.ShowTeamFiles(files);
+            DisplayFilesToUser(files);
             
+            return AttemptFileSelection(files);
+        }
+
+        private void DisplayFilesToUser(string[] files)
+        {
+            teamFileDisplay.ShowTeamFiles(files);
+        }
+
+        private string AttemptFileSelection(string[] files)
+        {
             if (!TrySelectFile(files, out string selectedFile))
             {
                 return string.Empty;

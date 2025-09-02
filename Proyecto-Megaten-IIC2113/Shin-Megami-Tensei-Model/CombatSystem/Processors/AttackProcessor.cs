@@ -33,16 +33,26 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 
         private bool ProcessAttack(AttackContext attackContext)
         {
-            var availableTargets = targetSelector.GetAvailableTargetsForAttack(attackContext.BattleState, attackContext.BattleState.IsPlayer1Turn);
+            var availableTargets = GetValidTargets(attackContext);
             if (HasNoAvailableTargets(availableTargets))
                 return false;
 
-            var selectedTarget = targetSelector.SelectTargetForAttack(attackContext.Attacker, availableTargets);
+            var selectedTarget = SelectTarget(attackContext, availableTargets);
             if (IsInvalidTarget(selectedTarget))
                 return false;
 
             ExecuteAttackOnTarget(attackContext, selectedTarget);
             return true;
+        }
+
+        private List<UnitInstance> GetValidTargets(AttackContext attackContext)
+        {
+            return targetSelector.GetAvailableTargetsForAttack(attackContext.BattleState, attackContext.BattleState.IsPlayer1Turn);
+        }
+
+        private UnitInstance SelectTarget(AttackContext attackContext, List<UnitInstance> availableTargets)
+        {
+            return targetSelector.SelectTargetForAttack(attackContext.Attacker, availableTargets);
         }
 
         private bool HasNoAvailableTargets(List<UnitInstance> availableTargets)

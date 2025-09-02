@@ -50,8 +50,14 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             var name = ExtractName(rest, openParen);
             var skills = ParseSkillsFromText(rest, openParen, closeParen);
             
-            if (skills == null || HasRemainingTextAfterSkills(rest, closeParen)) return (null, null);
+            return ValidateSamuraiParsing(rest, closeParen, name, skills);
+        }
 
+        private (string? name, List<string>? skills) ValidateSamuraiParsing(string rest, int closeParen, string name, List<string>? skills)
+        {
+            if (skills == null || HasRemainingTextAfterSkills(rest, closeParen)) 
+                return (null, null);
+            
             return (name, skills);
         }
 

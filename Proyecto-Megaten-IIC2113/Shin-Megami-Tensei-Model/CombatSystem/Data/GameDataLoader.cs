@@ -22,9 +22,15 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 
         private void LoadAllUnits()
         {
+            var allUnits = LoadUnitsFromMultipleSources();
+            AddValidUnitsToDictionary(allUnits);
+        }
+
+        private IEnumerable<Unit> LoadUnitsFromMultipleSources()
+        {
             var samurais = LoadUnitsFromJson("data/samurai.json");
             var monsters = LoadUnitsFromJson("data/monsters.json");
-            AddValidUnitsToDictionary(samurais.Concat(monsters));
+            return samurais.Concat(monsters);
         }
 
         private void LoadAllSkills()

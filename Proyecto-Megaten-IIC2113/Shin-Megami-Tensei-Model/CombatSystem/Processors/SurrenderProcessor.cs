@@ -2,6 +2,7 @@ using System;
 using Shin_Megami_Tensei_Model.Domain.States;
 using Shin_Megami_Tensei_Model.Domain.Entities;
 using Shin_Megami_Tensei_Model.CombatSystem.Core;
+using Shin_Megami_Tensei_Model.CombatSystem.Contexts;
 
 namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 {
@@ -23,18 +24,29 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 
         private void ShowSurrenderInfo(SurrenderInfo surrenderInfo)
         {
-            battleView.ShowSurrender(surrenderInfo.SurrenderingPlayerName, surrenderInfo.SurrenderingPlayerNumber, 
-                                   surrenderInfo.WinnerName, surrenderInfo.WinnerNumber);
+            battleView.ShowSurrender(surrenderInfo.SurrenderingPlayer.Name, surrenderInfo.SurrenderingPlayer.Number, 
+                                   surrenderInfo.Winner.Name, surrenderInfo.Winner.Number);
         }
 
         private SurrenderInfo CreateSurrenderInfo(BattleState battleState, string player1Name, string player2Name)
         {
-            var surrenderingPlayerName = GetSurrenderingPlayerName(battleState, player1Name, player2Name);
-            var surrenderingPlayerNumber = GetSurrenderingPlayerNumber(battleState);
-            var winnerName = GetSurrenderWinnerName(battleState, player1Name, player2Name);
-            var winnerNumber = GetSurrenderWinnerNumber(battleState);
+            var surrenderingPlayer = CreateSurrenderingPlayer(battleState, player1Name, player2Name);
+            var winner = CreateWinner(battleState, player1Name, player2Name);
+            return new SurrenderInfo(surrenderingPlayer, winner);
+        }
 
-            return new SurrenderInfo(surrenderingPlayerName, surrenderingPlayerNumber, winnerName, winnerNumber);
+        private PlayerInfo CreateSurrenderingPlayer(BattleState battleState, string player1Name, string player2Name)
+        {
+            var name = GetSurrenderingPlayerName(battleState, player1Name, player2Name);
+            var number = GetSurrenderingPlayerNumber(battleState);
+            return new PlayerInfo(name, number);
+        }
+
+        private PlayerInfo CreateWinner(BattleState battleState, string player1Name, string player2Name)
+        {
+            var name = GetSurrenderWinnerName(battleState, player1Name, player2Name);
+            var number = GetSurrenderWinnerNumber(battleState);
+            return new PlayerInfo(name, number);
         }
 
         private string GetSurrenderingPlayerName(BattleState battleState, string player1Name, string player2Name)

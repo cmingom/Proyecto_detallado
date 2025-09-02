@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using Shin_Megami_Tensei_Model.CombatSystem.Core;
@@ -8,6 +9,9 @@ namespace Shin_Megami_Tensei
 {
     public class BattleStateFactory
     {
+        private const int MAX_UNITS_IN_BATTLE = 4;
+        private static readonly char[] TEAM_POSITIONS = { 'A', 'B', 'C', 'D' };
+
         private readonly GameManager gameManager;
 
         public BattleStateFactory(GameManager gameManager)
@@ -61,19 +65,18 @@ namespace Shin_Megami_Tensei
         private List<UnitInstance> CreateTeamUnits(List<UnitInfo> team, Dictionary<string, Unit> unitData)
         {
             var units = new List<UnitInstance>();
-            var positions = GetTeamPositions();
             var teamSize = GetTeamSize(team);
             
-            PopulateTeamUnits(units, team, positions, teamSize, unitData);
+            PopulateTeamUnits(units, team, teamSize, unitData);
             
             return units;
         }
 
-        private void PopulateTeamUnits(List<UnitInstance> units, List<UnitInfo> team, char[] positions, int teamSize, Dictionary<string, Unit> unitData)
+        private void PopulateTeamUnits(List<UnitInstance> units, List<UnitInfo> team, int teamSize, Dictionary<string, Unit> unitData)
         {
             for (int i = 0; i < teamSize; i++)
             {
-                AddUnitToTeam(units, team[i], positions[i], unitData);
+                AddUnitToTeam(units, team[i], TEAM_POSITIONS[i], unitData);
             }
         }
 
@@ -86,13 +89,6 @@ namespace Shin_Megami_Tensei
             }
         }
 
-        private char[] GetTeamPositions()
-        {
-            return new char[] { 'A', 'B', 'C', 'D' };
-        }
-
-        private const int MAX_UNITS_IN_BATTLE = 4;
-
         private int GetTeamSize(List<UnitInfo> team)
         {
             return Math.Min(team.Count, MAX_UNITS_IN_BATTLE);
@@ -100,11 +96,21 @@ namespace Shin_Megami_Tensei
 
         private UnitInstance? CreateUnitInstance(UnitInfo unitInfo, char position, Dictionary<string, Unit> unitData)
         {
-            if (!unitData.TryGetValue(unitInfo.Name, out var unitTemplate))
+            if (!TryGetUnitTemplate(unitInfo.Name, unitData, out var unitTemplate))
             {
                 return null;
             }
             
+            return BuildUnitInstance(unitInfo, position, unitTemplate);
+        }
+
+        private bool TryGetUnitTemplate(string unitName, Dictionary<string, Unit> unitData, out Unit unitTemplate)
+        {
+            return unitData.TryGetValue(unitName, out unitTemplate);
+        }
+
+        private UnitInstance BuildUnitInstance(UnitInfo unitInfo, char position, Unit unitTemplate)
+        {
             return new UnitInstance(
                 name: unitInfo.Name,
                 maxHP: unitTemplate.Stats.HP,

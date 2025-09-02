@@ -1,19 +1,16 @@
+using Shin_Megami_Tensei_Model.CombatSystem.Contexts;
+
 namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 {
     public class SurrenderInfo
     {
-        public string SurrenderingPlayerName { get; }
-        public string SurrenderingPlayerNumber { get; }
-        public string WinnerName { get; }
-        public string WinnerNumber { get; }
+        public PlayerInfo SurrenderingPlayer { get; }
+        public PlayerInfo Winner { get; }
 
-        public SurrenderInfo(string surrenderingPlayerName, string surrenderingPlayerNumber, 
-                           string winnerName, string winnerNumber)
+        public SurrenderInfo(PlayerInfo surrenderingPlayer, PlayerInfo winner)
         {
-            SurrenderingPlayerName = surrenderingPlayerName;
-            SurrenderingPlayerNumber = surrenderingPlayerNumber;
-            WinnerName = winnerName;
-            WinnerNumber = winnerNumber;
+            SurrenderingPlayer = surrenderingPlayer;
+            Winner = winner;
         }
     }
 }

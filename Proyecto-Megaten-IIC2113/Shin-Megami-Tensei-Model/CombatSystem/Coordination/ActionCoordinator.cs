@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Shin_Megami_Tensei_Model.Domain.States;
 using Shin_Megami_Tensei_Model.Domain.Entities;
+using Shin_Megami_Tensei_Model.CombatSystem.Contexts;
 
 namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 {
@@ -10,11 +11,26 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
         private readonly AttackProcessor attackExecutor;
         private readonly SkillProcessor skillManager;
 
-        public ActionCoordinator(IBattleView battleView, SurrenderProcessor surrenderProcessor, Dictionary<string, Skill> skillData)
+        public ActionCoordinator(ActionCoordinatorConfig config)
         {
-            this.actionSelector = new ActionSelector(battleView, surrenderProcessor, skillData);
-            this.attackExecutor = new AttackProcessor(battleView);
-            this.skillManager = new SkillProcessor(battleView, skillData);
+            this.actionSelector = CreateActionSelector(config);
+            this.attackExecutor = CreateAttackProcessor(config);
+            this.skillManager = CreateSkillProcessor(config);
+        }
+
+        private ActionSelector CreateActionSelector(ActionCoordinatorConfig config)
+        {
+            return new ActionSelector(config.BattleView, config.SurrenderProcessor, config.SkillData);
+        }
+
+        private AttackProcessor CreateAttackProcessor(ActionCoordinatorConfig config)
+        {
+            return new AttackProcessor(config.BattleView);
+        }
+
+        private SkillProcessor CreateSkillProcessor(ActionCoordinatorConfig config)
+        {
+            return new SkillProcessor(config.BattleView, config.SkillData);
         }
 
         public bool ExecuteSelectedAction(UnitInstance actingUnit, BattleState battleState, string selectedAction, string player1Name, string player2Name)

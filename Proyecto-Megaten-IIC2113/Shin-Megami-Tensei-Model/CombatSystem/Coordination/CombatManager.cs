@@ -4,6 +4,7 @@ using System.Linq;
 using Shin_Megami_Tensei_Model.Domain.States;
 using Shin_Megami_Tensei_Model.Domain.Entities;
 using Shin_Megami_Tensei_Model.CombatSystem.Core;
+using Shin_Megami_Tensei_Model.CombatSystem.Contexts;
 
 namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 {
@@ -16,11 +17,17 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 
         public CombatManager(Dictionary<string, Skill> skillData, IBattleView battleView)
         {
-            var surrenderHandler = new SurrenderProcessor(battleView);
-            this.actionExecutor = new ActionCoordinator(battleView, surrenderHandler, skillData);
+            var config = CreateActionCoordinatorConfig(battleView, skillData);
+            this.actionExecutor = new ActionCoordinator(config);
             this.unitActionManager = new UnitActionProcessor(battleView, this.actionExecutor);
             this.battleStateManager = new BattleStateProcessor(battleView);
             this.skillManager = new SkillProcessor(battleView, skillData);
+        }
+
+        private ActionCoordinatorConfig CreateActionCoordinatorConfig(IBattleView battleView, Dictionary<string, Skill> skillData)
+        {
+            var surrenderHandler = new SurrenderProcessor(battleView);
+            return new ActionCoordinatorConfig(battleView, surrenderHandler, skillData);
         }
 
         public List<UnitInstance> CalculateActionOrder(TeamState team)

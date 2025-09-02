@@ -14,37 +14,82 @@ namespace Shin_Megami_Tensei_Model.Domain.States
         public TeamState(IEnumerable<UnitInstance> units)
         {
             unitsArray = new UnitInstance?[MAX_TEAM_SIZE];
-            foreach (var unit in units)
-            {
-                int index = unit.Position switch
-                {
-                    'A' => 0,
-                    'B' => 1,
-                    'C' => 2,
-                    'D' => 3,
-                    _ => -1
-                };
-                if (index >= 0 && index < unitsArray.Length)
-                {
-                    unitsArray[index] = unit;
-                }
-            }
+            PopulateUnitsArray(units);
             Units = Array.AsReadOnly(unitsArray);
         }
 
+        private void PopulateUnitsArray(IEnumerable<UnitInstance> units)
+        {
+            foreach (var unit in units)
+            {
+                PlaceUnitInArray(unit);
+            }
+        }
+
+        private void PlaceUnitInArray(UnitInstance unit)
+        {
+            int index = GetPositionIndex(unit.Position);
+            if (IsValidIndex(index))
+            {
+                unitsArray[index] = unit;
+            }
+        }
+
+        private int GetPositionIndex(char position)
+        {
+            return position switch
+            {
+                'A' => 0,
+                'B' => 1,
+                'C' => 2,
+                'D' => 3,
+                _ => -1
+            };
+        }
+
+        private bool IsValidIndex(int index)
+        {
+            return index >= 0 && index < unitsArray.Length;
+        }
+
         public IEnumerable<UnitInstance> AliveUnits =>
-            Units.Where(u => u != null && u.HP > 0).Cast<UnitInstance>();
+            GetAliveUnitsFromCollection();
+
+        private IEnumerable<UnitInstance> GetAliveUnitsFromCollection()
+        {
+            return Units.Where(IsUnitAlive).Cast<UnitInstance>();
+        }
+
+        private bool IsUnitAlive(UnitInstance? unit)
+        {
+            return unit != null && unit.HP > 0;
+        }
 
         public void RemoveDeadUnits()
         {
+            ProcessAllUnits();
+        }
+
+        private void ProcessAllUnits()
+        {
             for (int i = 0; i < unitsArray.Length; i++)
             {
-                var unit = unitsArray[i];
-                if (unit != null && unit.HP <= 0)
-                {
-                    unitsArray[i] = null;
-                }
+                ProcessUnitAtIndex(i);
             }
+        }
+
+        private void ProcessUnitAtIndex(int index)
+        {
+            var unit = unitsArray[index];
+            if (IsUnitDead(unit))
+            {
+                unitsArray[index] = null;
+            }
+        }
+
+        private bool IsUnitDead(UnitInstance? unit)
+        {
+            return unit != null && unit.HP <= 0;
         }
     }
 }

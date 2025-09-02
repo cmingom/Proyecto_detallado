@@ -7,6 +7,17 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
 {
     public class BattlefieldDisplayService
     {
+        private const int MAX_POSITIONS = 4;
+        private const string SEPARATOR = "----------------------------------------";
+        private const string TEAM_HEADER_FORMAT = "Equipo de {0} ({1})";
+        private const string UNIT_INFO_FORMAT = "{0}-{1} HP:{2}/{3} MP:{4}/{5}";
+        private const string EMPTY_POSITION_FORMAT = "{0}-";
+        private const string FULL_TURNS_FORMAT = "Full Turns: {0}";
+        private const string BLINKING_TURNS_FORMAT = "Blinking Turns: {0}";
+        private const string ORDER_HEADER = "Orden:";
+        private const string ORDER_ITEM_FORMAT = "{0}-{1}";
+        private const string ROUND_HEADER_FORMAT = "Ronda de {0} ({1})";
+
         private readonly View view;
 
         public BattlefieldDisplayService(View view)
@@ -16,9 +27,14 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
 
         public void ShowBattlefield(BattleState battleState, string player1Name, string player2Name)
         {
-            view.WriteLine("----------------------------------------");
+            ShowSeparator();
             ShowTeamStatus(battleState.Team1, player1Name, "J1");
             ShowTeamStatus(battleState.Team2, player2Name, "J2");
+        }
+
+        private void ShowSeparator()
+        {
+            view.WriteLine(SEPARATOR);
         }
 
         private void ShowTeamStatus(TeamState team, string playerName, string playerNumber)
@@ -29,7 +45,7 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
 
         private void ShowTeamHeader(string playerName, string playerNumber)
         {
-            view.WriteLine($"Equipo de {playerName} ({playerNumber})");
+            view.WriteLine(string.Format(TEAM_HEADER_FORMAT, playerName, playerNumber));
         }
 
         private void ShowAllUnitPositions(TeamState team)
@@ -72,38 +88,66 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
 
         private void ShowUnitInfo(UnitInstance unit, char position)
         {
-            view.WriteLine($"{position}-{unit.Name} HP:{unit.HP}/{unit.MaxHP} MP:{unit.MP}/{unit.MaxMP}");
+            view.WriteLine(string.Format(UNIT_INFO_FORMAT, position, unit.Name, unit.HP, unit.MaxHP, unit.MP, unit.MaxMP));
         }
 
         private void ShowEmptyPosition(char position)
         {
-            view.WriteLine($"{position}-");
+            view.WriteLine(string.Format(EMPTY_POSITION_FORMAT, position));
         }
-
-        private const int MAX_POSITIONS = 4;
 
         public void ShowTurnCounters(BattleState battleState)
         {
-            view.WriteLine("----------------------------------------");
-            view.WriteLine($"Full Turns: {battleState.FullTurns}");
-            view.WriteLine($"Blinking Turns: {battleState.BlinkingTurns}");
+            ShowSeparator();
+            ShowFullTurns(battleState.FullTurns);
+            ShowBlinkingTurns(battleState.BlinkingTurns);
+        }
+
+        private void ShowFullTurns(int fullTurns)
+        {
+            view.WriteLine(string.Format(FULL_TURNS_FORMAT, fullTurns));
+        }
+
+        private void ShowBlinkingTurns(int blinkingTurns)
+        {
+            view.WriteLine(string.Format(BLINKING_TURNS_FORMAT, blinkingTurns));
         }
 
         public void ShowActionOrderBySpeed(List<UnitInstance> actionOrder)
         {
-            view.WriteLine("----------------------------------------");
-            view.WriteLine("Orden:");
-            
+            ShowSeparator();
+            ShowOrderHeader();
+            ShowOrderItems(actionOrder);
+        }
+
+        private void ShowOrderHeader()
+        {
+            view.WriteLine(ORDER_HEADER);
+        }
+
+        private void ShowOrderItems(List<UnitInstance> actionOrder)
+        {
             for (int i = 0; i < actionOrder.Count; i++)
             {
-                view.WriteLine($"{i + 1}-{actionOrder[i].Name}");
+                ShowOrderItem(i + 1, actionOrder[i].Name);
             }
+        }
+
+        private void ShowOrderItem(int index, string unitName)
+        {
+            view.WriteLine(string.Format(ORDER_ITEM_FORMAT, index, unitName));
         }
 
         public void ShowRoundHeader(string playerName, string playerNumber)
         {
-            view.WriteLine("----------------------------------------");
-            view.WriteLine($"Ronda de {playerName} ({playerNumber})");
+            ShowSeparator();
+            ShowRoundHeaderText(playerName, playerNumber);
+        }
+
+        private void ShowRoundHeaderText(string playerName, string playerNumber)
+        {
+            view.WriteLine(string.Format(ROUND_HEADER_FORMAT, playerName, playerNumber));
         }
     }
 }
+

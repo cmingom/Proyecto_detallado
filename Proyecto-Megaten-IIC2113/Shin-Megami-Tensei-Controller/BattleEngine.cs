@@ -22,13 +22,28 @@ namespace Shin_Megami_Tensei
 
         public void StartBattle(BattleState battleState, string player1Name, string player2Name)
         {
-            while (!combatManager.IsBattleOver(battleState))
+            ExecuteBattleLoop(battleState, player1Name, player2Name);
+        }
+
+        private void ExecuteBattleLoop(BattleState battleState, string player1Name, string player2Name)
+        {
+            while (ShouldContinueBattle(battleState))
             {
-                if (turnManager.IsPlayerTurnComplete(battleState, player1Name, player2Name))
+                if (ShouldExitBattle(battleState, player1Name, player2Name))
                 {
                     return;
                 }
             }
+        }
+
+        private bool ShouldContinueBattle(BattleState battleState)
+        {
+            return !combatManager.IsBattleOver(battleState);
+        }
+
+        private bool ShouldExitBattle(BattleState battleState, string player1Name, string player2Name)
+        {
+            return turnManager.IsPlayerTurnComplete(battleState, player1Name, player2Name);
         }
     }
 }

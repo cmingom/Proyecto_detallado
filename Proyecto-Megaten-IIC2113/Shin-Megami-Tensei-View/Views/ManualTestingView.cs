@@ -2,7 +2,15 @@
 
 public class ManualTestingView : TestingView
 {
-    private const string EndOfFileString = "[EndOfFile]";
+    private const string END_OF_FILE_STRING = "[EndOfFile]";
+    private const string ERROR_PREFIX = "[ERROR]";
+    private const string INPUT_TEST_PREFIX = "[INPUT TEST]: ";
+    private const string INPUT_MANUAL_PREFIX = "[INPUT MANUAL]: ";
+    private const string INPUT_PREFIX = "INPUT: ";
+    private const string ERROR_MESSAGE_TEMPLATE = "el valor esperado acá era: \"{0}\"";
+    private const string INVALID_INPUT_MESSAGE = "No se debía pedir un input en este momento";
+    private const char NEWLINE_CHAR = '\n';
+    
     private readonly string[] _expectedScript;
     private int _currentLine;
     private bool _isOutputCorrectSoFar = true;
@@ -25,12 +33,24 @@ public class ManualTestingView : TestingView
     private void CheckIfCurrentOutputIsAsExpected(object text)
     {
         string normalizedText = GetNormalizedTest(text.ToString());
-        string[] lines = normalizedText.Split("\n");
+        string[] lines = normalizedText.Split(NEWLINE_CHAR);
         CheckThatLinesMatchTheExpectedOutput(lines);
     }
 
     private string GetNormalizedTest(string text)
-        => text[^1] == '\n' ? text.Remove(text.Length-1) : text;
+    {
+        return HasTrailingNewline(text) ? RemoveTrailingNewline(text) : text;
+    }
+
+    private bool HasTrailingNewline(string text)
+    {
+        return text.Length > 0 && text[^1] == NEWLINE_CHAR;
+    }
+
+    private string RemoveTrailingNewline(string text)
+    {
+        return text.Remove(text.Length - 1);
+    }
     
     private void CheckThatLinesMatchTheExpectedOutput(string[] lines)
     {
@@ -55,9 +75,26 @@ public class ManualTestingView : TestingView
 
     private void HandleOutputError()
     {
+        SetOutputAsIncorrect();
+        SetConsoleColorToRed();
+        DisplayErrorMessage();
+    }
+
+    private void SetOutputAsIncorrect()
+    {
         _isOutputCorrectSoFar = false;
+    }
+
+    private void SetConsoleColorToRed()
+    {
         Console.ForegroundColor = ConsoleColor.Red;
-        Console.Write($"[ERROR] el valor esperado acá era: \"{GetExpectedLine()}\"");
+    }
+
+    private void DisplayErrorMessage()
+    {
+        string expectedLine = GetExpectedLine();
+        string errorMessage = string.Format(ERROR_MESSAGE_TEMPLATE, expectedLine);
+        Console.Write($"{ERROR_PREFIX} {errorMessage}");
     }
 
     private void AdvanceToNextLine()
@@ -67,9 +104,7 @@ public class ManualTestingView : TestingView
 
     private string GetExpectedLine()
     {
-        if(IsTheEndOfTheExpectedScript())
-            return EndOfFileString;
-        return _expectedScript[_currentLine];
+        return IsTheEndOfTheExpectedScript() ? END_OF_FILE_STRING : _expectedScript[_currentLine];
     }
     
     private bool IsTheEndOfTheExpectedScript()
@@ -90,17 +125,32 @@ public class ManualTestingView : TestingView
     private string TryToGetInputFromTest()
     {
         string nextInput = base.GetNextInput();
-        CheckIfCurrentOutputIsAsExpected($"INPUT: {nextInput}");
-        if (!_isOutputCorrectSoFar)
-            throw new InvalidInputRequestException("No se debía pedir un input en este momento");
-        Console.Write($"[INPUT TEST]: {nextInput}");
-        Console.ReadLine();
+        ValidateInputRequest(nextInput);
+        DisplayTestInput(nextInput);
+        WaitForUserInput();
         return nextInput;
+    }
+
+    private void ValidateInputRequest(string nextInput)
+    {
+        CheckIfCurrentOutputIsAsExpected($"{INPUT_PREFIX}{nextInput}");
+        if (!_isOutputCorrectSoFar)
+            throw new InvalidInputRequestException(INVALID_INPUT_MESSAGE);
+    }
+
+    private void DisplayTestInput(string nextInput)
+    {
+        Console.Write($"{INPUT_TEST_PREFIX}{nextInput}");
+    }
+
+    private void WaitForUserInput()
+    {
+        Console.ReadLine();
     }
     
     private string GetNextInputFromUser()
     {
-        Console.Write($"[INPUT MANUAL]: ");
+        Console.Write(INPUT_MANUAL_PREFIX);
         return Console.ReadLine();
     }
 }

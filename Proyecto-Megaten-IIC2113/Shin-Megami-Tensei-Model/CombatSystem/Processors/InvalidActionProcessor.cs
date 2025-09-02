@@ -5,7 +5,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 {
     public class InvalidActionProcessor : IActionHandler
     {
-        public bool Execute(UnitInstance actingUnit, BattleState battleState, string player1Name, string player2Name)
+        public bool Execute(ActionContext actionContext)
         {
             return false; // Acción inválida nunca se completa
         }

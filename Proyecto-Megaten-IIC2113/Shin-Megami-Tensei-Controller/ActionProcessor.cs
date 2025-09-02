@@ -29,7 +29,16 @@ namespace Shin_Megami_Tensei
             return false;
         }
 
+        private void ShowBattleStatus(BattleContext battleContext, List<UnitInstance> actionOrder)
+        {
+            battleView.ShowBattlefield(battleContext.BattleState, battleContext.Player1Name, battleContext.Player2Name);
+            battleView.ShowTurnCounters(battleContext.BattleState);
+            battleView.ShowActionOrderBySpeed(actionOrder);
+        }
+
         private const int NO_TURNS_REMAINING = 0;
+        private const int EMPTY_LIST_COUNT = 0;
+        private const int FIRST_UNIT_INDEX = 0;
 
         private bool ShouldContinueProcessingActions(BattleContext battleContext)
         {
@@ -49,16 +58,6 @@ namespace Shin_Megami_Tensei
             ProcessUnitTurnEnd(actionOrder, currentTeam, currentUnit);
             return false;
         }
-
-        private void ShowBattleStatus(BattleContext battleContext, List<UnitInstance> actionOrder)
-        {
-            battleView.ShowBattlefield(battleContext.BattleState, battleContext.Player1Name, battleContext.Player2Name);
-            battleView.ShowTurnCounters(battleContext.BattleState);
-            battleView.ShowActionOrderBySpeed(actionOrder);
-        }
-
-        private const int EMPTY_LIST_COUNT = 0;
-        private const int FIRST_UNIT_INDEX = 0;
 
         private bool IsActionOrderEmpty(List<UnitInstance> actionOrder)
         {

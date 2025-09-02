@@ -5,23 +5,23 @@ namespace Shin_Megami_Tensei_Model.Domain.Entities;
 public sealed class UnitStats
 {
     [JsonPropertyName("HP")]
-    public int HealthPoints { get; init; }
+    public int HP { get; init; }
     
     [JsonPropertyName("MP")]
-    public int ManaPoints { get; init; }
+    public int MP { get; init; }
     
     [JsonPropertyName("Str")]
-    public int Strength { get; init; }
+    public int Str { get; init; }
     
     [JsonPropertyName("Skl")]
-    public int Skill { get; init; }
+    public int Skl { get; init; }
     
     [JsonPropertyName("Mag")]
-    public int Magic { get; init; }
+    public int Mag { get; init; }
     
     [JsonPropertyName("Spd")]
-    public int Speed { get; init; }
+    public int Spd { get; init; }
     
     [JsonPropertyName("Lck")]
-    public int Luck { get; init; }
+    public int Lck { get; init; }
 }

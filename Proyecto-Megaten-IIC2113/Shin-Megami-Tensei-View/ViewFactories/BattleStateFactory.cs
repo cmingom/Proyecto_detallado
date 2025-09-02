@@ -107,11 +107,11 @@ namespace Shin_Megami_Tensei
             
             return new UnitInstance(
                 name: unitInfo.Name,
-                maxHP: unitTemplate.Stats.HealthPoints,
-                maxMP: unitTemplate.Stats.ManaPoints,
-                str: unitTemplate.Stats.Strength,
-                skl: unitTemplate.Stats.Skill,
-                spd: unitTemplate.Stats.Speed,
+                maxHP: unitTemplate.Stats.HP,
+                maxMP: unitTemplate.Stats.MP,
+                str: unitTemplate.Stats.Str,
+                skl: unitTemplate.Stats.Skl,
+                spd: unitTemplate.Stats.Spd,
                 isSamurai: unitInfo.IsSamurai,
                 position: position,
                 skills: GetUnitSkills(unitInfo, unitTemplate)

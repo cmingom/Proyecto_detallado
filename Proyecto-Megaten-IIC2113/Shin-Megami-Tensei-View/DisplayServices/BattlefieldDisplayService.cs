@@ -21,8 +21,6 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
             ShowTeamStatus(battleState.Team2, player2Name, "J2");
         }
 
-        private const int MAX_POSITIONS = 4;
-
         private void ShowTeamStatus(TeamState team, string playerName, string playerNumber)
         {
             view.WriteLine($"Equipo de {playerName} ({playerNumber})");
@@ -49,6 +47,8 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
                 }
             }
         }
+
+        private const int MAX_POSITIONS = 4;
 
         public void ShowTurnCounters(BattleState battleState)
         {

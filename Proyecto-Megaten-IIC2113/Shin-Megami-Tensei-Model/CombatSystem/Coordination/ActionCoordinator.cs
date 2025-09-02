@@ -47,10 +47,6 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
         {
             return attackExecutor.ExecuteGunAttack(attacker, battleState);
         }
-
-        public List<Skill> GetAvailableSkills(UnitInstance unit)
-        {
-            return skillManager.GetAvailableSkills(unit);
-        }
+        
     }
 }

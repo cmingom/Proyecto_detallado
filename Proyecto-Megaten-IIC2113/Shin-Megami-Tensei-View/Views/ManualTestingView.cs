@@ -78,18 +78,12 @@ public class ManualTestingView : TestingView
     private void HandleOutputError()
     {
         SetOutputAsIncorrect();
-        SetConsoleColorToRed();
         DisplayErrorMessage();
     }
 
     private void SetOutputAsIncorrect()
     {
         _isOutputCorrectSoFar = false;
-    }
-
-    private void SetConsoleColorToRed()
-    {
-        Console.ForegroundColor = ConsoleColor.Red;
     }
 
     private void DisplayErrorMessage()

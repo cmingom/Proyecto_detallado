@@ -44,32 +44,6 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
         {
             return unitActionManager.ProcessUnitAction(actingUnit, battleState, player1Name, player2Name);
         }
-
-        public bool ExecutePhysicalAttack(UnitInstance attacker, BattleState battleState)
-        {
-            return actionExecutor.ExecutePhysicalAttack(attacker, battleState);
-        }
-
-        public bool ExecuteGunAttack(UnitInstance attacker, BattleState battleState)
-        {
-            return actionExecutor.ExecuteGunAttack(attacker, battleState);
-        }
-
-        public List<string> GetAvailableActions(UnitInstance unit)
-        {
-            return unitActionManager.GetAvailableActions(unit);
-        }
-
-        public List<Skill> GetAvailableSkills(UnitInstance unit)
-        {
-            return skillManager.GetAvailableSkills(unit);
-        }
-
-        public List<UnitInstance> GetTargets(TeamState enemyTeam)
-        {
-            return battleStateManager.GetTargets(enemyTeam);
-        }
-
         public void ConsumeTurn(BattleState battleState)
         {
             battleStateManager.ConsumeTurn(battleState);

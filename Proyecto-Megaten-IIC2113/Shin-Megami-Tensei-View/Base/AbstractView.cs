@@ -21,8 +21,6 @@ public abstract class AbstractView
     
     protected abstract string GetNextInput();
     
-    public void ExportScript(string path)
-        => script.ExportScript(path);
 
     public string[] GetScript()
         => script.GetScript().Split(NEWLINE);

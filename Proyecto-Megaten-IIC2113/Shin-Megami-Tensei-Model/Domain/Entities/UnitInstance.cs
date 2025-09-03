@@ -2,8 +2,6 @@ namespace Shin_Megami_Tensei_Model.Domain.Entities
 {
     public class UnitInstance
     {
-        private const int MINIMUM_HP = 0;
-        
         public string Name { get; init; } = string.Empty;
         public int MaxHP { get; init; }
         public int HP { get; set; }

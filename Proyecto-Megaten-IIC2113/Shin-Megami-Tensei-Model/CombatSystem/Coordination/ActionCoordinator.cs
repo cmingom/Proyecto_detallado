@@ -18,6 +18,8 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             return new ActionSelector(config.BattleView, config.SurrenderProcessor, config.SkillData);
         }
 
+        // recibe 5
+        // verbo auxiliar
         public bool ExecuteSelectedAction(UnitInstance actingUnit, BattleState battleState, string selectedAction, string player1Name, string player2Name)
         {
             return actionSelector.ExecuteSelectedAction(actingUnit, battleState, selectedAction, player1Name, player2Name);

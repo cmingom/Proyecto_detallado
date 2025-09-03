@@ -21,6 +21,7 @@ namespace Shin_Megami_Tensei
             this.actionProcessor = new ActionProcessor(battleView, combatService);
         }
 
+        // dividir en dos
         public bool IsPlayerTurnComplete(BattleState battleState, string player1Name, string player2Name)
         {
             var currentTeam = GetCurrentTeam(battleState);
@@ -54,6 +55,7 @@ namespace Shin_Megami_Tensei
             return battleState.IsPlayer1Turn ? PLAYER_1_LABEL : PLAYER_2_LABEL;
         }
 
+        // verbo auxiliar, recibe 4 argumentos
         private bool ProcessPlayerActions(BattleState battleState, TeamState currentTeam, string player1Name, string player2Name)
         {
             var actionOrder = combatService.CalculateActionOrder(currentTeam);
@@ -66,6 +68,7 @@ namespace Shin_Megami_Tensei
             return new BattleContext { BattleState = battleState, Player1Name = player1Name, Player2Name = player2Name };
         }
 
+        // recibe un bool, cambiar
         private void HandlePlayerTurnEnd(BattleState battleState, TeamState currentTeam, bool shouldEndBattle)
         {
             if (ShouldSwitchTurn(shouldEndBattle))
@@ -74,11 +77,13 @@ namespace Shin_Megami_Tensei
             }
         }
 
+        // recibe un bool
         private bool ShouldSwitchTurn(bool shouldEndBattle)
         {
             return !shouldEndBattle;
         }
 
+        // revisar parametros
         private void SwitchPlayerTurn(BattleState battleState, TeamState currentTeam)
         {
             TogglePlayerTurn(battleState);

@@ -112,6 +112,8 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
                    choice <= maxChoice;
         }
 
+        // recibe bool
+        // tiene 4
         public void ShowAttackResult(UnitInstance attacker, UnitInstance target, int damage, bool isGunAttack)
         {
             ShowSeparator();
@@ -120,12 +122,14 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
             ShowHpResult(target.Name, target.HP, target.MaxHP);
         }
 
+        // recibe bool
         private void ShowAttackAction(string attackerName, string targetName, bool isGunAttack)
         {
             string attackType = GetAttackTypeText(isGunAttack);
             view.WriteLine(string.Format(ATTACK_RESULT_FORMAT, attackerName, attackType, targetName));
         }
 
+        // recibe bool
         private string GetAttackTypeText(bool isGunAttack)
         {
             return isGunAttack ? GUN_ATTACK_TEXT : PHYSICAL_ATTACK_TEXT;

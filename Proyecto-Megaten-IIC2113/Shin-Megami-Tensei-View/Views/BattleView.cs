@@ -6,7 +6,6 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
 {
     public class BattleView : IBattleView
     {
-        private readonly View view;
         private readonly BattlefieldDisplayService battlefieldDisplayService;
         private readonly ActionMenuDisplayService actionMenuDisplayService;
         private readonly SkillDisplayService skillDisplayService;
@@ -14,7 +13,6 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
 
         public BattleView(View view)
         {
-            this.view = view;
             this.battlefieldDisplayService = new BattlefieldDisplayService(view);
             this.actionMenuDisplayService = new ActionMenuDisplayService(view);
             this.skillDisplayService = new SkillDisplayService(view);
@@ -61,6 +59,7 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
             return actionMenuDisplayService.GetTargetChoice(maxTargets);
         }
 
+        // recibe bool y 4 parametros
         public void ShowAttackResult(UnitInstance attacker, UnitInstance target, int damage, bool isGunAttack)
         {
             actionMenuDisplayService.ShowAttackResult(attacker, target, damage, isGunAttack);
@@ -76,6 +75,7 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
             return skillDisplayService.GetSkillChoice(maxSkills);
         }
 
+        // recibe 4
         public void ShowSurrender(string playerName, string playerNumber, string winnerName, string winnerNumber)
         {
             battleResultDisplayService.ShowSurrender(playerName, playerNumber, winnerName, winnerNumber);

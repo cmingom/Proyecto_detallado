@@ -17,6 +17,8 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             this.skillData = skillData;
         }
 
+        // verbo auxiliar
+        // revisar aparmetros
         public bool ProcessUseSkill(UnitInstance unit, BattleState battleState)
         {
             var availableSkills = GetAvailableSkills(unit);
@@ -46,6 +48,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             }
         }
 
+        // addskill y separar en dos (validate affordable)
         private void AddSkillIfAffordable(List<Skill> availableSkills, string skillName, int unitMP)
         {
             if (skillData.TryGetValue(skillName, out var skill) && skill.Cost <= unitMP)

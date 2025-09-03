@@ -17,11 +17,13 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             this.battleView = battleView;
         }
 
+        // get
         public List<UnitInstance> CalculateActionOrder(TeamState team)
         {
             return team.AliveUnits.OrderByDescending(u => u.Spd).ToList();
         }
 
+        // get
         public int CalculateNextTurnCount(TeamState team)
         {
             return team.AliveUnits.Count();
@@ -44,6 +46,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             battleState.FullTurns = newTurnCount;
         }
 
+        // get
         private int CalculateNewTurnCount(int currentTurns)
         {
             return Math.Max(MINIMUM_TURNS, currentTurns - TURN_DECREMENT);
@@ -64,6 +67,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             return IsTeam1Defeated(battleState) ? player2Name : player1Name;
         }
 
+        // sacar numero del nombre (poner first)
         private bool IsTeam1Defeated(BattleState battleState)
         {
             return !battleState.Team1.AliveUnits.Any();

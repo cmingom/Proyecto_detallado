@@ -24,12 +24,15 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             this.actionExecutor = actionExecutor;
         }
 
+        // verbo auxiliar
+        // dividir y ver manejo (no bool?)
         public bool ProcessUnitAction(UnitInstance actingUnit, BattleState battleState, string player1Name, string player2Name)
         {
             bool actionCompleted = false;
 
             while (!actionCompleted)
             {
+                // recibe 4
                 actionCompleted = ProcessSingleAction(actingUnit, battleState, player1Name, player2Name);
                 
                 if (ShouldStopProcessing())
@@ -41,6 +44,9 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             return false;
         }
 
+        // recibe 4
+        // verbo auxiliar
+        // revisar divicion para no manejar bool (usar excepciones)
         private bool ProcessSingleAction(UnitInstance actingUnit, BattleState battleState, string player1Name, string player2Name)
         {
             var availableActions = GetAvailableActions(actingUnit);
@@ -71,6 +77,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             };
         }
 
+        // poner como atributo (los dos)
         private List<string> GetRegularActions()
         {
             return new List<string>
@@ -97,6 +104,9 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             return actionChoice == INVALID_ACTION_CHOICE;
         }
 
+        // verbo auxiliar
+        // recibe 5
+        // hace 2 cosas
         private bool ExecuteSelectedAction(UnitInstance actingUnit, BattleState battleState, string player1Name, string player2Name, int actionChoice)
         {
             var availableActions = GetAvailableActions(actingUnit);

@@ -130,24 +130,45 @@ C:/Users/crist/Documents/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami
 C:/Users/crist/Documents/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/obj/Debug/net8.0/Shin-Megami-Tensei-Controller.pdb
 C:/Users/crist/Documents/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/obj/Debug/net8.0/Shin-Megami-Tensei-Controller.genruntimeconfig.cache
 C:/Users/crist/Documents/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/obj/Debug/net8.0/ref/Shin-Megami-Tensei-Controller.dll
-C:\Users\crist\Dropbox\8º semestre\Diseño detallado\Proyecto_detallado\Proyecto-Megaten-IIC2113\Shin-Megami-Tensei-Controller\bin\Debug\net8.0\Shin-Megami-Tensei-Controller.exe
-C:\Users\crist\Dropbox\8º semestre\Diseño detallado\Proyecto_detallado\Proyecto-Megaten-IIC2113\Shin-Megami-Tensei-Controller\bin\Debug\net8.0\Shin-Megami-Tensei-Controller.deps.json
-C:\Users\crist\Dropbox\8º semestre\Diseño detallado\Proyecto_detallado\Proyecto-Megaten-IIC2113\Shin-Megami-Tensei-Controller\bin\Debug\net8.0\Shin-Megami-Tensei-Controller.runtimeconfig.json
-C:\Users\crist\Dropbox\8º semestre\Diseño detallado\Proyecto_detallado\Proyecto-Megaten-IIC2113\Shin-Megami-Tensei-Controller\bin\Debug\net8.0\Shin-Megami-Tensei-Controller.dll
-C:\Users\crist\Dropbox\8º semestre\Diseño detallado\Proyecto_detallado\Proyecto-Megaten-IIC2113\Shin-Megami-Tensei-Controller\bin\Debug\net8.0\Shin-Megami-Tensei-Controller.pdb
-C:\Users\crist\Dropbox\8º semestre\Diseño detallado\Proyecto_detallado\Proyecto-Megaten-IIC2113\Shin-Megami-Tensei-Controller\bin\Debug\net8.0\Shin-Megami-Tensei-Model.dll
-C:\Users\crist\Dropbox\8º semestre\Diseño detallado\Proyecto_detallado\Proyecto-Megaten-IIC2113\Shin-Megami-Tensei-Controller\bin\Debug\net8.0\Shin-Megami-Tensei-View.dll
-C:\Users\crist\Dropbox\8º semestre\Diseño detallado\Proyecto_detallado\Proyecto-Megaten-IIC2113\Shin-Megami-Tensei-Controller\bin\Debug\net8.0\Shin-Megami-Tensei-View.pdb
-C:\Users\crist\Dropbox\8º semestre\Diseño detallado\Proyecto_detallado\Proyecto-Megaten-IIC2113\Shin-Megami-Tensei-Controller\bin\Debug\net8.0\Shin-Megami-Tensei-Model.pdb
-C:\Users\crist\Dropbox\8º semestre\Diseño detallado\Proyecto_detallado\Proyecto-Megaten-IIC2113\Shin-Megami-Tensei-Controller\obj\Debug\net8.0\Shin-Megami-Tensei-Controller.csproj.AssemblyReference.cache
-C:\Users\crist\Dropbox\8º semestre\Diseño detallado\Proyecto_detallado\Proyecto-Megaten-IIC2113\Shin-Megami-Tensei-Controller\obj\Debug\net8.0\Shin-Megami-Tensei-Controller.GeneratedMSBuildEditorConfig.editorconfig
-C:\Users\crist\Dropbox\8º semestre\Diseño detallado\Proyecto_detallado\Proyecto-Megaten-IIC2113\Shin-Megami-Tensei-Controller\obj\Debug\net8.0\Shin-Megami-Tensei-Controller.AssemblyInfoInputs.cache
-C:\Users\crist\Dropbox\8º semestre\Diseño detallado\Proyecto_detallado\Proyecto-Megaten-IIC2113\Shin-Megami-Tensei-Controller\obj\Debug\net8.0\Shin-Megami-Tensei-Controller.AssemblyInfo.cs
-C:\Users\crist\Dropbox\8º semestre\Diseño detallado\Proyecto_detallado\Proyecto-Megaten-IIC2113\Shin-Megami-Tensei-Controller\obj\Debug\net8.0\Shin-Megami-Tensei-Controller.csproj.CoreCompileInputs.cache
-C:\Users\crist\Dropbox\8º semestre\Diseño detallado\Proyecto_detallado\Proyecto-Megaten-IIC2113\Shin-Megami-Tensei-Controller\obj\Debug\net8.0\Shin-Megami-Tensei-Controller.sourcelink.json
-C:\Users\crist\Dropbox\8º semestre\Diseño detallado\Proyecto_detallado\Proyecto-Megaten-IIC2113\Shin-Megami-Tensei-Controller\obj\Debug\net8.0\Shin-Meg.3F350B1A.Up2Date
-C:\Users\crist\Dropbox\8º semestre\Diseño detallado\Proyecto_detallado\Proyecto-Megaten-IIC2113\Shin-Megami-Tensei-Controller\obj\Debug\net8.0\Shin-Megami-Tensei-Controller.dll
-C:\Users\crist\Dropbox\8º semestre\Diseño detallado\Proyecto_detallado\Proyecto-Megaten-IIC2113\Shin-Megami-Tensei-Controller\obj\Debug\net8.0\refint\Shin-Megami-Tensei-Controller.dll
-C:\Users\crist\Dropbox\8º semestre\Diseño detallado\Proyecto_detallado\Proyecto-Megaten-IIC2113\Shin-Megami-Tensei-Controller\obj\Debug\net8.0\Shin-Megami-Tensei-Controller.pdb
-C:\Users\crist\Dropbox\8º semestre\Diseño detallado\Proyecto_detallado\Proyecto-Megaten-IIC2113\Shin-Megami-Tensei-Controller\obj\Debug\net8.0\Shin-Megami-Tensei-Controller.genruntimeconfig.cache
-C:\Users\crist\Dropbox\8º semestre\Diseño detallado\Proyecto_detallado\Proyecto-Megaten-IIC2113\Shin-Megami-Tensei-Controller\obj\Debug\net8.0\ref\Shin-Megami-Tensei-Controller.dll
+C:/Users/crist/Dropbox/8º semestre/Diseño detallado/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/bin/Debug/net8.0/Shin-Megami-Tensei-Controller.exe
+C:/Users/crist/Dropbox/8º semestre/Diseño detallado/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/bin/Debug/net8.0/Shin-Megami-Tensei-Controller.deps.json
+C:/Users/crist/Dropbox/8º semestre/Diseño detallado/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/bin/Debug/net8.0/Shin-Megami-Tensei-Controller.runtimeconfig.json
+C:/Users/crist/Dropbox/8º semestre/Diseño detallado/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/bin/Debug/net8.0/Shin-Megami-Tensei-Controller.dll
+C:/Users/crist/Dropbox/8º semestre/Diseño detallado/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/bin/Debug/net8.0/Shin-Megami-Tensei-Controller.pdb
+C:/Users/crist/Dropbox/8º semestre/Diseño detallado/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/bin/Debug/net8.0/Shin-Megami-Tensei-Model.dll
+C:/Users/crist/Dropbox/8º semestre/Diseño detallado/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/bin/Debug/net8.0/Shin-Megami-Tensei-View.dll
+C:/Users/crist/Dropbox/8º semestre/Diseño detallado/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/bin/Debug/net8.0/Shin-Megami-Tensei-View.pdb
+C:/Users/crist/Dropbox/8º semestre/Diseño detallado/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/bin/Debug/net8.0/Shin-Megami-Tensei-Model.pdb
+C:/Users/crist/Dropbox/8º semestre/Diseño detallado/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/obj/Debug/net8.0/Shin-Megami-Tensei-Controller.csproj.AssemblyReference.cache
+C:/Users/crist/Dropbox/8º semestre/Diseño detallado/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/obj/Debug/net8.0/Shin-Megami-Tensei-Controller.GeneratedMSBuildEditorConfig.editorconfig
+C:/Users/crist/Dropbox/8º semestre/Diseño detallado/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/obj/Debug/net8.0/Shin-Megami-Tensei-Controller.AssemblyInfoInputs.cache
+C:/Users/crist/Dropbox/8º semestre/Diseño detallado/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/obj/Debug/net8.0/Shin-Megami-Tensei-Controller.AssemblyInfo.cs
+C:/Users/crist/Dropbox/8º semestre/Diseño detallado/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/obj/Debug/net8.0/Shin-Megami-Tensei-Controller.csproj.CoreCompileInputs.cache
+C:/Users/crist/Dropbox/8º semestre/Diseño detallado/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/obj/Debug/net8.0/Shin-Megami-Tensei-Controller.sourcelink.json
+C:/Users/crist/Dropbox/8º semestre/Diseño detallado/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/obj/Debug/net8.0/Shin-Meg.3F350B1A.Up2Date
+C:/Users/crist/Dropbox/8º semestre/Diseño detallado/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/obj/Debug/net8.0/Shin-Megami-Tensei-Controller.dll
+C:/Users/crist/Dropbox/8º semestre/Diseño detallado/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/obj/Debug/net8.0/refint/Shin-Megami-Tensei-Controller.dll
+C:/Users/crist/Dropbox/8º semestre/Diseño detallado/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/obj/Debug/net8.0/Shin-Megami-Tensei-Controller.pdb
+C:/Users/crist/Dropbox/8º semestre/Diseño detallado/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/obj/Debug/net8.0/Shin-Megami-Tensei-Controller.genruntimeconfig.cache
+C:/Users/crist/Dropbox/8º semestre/Diseño detallado/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/obj/Debug/net8.0/ref/Shin-Megami-Tensei-Controller.dll
+/Users/cristobalmingo/Downloads/Proyecto/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/bin/Debug/net8.0/Shin-Megami-Tensei-Controller
+/Users/cristobalmingo/Downloads/Proyecto/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/bin/Debug/net8.0/Shin-Megami-Tensei-Controller.deps.json
+/Users/cristobalmingo/Downloads/Proyecto/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/bin/Debug/net8.0/Shin-Megami-Tensei-Controller.runtimeconfig.json
+/Users/cristobalmingo/Downloads/Proyecto/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/bin/Debug/net8.0/Shin-Megami-Tensei-Controller.dll
+/Users/cristobalmingo/Downloads/Proyecto/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/bin/Debug/net8.0/Shin-Megami-Tensei-Controller.pdb
+/Users/cristobalmingo/Downloads/Proyecto/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/bin/Debug/net8.0/Shin-Megami-Tensei-Model.dll
+/Users/cristobalmingo/Downloads/Proyecto/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/bin/Debug/net8.0/Shin-Megami-Tensei-View.dll
+/Users/cristobalmingo/Downloads/Proyecto/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/bin/Debug/net8.0/Shin-Megami-Tensei-View.pdb
+/Users/cristobalmingo/Downloads/Proyecto/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/bin/Debug/net8.0/Shin-Megami-Tensei-Model.pdb
+/Users/cristobalmingo/Downloads/Proyecto/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/obj/Debug/net8.0/Shin-Megami-Tensei-Controller.csproj.AssemblyReference.cache
+/Users/cristobalmingo/Downloads/Proyecto/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/obj/Debug/net8.0/Shin-Megami-Tensei-Controller.GeneratedMSBuildEditorConfig.editorconfig
+/Users/cristobalmingo/Downloads/Proyecto/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/obj/Debug/net8.0/Shin-Megami-Tensei-Controller.AssemblyInfoInputs.cache
+/Users/cristobalmingo/Downloads/Proyecto/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/obj/Debug/net8.0/Shin-Megami-Tensei-Controller.AssemblyInfo.cs
+/Users/cristobalmingo/Downloads/Proyecto/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/obj/Debug/net8.0/Shin-Megami-Tensei-Controller.csproj.CoreCompileInputs.cache
+/Users/cristobalmingo/Downloads/Proyecto/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/obj/Debug/net8.0/Shin-Megami-Tensei-Controller.sourcelink.json
+/Users/cristobalmingo/Downloads/Proyecto/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/obj/Debug/net8.0/Shin-Meg.3F350B1A.Up2Date
+/Users/cristobalmingo/Downloads/Proyecto/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/obj/Debug/net8.0/Shin-Megami-Tensei-Controller.dll
+/Users/cristobalmingo/Downloads/Proyecto/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/obj/Debug/net8.0/refint/Shin-Megami-Tensei-Controller.dll
+/Users/cristobalmingo/Downloads/Proyecto/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/obj/Debug/net8.0/Shin-Megami-Tensei-Controller.pdb
+/Users/cristobalmingo/Downloads/Proyecto/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/obj/Debug/net8.0/Shin-Megami-Tensei-Controller.genruntimeconfig.cache
+/Users/cristobalmingo/Downloads/Proyecto/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/obj/Debug/net8.0/ref/Shin-Megami-Tensei-Controller.dll

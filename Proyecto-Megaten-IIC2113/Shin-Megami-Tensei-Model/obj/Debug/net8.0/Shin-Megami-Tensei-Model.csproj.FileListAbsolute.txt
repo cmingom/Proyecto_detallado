@@ -22,15 +22,27 @@ C:/Users/crist/Documents/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami
 C:/Users/crist/Documents/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Model/obj/Debug/net8.0/refint/Shin-Megami-Tensei-Model.dll
 C:/Users/crist/Documents/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Model/obj/Debug/net8.0/Shin-Megami-Tensei-Model.pdb
 C:/Users/crist/Documents/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Model/obj/Debug/net8.0/ref/Shin-Megami-Tensei-Model.dll
-C:\Users\crist\Dropbox\8º semestre\Diseño detallado\Proyecto_detallado\Proyecto-Megaten-IIC2113\Shin-Megami-Tensei-Model\bin\Debug\net8.0\Shin-Megami-Tensei-Model.deps.json
-C:\Users\crist\Dropbox\8º semestre\Diseño detallado\Proyecto_detallado\Proyecto-Megaten-IIC2113\Shin-Megami-Tensei-Model\bin\Debug\net8.0\Shin-Megami-Tensei-Model.dll
-C:\Users\crist\Dropbox\8º semestre\Diseño detallado\Proyecto_detallado\Proyecto-Megaten-IIC2113\Shin-Megami-Tensei-Model\bin\Debug\net8.0\Shin-Megami-Tensei-Model.pdb
-C:\Users\crist\Dropbox\8º semestre\Diseño detallado\Proyecto_detallado\Proyecto-Megaten-IIC2113\Shin-Megami-Tensei-Model\obj\Debug\net8.0\Shin-Megami-Tensei-Model.GeneratedMSBuildEditorConfig.editorconfig
-C:\Users\crist\Dropbox\8º semestre\Diseño detallado\Proyecto_detallado\Proyecto-Megaten-IIC2113\Shin-Megami-Tensei-Model\obj\Debug\net8.0\Shin-Megami-Tensei-Model.AssemblyInfoInputs.cache
-C:\Users\crist\Dropbox\8º semestre\Diseño detallado\Proyecto_detallado\Proyecto-Megaten-IIC2113\Shin-Megami-Tensei-Model\obj\Debug\net8.0\Shin-Megami-Tensei-Model.AssemblyInfo.cs
-C:\Users\crist\Dropbox\8º semestre\Diseño detallado\Proyecto_detallado\Proyecto-Megaten-IIC2113\Shin-Megami-Tensei-Model\obj\Debug\net8.0\Shin-Megami-Tensei-Model.csproj.CoreCompileInputs.cache
-C:\Users\crist\Dropbox\8º semestre\Diseño detallado\Proyecto_detallado\Proyecto-Megaten-IIC2113\Shin-Megami-Tensei-Model\obj\Debug\net8.0\Shin-Megami-Tensei-Model.sourcelink.json
-C:\Users\crist\Dropbox\8º semestre\Diseño detallado\Proyecto_detallado\Proyecto-Megaten-IIC2113\Shin-Megami-Tensei-Model\obj\Debug\net8.0\Shin-Megami-Tensei-Model.dll
-C:\Users\crist\Dropbox\8º semestre\Diseño detallado\Proyecto_detallado\Proyecto-Megaten-IIC2113\Shin-Megami-Tensei-Model\obj\Debug\net8.0\refint\Shin-Megami-Tensei-Model.dll
-C:\Users\crist\Dropbox\8º semestre\Diseño detallado\Proyecto_detallado\Proyecto-Megaten-IIC2113\Shin-Megami-Tensei-Model\obj\Debug\net8.0\Shin-Megami-Tensei-Model.pdb
-C:\Users\crist\Dropbox\8º semestre\Diseño detallado\Proyecto_detallado\Proyecto-Megaten-IIC2113\Shin-Megami-Tensei-Model\obj\Debug\net8.0\ref\Shin-Megami-Tensei-Model.dll
+C:/Users/crist/Dropbox/8º semestre/Diseño detallado/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Model/bin/Debug/net8.0/Shin-Megami-Tensei-Model.deps.json
+C:/Users/crist/Dropbox/8º semestre/Diseño detallado/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Model/bin/Debug/net8.0/Shin-Megami-Tensei-Model.dll
+C:/Users/crist/Dropbox/8º semestre/Diseño detallado/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Model/bin/Debug/net8.0/Shin-Megami-Tensei-Model.pdb
+C:/Users/crist/Dropbox/8º semestre/Diseño detallado/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Model/obj/Debug/net8.0/Shin-Megami-Tensei-Model.GeneratedMSBuildEditorConfig.editorconfig
+C:/Users/crist/Dropbox/8º semestre/Diseño detallado/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Model/obj/Debug/net8.0/Shin-Megami-Tensei-Model.AssemblyInfoInputs.cache
+C:/Users/crist/Dropbox/8º semestre/Diseño detallado/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Model/obj/Debug/net8.0/Shin-Megami-Tensei-Model.AssemblyInfo.cs
+C:/Users/crist/Dropbox/8º semestre/Diseño detallado/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Model/obj/Debug/net8.0/Shin-Megami-Tensei-Model.csproj.CoreCompileInputs.cache
+C:/Users/crist/Dropbox/8º semestre/Diseño detallado/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Model/obj/Debug/net8.0/Shin-Megami-Tensei-Model.sourcelink.json
+C:/Users/crist/Dropbox/8º semestre/Diseño detallado/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Model/obj/Debug/net8.0/Shin-Megami-Tensei-Model.dll
+C:/Users/crist/Dropbox/8º semestre/Diseño detallado/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Model/obj/Debug/net8.0/refint/Shin-Megami-Tensei-Model.dll
+C:/Users/crist/Dropbox/8º semestre/Diseño detallado/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Model/obj/Debug/net8.0/Shin-Megami-Tensei-Model.pdb
+C:/Users/crist/Dropbox/8º semestre/Diseño detallado/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Model/obj/Debug/net8.0/ref/Shin-Megami-Tensei-Model.dll
+/Users/cristobalmingo/Downloads/Proyecto/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Model/bin/Debug/net8.0/Shin-Megami-Tensei-Model.deps.json
+/Users/cristobalmingo/Downloads/Proyecto/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Model/bin/Debug/net8.0/Shin-Megami-Tensei-Model.dll
+/Users/cristobalmingo/Downloads/Proyecto/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Model/bin/Debug/net8.0/Shin-Megami-Tensei-Model.pdb
+/Users/cristobalmingo/Downloads/Proyecto/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Model/obj/Debug/net8.0/Shin-Megami-Tensei-Model.GeneratedMSBuildEditorConfig.editorconfig
+/Users/cristobalmingo/Downloads/Proyecto/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Model/obj/Debug/net8.0/Shin-Megami-Tensei-Model.AssemblyInfoInputs.cache
+/Users/cristobalmingo/Downloads/Proyecto/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Model/obj/Debug/net8.0/Shin-Megami-Tensei-Model.AssemblyInfo.cs
+/Users/cristobalmingo/Downloads/Proyecto/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Model/obj/Debug/net8.0/Shin-Megami-Tensei-Model.csproj.CoreCompileInputs.cache
+/Users/cristobalmingo/Downloads/Proyecto/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Model/obj/Debug/net8.0/Shin-Megami-Tensei-Model.sourcelink.json
+/Users/cristobalmingo/Downloads/Proyecto/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Model/obj/Debug/net8.0/Shin-Megami-Tensei-Model.dll
+/Users/cristobalmingo/Downloads/Proyecto/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Model/obj/Debug/net8.0/refint/Shin-Megami-Tensei-Model.dll
+/Users/cristobalmingo/Downloads/Proyecto/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Model/obj/Debug/net8.0/Shin-Megami-Tensei-Model.pdb
+/Users/cristobalmingo/Downloads/Proyecto/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Model/obj/Debug/net8.0/ref/Shin-Megami-Tensei-Model.dll

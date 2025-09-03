@@ -40,6 +40,7 @@ namespace Shin_Megami_Tensei
             return AttemptFileSelection(files);
         }
 
+        // revisar return
         private string[] GetTeamFiles()
         {
             return Directory.GetFiles(pathResolver.GetTeamsFolder(), TEXT_FILE_EXTENSION).OrderBy(f => f).ToArray();
@@ -50,12 +51,15 @@ namespace Shin_Megami_Tensei
             fileSelector.ShowTeamFiles(files);
         }
 
+        // cambiar nombre a mas descriptivo (si es accion no retorna)
         private string AttemptFileSelection(string[] files)
         {
             var selectedFile = TrySelectFile(files);
             return selectedFile ?? string.Empty;
         }
 
+        // lo mismo que arriba (si retorna que tenga su get)
+        // hace dos cosas, dividir
         private string? TrySelectFile(string[] files)
         {
             var input = GetUserInput();

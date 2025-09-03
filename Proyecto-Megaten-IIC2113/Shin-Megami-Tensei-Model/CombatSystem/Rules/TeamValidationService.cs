@@ -14,6 +14,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Rules
         private readonly Func<string, bool> _skillExists;
         private readonly UnitParser unitParser;
 
+        // ver si es cacho sacar el func
         public TeamValidationService(Func<string, bool> unitExists, Func<string, bool> skillExists)
         {
             _unitExists = unitExists ?? throw new ArgumentNullException(nameof(unitExists));
@@ -21,6 +22,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Rules
             this.unitParser = new UnitParser();
         }
 
+        // separar verificar y procesar
         public bool IsValidTeam(List<string> teamLines)
         {
             if (!IsValidTeamInput(teamLines)) return false;
@@ -40,6 +42,8 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Rules
             return new ValidationContext(new HashSet<string>(StringComparer.Ordinal));
         }
 
+        // verbo auxiliar
+        // hace dos cosas
         private bool ProcessTeamLines(List<string> teamLines, ValidationContext context)
         {
             foreach (var rawLine in teamLines)
@@ -49,6 +53,8 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Rules
             return context.SamuraiCount == REQUIRED_SAMURAI_COUNT;
         }
 
+        // verbo auxiliar
+        // hace dos cosas
         private bool ProcessSingleTeamLine(string rawLine, ValidationContext context)
         {
             var line = rawLine.Trim();
@@ -60,6 +66,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Rules
             return ValidateUnitInfo(unitInfo, context);
         }
 
+        // verbo auxiliar
         private bool ValidateUnitInfo(UnitInfo unitInfo, ValidationContext context)
         {
             if (unitInfo.IsSamurai)
@@ -72,6 +79,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Rules
             return context.SeenUnits.Add(unitInfo.Name);
         }
 
+        // verbo auxiliar
         private bool ValidateSamuraiSkills(List<string> skills)
         {
             if (!IsValidSkillCount(skills)) return false;
@@ -85,6 +93,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Rules
             return skills.Count <= MAX_SKILLS_PER_SAMURAI;
         }
 
+        // verbo auxiliar
         private bool ValidateAllSkills(List<string> skills, HashSet<string> uniqueSkills)
         {
             foreach (var skill in skills)

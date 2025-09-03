@@ -23,6 +23,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             return BuildBothTeams(team1, team2);
         }
 
+        // poner get
         private string[] ReadTeamFile(string filePath)
         {
             return File.ReadAllLines(filePath);
@@ -43,6 +44,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
         {
             return new ParsingState();
         }
+        // recibe 4
 
         private void ProcessAllLines(string[] lines, List<string> team1, List<string> team2, ParsingState state)
         {
@@ -51,12 +53,16 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
                 ProcessSingleLine(rawLine, team1, team2, state);
             }
         }
-
+        
+// recibe 4
+// encapsular validaciones en un metodo (separar en 2)
         private void ProcessSingleLine(string rawLine, List<string> team1, List<string> team2, ParsingState state)
         {
             var line = rawLine.Trim();
             if (IsEmptyLine(line)) return;
-
+            
+// recibe bool
+// no se puede usar out
             if (IsTeamHeader(line, out bool isTeam1))
             {
                 UpdateParsingState(state, isTeam1);
@@ -71,6 +77,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             return line.Length == EMPTY_LINE_LENGTH;
         }
 
+        // bool y out
         private bool IsTeamHeader(string line, out bool isTeam1)
         {
             if (line.StartsWith(PLAYER_1_TEAM_HEADER, StringComparison.Ordinal))
@@ -87,12 +94,14 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             return false;
         }
 
+        // recibe bool
         private void UpdateParsingState(ParsingState state, bool isTeam1)
         {
             state.ReadingTeam1 = isTeam1;
             state.ReadingTeam2 = !isTeam1;
         }
 
+        // recibe 4
         private void AddLineToAppropriateTeam(string line, List<string> team1, List<string> team2, ParsingState state)
         {
             if (state.ReadingTeam1) team1.Add(line);
@@ -125,6 +134,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             return (parsedTeam1, parsedTeam2);
         }
 
+        // archivo aparte
         private class ParsingState
         {
             public bool ReadingTeam1 { get; set; }

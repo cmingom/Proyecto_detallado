@@ -24,6 +24,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             this.teamValidator = new TeamValidator(UnitExists, SkillExists);
         }
 
+        // verbo auxiliar
         public bool ValidateTeams(List<string> team1, List<string> team2)
         {
             return teamValidator.IsValidTeam(team1) && teamValidator.IsValidTeam(team2);

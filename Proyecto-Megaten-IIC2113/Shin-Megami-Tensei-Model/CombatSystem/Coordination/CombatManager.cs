@@ -24,18 +24,23 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             return new ActionCoordinatorConfig(battleView, surrenderHandler, skillData);
         }
 
+        // poner get
         public List<UnitInstance> CalculateActionOrder(TeamState team)
         {
             return battleStateManager.CalculateActionOrder(team);
         }
 
+        // poner get
         public int CalculateNextTurnCount(TeamState team)
         {
             return battleStateManager.CalculateNextTurnCount(team);
         }
 
+        // verbo auxiliar
+        // recibe 4
         public bool ProcessUnitAction(UnitInstance actingUnit, BattleState battleState, string player1Name, string player2Name)
         {
+            // recibe 4
             return unitActionManager.ProcessUnitAction(actingUnit, battleState, player1Name, player2Name);
         }
         public void ConsumeTurn(BattleState battleState)

@@ -15,11 +15,11 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             this.battleView = battleView;
         }
 
-        public bool ProcessSurrender(BattleState battleState, string player1Name, string player2Name)
+        // verbo auxiliar (revisar en caso de que caiga) le saque el return y antes era bool
+        public void ProcessSurrender(BattleState battleState, string player1Name, string player2Name)
         {
             var surrenderInfo = CreateSurrenderInfo(battleState, player1Name, player2Name);
             ShowSurrenderInfo(surrenderInfo);
-            return true;
         }
 
         private SurrenderInfo CreateSurrenderInfo(BattleState battleState, string player1Name, string player2Name)
@@ -65,6 +65,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 
         private void ShowSurrenderInfo(SurrenderInfo surrenderInfo)
         {
+            // recibe 4
             battleView.ShowSurrender(surrenderInfo.SurrenderingPlayer.Name, surrenderInfo.SurrenderingPlayer.Number, 
                                    surrenderInfo.Winner.Name, surrenderInfo.Winner.Number);
         }

@@ -16,18 +16,22 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             this.damageCalculator = new DamageCalculator();
         }
 
+        // verbo auxiliar
         public bool ExecutePhysicalAttack(UnitInstance attacker, BattleState battleState)
         {
             var attackContext = new AttackContext(attacker, battleState, AttackType.Physical);
             return ProcessAttack(attackContext);
         }
 
+        // verbo auxiliar
         public bool ExecuteGunAttack(UnitInstance attacker, BattleState battleState)
         {
             var attackContext = new AttackContext(attacker, battleState, AttackType.Gun);
             return ProcessAttack(attackContext);
         }
 
+        // verbo auxiliar
+        // separar en 3
         private bool ProcessAttack(AttackContext attackContext)
         {
             var availableTargets = GetValidTargets(attackContext);
@@ -47,6 +51,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             return targetSelector.GetAvailableTargetsForAttack(attackContext.BattleState, attackContext.BattleState.IsPlayer1Turn);
         }
 
+        // get
         private UnitInstance SelectTarget(AttackContext attackContext, List<UnitInstance> availableTargets)
         {
             return targetSelector.SelectTargetForAttack(attackContext.Attacker, availableTargets);
@@ -62,11 +67,12 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             return selectedTarget == null;
         }
 
+        // hace dos cosas
         private void ExecuteAttackOnTarget(AttackContext attackContext, UnitInstance selectedTarget)
         {
             var damage = damageCalculator.CalculateAttackDamage(attackContext);
             damageCalculator.ApplyDamageToTarget(selectedTarget, damage);
-            ShowAttackResult(attackContext, selectedTarget, damage);
+            ShowAttackResult(attackContext, selectedTarget, damage); // separar
         }
 
         private void ShowAttackResult(AttackContext attackContext, UnitInstance target, int damage)
@@ -75,6 +81,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             ShowAttackResultToView(attackContext.Attacker, target, damage, isGunAttack);
         }
 
+        // recibe 4 y un bool
         private void ShowAttackResultToView(UnitInstance attacker, UnitInstance target, int damage, bool isGunAttack)
         {
             battleView.ShowAttackResult(attacker, target, damage, isGunAttack);

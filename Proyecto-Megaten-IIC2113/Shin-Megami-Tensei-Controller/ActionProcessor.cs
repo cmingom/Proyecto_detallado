@@ -19,11 +19,14 @@ namespace Shin_Megami_Tensei
             this.battleView = battleView;
             this.combatManager = combatManager;
         }
-
+        
+        
+        //verbo auxiliar como el should
         public bool ProcessActionOrder(BattleContext battleContext, List<UnitInstance> actionOrder, TeamState currentTeam)
         {
             while (ShouldContinueProcessingActions(battleContext))
             {
+                // agregar verbo
                 if (ProcessSingleActionIteration(battleContext, actionOrder, currentTeam))
                     return true;
             }
@@ -57,6 +60,7 @@ namespace Shin_Megami_Tensei
             return actionOrder.Count == EMPTY_LIST_COUNT;
         }
 
+        // verbo auxiliar
         private bool ProcessCurrentUnit(BattleContext battleContext, List<UnitInstance> actionOrder, TeamState currentTeam)
         {
             var currentUnit = GetCurrentUnit(actionOrder);
@@ -73,6 +77,7 @@ namespace Shin_Megami_Tensei
             return actionOrder[FIRST_UNIT_INDEX];
         }
 
+        // verbo auxiliar
         private bool ProcessSingleUnitAction(UnitInstance currentUnit, BattleContext battleContext)
         {
             if (IsUnitActionSuccessful(currentUnit, battleContext))
@@ -88,6 +93,7 @@ namespace Shin_Megami_Tensei
             return combatManager.ProcessUnitAction(currentUnit, battleContext.BattleState, battleContext.Player1Name, battleContext.Player2Name);
         }
 
+        // verbo auxiliar
         private bool CheckAndHandleBattleEnd(BattleContext battleContext)
         {
             if (combatManager.IsBattleOver(battleContext.BattleState))

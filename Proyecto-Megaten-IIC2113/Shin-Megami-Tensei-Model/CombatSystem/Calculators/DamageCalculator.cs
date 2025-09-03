@@ -10,6 +10,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
         private const double GUN_DAMAGE_MULTIPLIER = BASE_GUN_DAMAGE * PER_POINT_SCALING;
         private const double PHYSICAL_DAMAGE_MULTIPLIER = BASE_PHYSICAL_DAMAGE * PER_POINT_SCALING;
 
+        // ponerle get
         public int CalculateAttackDamage(AttackContext attackContext)
         {
             return IsGunAttack(attackContext.AttackType)
@@ -22,11 +23,13 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             return attackType == AttackType.Gun;
         }
 
+        // poner get
         private int CalculateGunDamage(int skill)
         {
             return (int)Math.Floor(skill * GUN_DAMAGE_MULTIPLIER);
         }
 
+        // poner get
         private int CalculatePhysicalDamage(int strength)
         {
             return (int)Math.Floor(strength * PHYSICAL_DAMAGE_MULTIPLIER);
@@ -38,6 +41,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             target.HP = newHP;
         }
 
+        // poner get
         private int CalculateNewHP(int currentHP, int damage)
         {
             return Math.Max(0, currentHP - damage);

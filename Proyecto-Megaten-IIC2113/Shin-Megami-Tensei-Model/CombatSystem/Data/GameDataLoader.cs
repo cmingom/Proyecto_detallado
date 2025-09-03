@@ -22,6 +22,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             AddValidUnitsToDictionary(allUnits);
         }
 
+        // poner get
         private IEnumerable<Unit> LoadUnitsFromMultipleSources()
         {
             var samurais = LoadUnitsFromJson("data/samurai.json");
@@ -65,11 +66,13 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             return !string.IsNullOrWhiteSpace(name);
         }
 
+        // poner get
         private List<Unit> LoadUnitsFromJson(string filePath)
         {
             return JsonSerializer.Deserialize<List<Unit>>(File.ReadAllText(filePath)) ?? new();
         }
 
+        // poner get
         private List<Skill> LoadSkillsFromJson(string filePath)
         {
             return JsonSerializer.Deserialize<List<Skill>>(File.ReadAllText(filePath)) ?? new();

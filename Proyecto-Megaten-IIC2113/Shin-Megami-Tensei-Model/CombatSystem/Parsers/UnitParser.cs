@@ -21,6 +21,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             return line.Contains(SAMURAI_TAG, StringComparison.Ordinal);
         }
 
+        // manejar return
         private UnitInfo? ParseSamuraiDefinition(string line)
         {
             var rest = RemoveSamuraiTag(line);
@@ -31,6 +32,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             return new UnitInfo(name, true, skills ?? new List<string>());
         }
 
+        // poner get
         private string RemoveSamuraiTag(string line)
         {
             return line.Replace(SAMURAI_TAG, string.Empty).Trim();
@@ -57,6 +59,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             return ValidateSamuraiParsing(rest, closeParen, name, skills);
         }
 
+        // tiene 4, mejorar nombre (o levantar excepcion, no deberia retornar)
         private (string? name, List<string>? skills) ValidateSamuraiParsing(string rest, int closeParen, string name, List<string>? skills)
         {
             if (skills == null || HasRemainingTextAfterSkills(rest, closeParen)) 
@@ -65,11 +68,13 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             return (name, skills);
         }
 
+        // usar get
         private int FindCloseParenthesis(string rest, int openParen)
         {
             return rest.IndexOf(CLOSE_PARENTHESIS, openParen + PARENTHESIS_OFFSET);
         }
 
+        // usar get
         private string ExtractName(string rest, int openParen)
         {
             return rest.Substring(0, openParen).Trim();
@@ -78,10 +83,11 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
         private List<string>? ParseSkillsFromText(string rest, int openParen, int closeParen)
         {
             var skillsText = ExtractSkillsText(rest, openParen, closeParen);
-            if (!IsValidSkillsText(skillsText)) return null;
+            if (!IsValidSkillsText(skillsText)) return null; // sacar
             return ParseSkillList(skillsText);
         }
 
+        // get
         private string ExtractSkillsText(string rest, int openParen, int closeParen)
         {
             return rest.Substring(openParen + PARENTHESIS_OFFSET, closeParen - openParen - PARENTHESIS_OFFSET);
@@ -117,6 +123,8 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             return skills;
         }
 
+        // verbo auxiliar
+        // hace dos cosas (valida y agrega)
         private bool AddValidSkill(List<string> skills, string part)
         {
             var skillName = part.Trim();

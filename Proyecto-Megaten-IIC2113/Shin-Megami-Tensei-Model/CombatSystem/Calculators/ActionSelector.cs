@@ -12,24 +12,27 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
         private const string PASS_TURN_ACTION = "Pasar Turno";
         private const string SURRENDER_ACTION = "Rendirse";
         
-        private readonly IBattleView battleView;
         private readonly SurrenderProcessor surrenderHandler;
         private readonly AttackProcessor attackExecutor;
         private readonly SkillProcessor skillManager;
 
+        // recibe 4
         public ActionSelector(IBattleView battleView, SurrenderProcessor surrenderHandler, Dictionary<string, Skill> skillData)
         {
-            this.battleView = battleView;
             this.surrenderHandler = surrenderHandler;
             this.attackExecutor = new AttackProcessor(battleView);
             this.skillManager = new SkillProcessor(battleView, skillData);
         }
 
+        // recibe 4 
+        // verbo auxiliar, no es execute
         public bool ExecuteSelectedAction(UnitInstance actingUnit, BattleState battleState, string selectedAction, string player1Name, string player2Name)
         {
             return GetActionResult(selectedAction, actingUnit, battleState, player1Name, player2Name);
         }
 
+        // vrbo auxiliar
+        // recibe 5
         private bool GetActionResult(string selectedAction, UnitInstance actingUnit, BattleState battleState, string player1Name, string player2Name)
         {
             return selectedAction switch
@@ -44,22 +47,26 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             };
         }
 
+        // vrbo auxiliar
         private bool GetSummonResult()
         {
             return true;
         }
 
+        // vrbo auxiliar
         private bool GetPassTurnResult()
         {
             return true;
         }
 
+        // vrbo auxiliar
         private bool GetSurrenderResult(BattleState battleState, string player1Name, string player2Name)
         {
             surrenderHandler.ProcessSurrender(battleState, player1Name, player2Name);
             return true;
         }
 
+        // vrbo auxiliar
         private bool GetDefaultResult()
         {
             return false;

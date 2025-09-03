@@ -67,6 +67,7 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
             return choice;
         }
 
+        // recibe out
         private bool IsValidChoice(string input, int maxChoice, out int choice)
         {
             choice = 0;

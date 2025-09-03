@@ -15,12 +15,14 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             this.battleView = battleView;
         }
 
+        // recibe bool
         public List<UnitInstance> GetAvailableTargetsForAttack(BattleState battleState, bool isPlayer1Turn)
         {
             var enemyTeam = GetEnemyTeam(battleState, isPlayer1Turn);
             return GetAvailableTargets(enemyTeam);
         }
 
+        // recibe bool
         private TeamState GetEnemyTeam(BattleState battleState, bool isPlayer1Turn)
         {
             return isPlayer1Turn ? battleState.Team2 : battleState.Team1;
@@ -31,6 +33,8 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             return enemyTeam.AliveUnits.ToList();
         }
 
+        // falta get
+        // hace dos cosas
         public UnitInstance SelectTargetForAttack(UnitInstance attacker, List<UnitInstance> availableTargets)
         {
             ShowTargetSelection(attacker, availableTargets);

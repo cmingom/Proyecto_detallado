@@ -17,6 +17,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
         }
     }
 
+    // que tenga su archivo
     public enum AttackType
     {
         Physical,

@@ -10,9 +10,11 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
         int GetActionChoice(int actionCount);
         void ShowTargetSelection(UnitInstance attacker, List<UnitInstance> targets);
         int GetTargetChoice(int targetCount);
+        // recibe bool, son 4
         void ShowAttackResult(UnitInstance attacker, UnitInstance target, int damage, bool isGunAttack);
         void ShowSkillSelection(UnitInstance unit, List<Skill> skills);
         int GetSkillChoice(int skillCount);
+        // recibe 4
         void ShowSurrender(string playerName, string playerNumber, string winnerName, string winnerNumber);
         void ShowTurnConsumption();
     }

@@ -20,6 +20,7 @@ namespace Shin_Megami_Tensei
             this.gameManager = gameManager;
         }
 
+        // get
         public BattleState CreateBattleState(string file)
         {
             var lines = ReadFileLines(file);
@@ -49,6 +50,7 @@ namespace Shin_Megami_Tensei
             return gameManager.ValidateTeams(team1, team2);
         }
 
+        // get
         private BattleState CreateBattleStateFromValidTeams(string file)
         {
             var (parsedTeam1, parsedTeam2) = gameManager.ParseTeamsFromFile(file);
@@ -63,6 +65,7 @@ namespace Shin_Megami_Tensei
             return new BattleState(battleTeam1, battleTeam2);
         }
 
+        // get
         private List<UnitInstance> CreateTeamUnits(List<UnitInfo> team, Dictionary<string, Unit> unitData)
         {
             var units = new List<UnitInstance>();
@@ -73,6 +76,7 @@ namespace Shin_Megami_Tensei
             return units;
         }
 
+        // recibe 5
         private void PopulateTeamUnits(List<UnitInstance> units, List<UnitInfo> team, int teamSize, Dictionary<string, Unit> unitData)
         {
             for (int i = 0; i < teamSize; i++)
@@ -81,6 +85,7 @@ namespace Shin_Megami_Tensei
             }
         }
 
+        // recibe 5
         private void AddUnitToTeam(List<UnitInstance> units, UnitInfo unitInfo, char position, Dictionary<string, Unit> unitData)
         {
             var unitInstance = CreateUnitInstance(unitInfo, position, unitData);
@@ -95,6 +100,7 @@ namespace Shin_Megami_Tensei
             return Math.Min(team.Count, MAX_UNITS_IN_BATTLE);
         }
 
+        // recibe 4
         private UnitInstance? CreateUnitInstance(UnitInfo unitInfo, char position, Dictionary<string, Unit> unitData)
         {
             if (!TryGetUnitTemplate(unitInfo.Name, unitData, out var unitTemplate))
@@ -105,6 +111,9 @@ namespace Shin_Megami_Tensei
             return BuildUnitInstance(unitInfo, position, unitTemplate);
         }
 
+        // recibe out
+        // verbo auxiliar
+        // recibe 4
         private bool TryGetUnitTemplate(string unitName, Dictionary<string, Unit> unitData, out Unit unitTemplate)
         {
             return unitData.TryGetValue(unitName, out unitTemplate);

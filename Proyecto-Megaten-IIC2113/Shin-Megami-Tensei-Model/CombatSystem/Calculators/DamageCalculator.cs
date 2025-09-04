@@ -1,4 +1,5 @@
 using Shin_Megami_Tensei_Model.Domain.Entities;
+using Shin_Megami_Tensei_Model.CombatSystem.Enums;
 
 namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 {
@@ -10,12 +11,11 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
         private const double GUN_DAMAGE_MULTIPLIER = BASE_GUN_DAMAGE * PER_POINT_SCALING;
         private const double PHYSICAL_DAMAGE_MULTIPLIER = BASE_PHYSICAL_DAMAGE * PER_POINT_SCALING;
 
-        // ponerle get
-        public int CalculateAttackDamage(AttackContext attackContext)
+        public int GetCalculatedAttackDamage(AttackContext attackContext)
         {
             return IsGunAttack(attackContext.AttackType)
-                ? CalculateGunDamage(attackContext.Attacker.Skl)
-                : CalculatePhysicalDamage(attackContext.Attacker.Str);
+                ? GetCalculatedGunDamage(attackContext.Attacker.Skl)
+                : GetCalculatedPhysicalDamage(attackContext.Attacker.Str);
         }
 
         private bool IsGunAttack(AttackType attackType)
@@ -23,26 +23,23 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             return attackType == AttackType.Gun;
         }
 
-        // poner get
-        private int CalculateGunDamage(int skill)
+        private int GetCalculatedGunDamage(int skill)
         {
             return (int)Math.Floor(skill * GUN_DAMAGE_MULTIPLIER);
         }
 
-        // poner get
-        private int CalculatePhysicalDamage(int strength)
+        private int GetCalculatedPhysicalDamage(int strength)
         {
             return (int)Math.Floor(strength * PHYSICAL_DAMAGE_MULTIPLIER);
         }
 
-        public void ApplyDamageToTarget(UnitInstance target, int damage)
+        public void ApplyDamageToTarget(GetUnitInstance target, int damage)
         {
-            var newHP = CalculateNewHP(target.HP, damage);
+            var newHP = GetCalculatedNewHP(target.HP, damage);
             target.HP = newHP;
         }
 
-        // poner get
-        private int CalculateNewHP(int currentHP, int damage)
+        private int GetCalculatedNewHP(int currentHP, int damage)
         {
             return Math.Max(0, currentHP - damage);
         }

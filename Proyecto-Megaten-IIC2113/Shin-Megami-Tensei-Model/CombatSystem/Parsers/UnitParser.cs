@@ -21,19 +21,28 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             return line.Contains(SAMURAI_TAG, StringComparison.Ordinal);
         }
 
-        // manejar return
         private UnitInfo? ParseSamuraiDefinition(string line)
         {
-            var rest = RemoveSamuraiTag(line);
+            var rest = GetSamuraiWhithoutTag(line);
             var (name, skills) = ParseSamuraiNameAndSkills(rest);
             
             if (name == null) return null;
             
-            return new UnitInfo(name, true, skills ?? new List<string>());
+            return CreateSamuraiUnitInfo(name, skills);
         }
 
-        // poner get
-        private string RemoveSamuraiTag(string line)
+        private UnitInfo CreateSamuraiUnitInfo(string name, List<string>? skills)
+        {
+            var validSkills = GetValidSkills(skills);
+            return new UnitInfo(name, true, validSkills);
+        }
+
+        private List<string> GetValidSkills(List<string>? skills)
+        {
+            return skills ?? new List<string>();
+        }
+
+        private string GetSamuraiWhithoutTag(string line)
         {
             return line.Replace(SAMURAI_TAG, string.Empty).Trim();
         }
@@ -50,58 +59,36 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 
         private (string? name, List<string>? skills) ParseSamuraiWithSkills(string rest, int openParen)
         {
-            var closeParen = FindCloseParenthesis(rest, openParen);
+            var closeParen = GetCloseParenthesis(rest, openParen);
             if (closeParen < 0) return (null, null);
 
-            var name = ExtractName(rest, openParen);
+            var name = GetName(rest, openParen);
             var skills = ParseSkillsFromText(rest, openParen, closeParen);
-            
-            return ValidateSamuraiParsing(rest, closeParen, name, skills);
-        }
-
-        // tiene 4, mejorar nombre (o levantar excepcion, no deberia retornar)
-        private (string? name, List<string>? skills) ValidateSamuraiParsing(string rest, int closeParen, string name, List<string>? skills)
-        {
-            if (skills == null || HasRemainingTextAfterSkills(rest, closeParen)) 
-                return (null, null);
             
             return (name, skills);
         }
 
-        // usar get
-        private int FindCloseParenthesis(string rest, int openParen)
+        private int GetCloseParenthesis(string rest, int openParen)
         {
             return rest.IndexOf(CLOSE_PARENTHESIS, openParen + PARENTHESIS_OFFSET);
         }
 
-        // usar get
-        private string ExtractName(string rest, int openParen)
+        private string GetName(string rest, int openParen)
         {
             return rest.Substring(0, openParen).Trim();
         }
 
         private List<string>? ParseSkillsFromText(string rest, int openParen, int closeParen)
         {
-            var skillsText = ExtractSkillsText(rest, openParen, closeParen);
-            if (!IsValidSkillsText(skillsText)) return null; // sacar
+            var skillsText = GetSkillsText(rest, openParen, closeParen);
             return ParseSkillList(skillsText);
         }
 
-        // get
-        private string ExtractSkillsText(string rest, int openParen, int closeParen)
+        private string GetSkillsText(string rest, int openParen, int closeParen)
         {
             return rest.Substring(openParen + PARENTHESIS_OFFSET, closeParen - openParen - PARENTHESIS_OFFSET);
         }
 
-        private bool IsValidSkillsText(string skillsText)
-        {
-            return !string.IsNullOrWhiteSpace(skillsText);
-        }
-
-        private bool HasRemainingTextAfterSkills(string rest, int closeParen)
-        {
-            return !string.IsNullOrWhiteSpace(rest.Substring(closeParen + PARENTHESIS_OFFSET));
-        }
 
         private List<string>? ParseSkillList(string skillsText)
         {
@@ -117,22 +104,31 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             var skills = new List<string>();
             foreach (var part in parts)
             {
-                if (!AddValidSkill(skills, part))
+                if (!CanAddValidSkill(skills, part))
                     return null;
             }
             return skills;
         }
 
-        // verbo auxiliar
-        // hace dos cosas (valida y agrega)
-        private bool AddValidSkill(List<string> skills, string part)
+        private bool CanAddValidSkill(List<string> skills, string part)
         {
             var skillName = part.Trim();
-            if (string.IsNullOrWhiteSpace(skillName))
-                return false;
-            
+            if (IsValidSkillName(skillName))
+            {
+                AddSkillToList(skills, skillName);
+                return true;
+            }
+            return false;
+        }
+
+        private bool IsValidSkillName(string skillName)
+        {
+            return !string.IsNullOrWhiteSpace(skillName);
+        }
+
+        private void AddSkillToList(List<string> skills, string skillName)
+        {
             skills.Add(skillName);
-            return true;
         }
 
         private UnitInfo? ParseMonsterDefinition(string line)

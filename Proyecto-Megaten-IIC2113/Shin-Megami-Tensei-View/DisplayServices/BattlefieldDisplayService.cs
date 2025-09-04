@@ -67,7 +67,7 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
             return new char[] { POSITION_A, POSITION_B, POSITION_C, POSITION_D };
         }
 
-        private void ShowSingleUnitPosition(UnitInstance? unit, char position)
+        private void ShowSingleUnitPosition(GetUnitInstance? unit, char position)
         {
             if (unit == null)
             {
@@ -85,14 +85,14 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
             }
         }
 
-        private bool ShouldShowUnitInfo(UnitInstance unit)
+        private bool ShouldShowUnitInfo(GetUnitInstance getUnit)
         {
-            return unit.IsSamurai || unit.HP > MINIMUM_HP;
+            return getUnit.IsSamurai || getUnit.HP > MINIMUM_HP;
         }
 
-        private void ShowUnitInfo(UnitInstance unit, char position)
+        private void ShowUnitInfo(GetUnitInstance getUnit, char position)
         {
-            view.WriteLine(string.Format(UNIT_INFO_FORMAT, position, unit.Name, unit.HP, unit.MaxHP, unit.MP, unit.MaxMP));
+            view.WriteLine(string.Format(UNIT_INFO_FORMAT, position, getUnit.Name, getUnit.HP, getUnit.MaxHP, getUnit.MP, getUnit.MaxMP));
         }
 
         private void ShowEmptyPosition(char position)
@@ -117,7 +117,7 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
             view.WriteLine(string.Format(BLINKING_TURNS_FORMAT, blinkingTurns));
         }
 
-        public void ShowActionOrderBySpeed(List<UnitInstance> actionOrder)
+        public void ShowActionOrderBySpeed(List<GetUnitInstance> actionOrder)
         {
             ShowSeparator();
             ShowOrderHeader();
@@ -129,7 +129,7 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
             view.WriteLine(ORDER_HEADER);
         }
 
-        private void ShowOrderItems(List<UnitInstance> actionOrder)
+        private void ShowOrderItems(List<GetUnitInstance> actionOrder)
         {
             for (int i = 0; i < actionOrder.Count; i++)
             {

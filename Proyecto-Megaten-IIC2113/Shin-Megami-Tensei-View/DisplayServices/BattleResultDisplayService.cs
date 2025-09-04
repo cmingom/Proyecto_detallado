@@ -1,3 +1,5 @@
+using Shin_Megami_Tensei_Model.CombatSystem.Contexts;
+
 namespace Shin_Megami_Tensei_View.ConsoleLib
 {
     public class BattleResultDisplayService
@@ -15,12 +17,12 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
             this.view = view;
         }
 
-        public void ShowSurrender(string playerName, string playerNumber, string winnerName, string winnerNumber)
+        public void ShowSurrender(SurrenderContext context)
         {
             ShowSeparator();
-            ShowSurrenderMessage(playerName, playerNumber);
+            ShowSurrenderMessage(context.PlayerName, context.PlayerNumber);
             ShowSeparator();
-            ShowWinnerMessage(winnerName, winnerNumber);
+            ShowWinnerMessage(context.WinnerName, context.WinnerNumber);
         }
 
         private void ShowSeparator()

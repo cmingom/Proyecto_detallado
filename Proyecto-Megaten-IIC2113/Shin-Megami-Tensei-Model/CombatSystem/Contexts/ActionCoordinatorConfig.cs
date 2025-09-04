@@ -8,9 +8,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Contexts
         public IBattleView BattleView { get; }
         public SurrenderProcessor SurrenderProcessor { get; }
         public Dictionary<string, Skill> SkillData { get; }
-
-        // recibe 4
-        // dejarlo asi
+        
         public ActionCoordinatorConfig(IBattleView battleView, SurrenderProcessor surrenderProcessor, Dictionary<string, Skill> skillData)
         {
             BattleView = battleView;

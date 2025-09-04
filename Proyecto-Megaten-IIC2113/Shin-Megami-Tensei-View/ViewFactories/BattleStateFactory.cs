@@ -20,8 +20,7 @@ namespace Shin_Megami_Tensei
             this.gameManager = gameManager;
         }
 
-        // get
-        public BattleState CreateBattleState(string file)
+        public BattleState GetBattleState(string file)
         {
             var lines = ReadFileLines(file);
             var (team1, team2) = ParseTeamsFromLines(lines);
@@ -31,7 +30,7 @@ namespace Shin_Megami_Tensei
                 return null;
             }
             
-            return CreateBattleStateFromValidTeams(file);
+            return GetBattleStateFromValidTeams(file);
         }
 
         private string[] ReadFileLines(string file)
@@ -47,17 +46,16 @@ namespace Shin_Megami_Tensei
 
         private bool AreTeamsValid(List<string> team1, List<string> team2)
         {
-            return gameManager.ValidateTeams(team1, team2);
+            return gameManager.AreValidTeams(team1, team2);
         }
 
-        // get
-        private BattleState CreateBattleStateFromValidTeams(string file)
+        private BattleState GetBattleStateFromValidTeams(string file)
         {
             var (parsedTeam1, parsedTeam2) = gameManager.ParseTeamsFromFile(file);
             var unitData = gameManager.GetUnitData();
             
-            var team1Units = CreateTeamUnits(parsedTeam1, unitData);
-            var team2Units = CreateTeamUnits(parsedTeam2, unitData);
+            var team1Units = GetTeamUnits(parsedTeam1, unitData);
+            var team2Units = GetTeamUnits(parsedTeam2, unitData);
             
             var battleTeam1 = new TeamState(team1Units);
             var battleTeam2 = new TeamState(team2Units);
@@ -65,33 +63,31 @@ namespace Shin_Megami_Tensei
             return new BattleState(battleTeam1, battleTeam2);
         }
 
-        // get
-        private List<UnitInstance> CreateTeamUnits(List<UnitInfo> team, Dictionary<string, Unit> unitData)
+        private List<GetUnitInstance> GetTeamUnits(List<UnitInfo> team, Dictionary<string, Unit> unitData)
         {
-            var units = new List<UnitInstance>();
+            var units = new List<GetUnitInstance>();
             var teamSize = GetTeamSize(team);
             
-            PopulateTeamUnits(units, team, teamSize, unitData);
+            var teamContext = new TeamPopulationContext(units, team, teamSize, unitData);
+            PopulateTeamUnits(teamContext);
             
             return units;
         }
 
-        // recibe 5
-        private void PopulateTeamUnits(List<UnitInstance> units, List<UnitInfo> team, int teamSize, Dictionary<string, Unit> unitData)
+        private void PopulateTeamUnits(TeamPopulationContext context)
         {
-            for (int i = 0; i < teamSize; i++)
+            for (int i = 0; i < context.TeamSize; i++)
             {
-                AddUnitToTeam(units, team[i], TEAM_POSITIONS[i], unitData);
+                AddUnitToTeam(context, i);
             }
         }
 
-        // recibe 5
-        private void AddUnitToTeam(List<UnitInstance> units, UnitInfo unitInfo, char position, Dictionary<string, Unit> unitData)
+        private void AddUnitToTeam(TeamPopulationContext context, int index)
         {
-            var unitInstance = CreateUnitInstance(unitInfo, position, unitData);
+            var unitInstance = CreateUnitInstance(context.Team[index], TEAM_POSITIONS[index], context.UnitData);
             if (unitInstance != null)
             {
-                units.Add(unitInstance);
+                context.Units.Add(unitInstance);
             }
         }
 
@@ -100,10 +96,10 @@ namespace Shin_Megami_Tensei
             return Math.Min(team.Count, MAX_UNITS_IN_BATTLE);
         }
 
-        // recibe 4
-        private UnitInstance? CreateUnitInstance(UnitInfo unitInfo, char position, Dictionary<string, Unit> unitData)
+        private GetUnitInstance? CreateUnitInstance(UnitInfo unitInfo, char position, Dictionary<string, Unit> unitData)
         {
-            if (!TryGetUnitTemplate(unitInfo.Name, unitData, out var unitTemplate))
+            var unitTemplate = GetUnitTemplate(unitInfo.Name, unitData);
+            if (unitTemplate == null)
             {
                 return null;
             }
@@ -111,17 +107,14 @@ namespace Shin_Megami_Tensei
             return BuildUnitInstance(unitInfo, position, unitTemplate);
         }
 
-        // recibe out
-        // verbo auxiliar
-        // recibe 4
-        private bool TryGetUnitTemplate(string unitName, Dictionary<string, Unit> unitData, out Unit unitTemplate)
+        private Unit? GetUnitTemplate(string unitName, Dictionary<string, Unit> unitData)
         {
-            return unitData.TryGetValue(unitName, out unitTemplate);
+            return unitData.TryGetValue(unitName, out var unitTemplate) ? unitTemplate : null;
         }
 
-        private UnitInstance BuildUnitInstance(UnitInfo unitInfo, char position, Unit unitTemplate)
+        private GetUnitInstance BuildUnitInstance(UnitInfo unitInfo, char position, Unit unitTemplate)
         {
-            return new UnitInstance(
+            return new GetUnitInstance(
                 name: unitInfo.Name,
                 maxHP: unitTemplate.Stats.HP,
                 maxMP: unitTemplate.Stats.MP,
@@ -139,4 +132,5 @@ namespace Shin_Megami_Tensei
             return unitInfo.IsSamurai ? unitInfo.Skills : unitTemplate.Skills;
         }
     }
+
 }

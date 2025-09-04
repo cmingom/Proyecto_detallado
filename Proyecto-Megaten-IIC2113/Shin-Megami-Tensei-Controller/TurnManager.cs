@@ -21,15 +21,23 @@ namespace Shin_Megami_Tensei
             this.actionProcessor = new ActionProcessor(battleView, combatService);
         }
 
-        // dividir en dos
         public bool IsPlayerTurnComplete(BattleState battleState, string player1Name, string player2Name)
         {
             var currentTeam = GetCurrentTeam(battleState);
-            ShowPlayerTurnHeader(battleState, player1Name, player2Name);
-            
-            var shouldEndBattle = ProcessPlayerActions(battleState, currentTeam, player1Name, player2Name);
-            HandlePlayerTurnEnd(battleState, currentTeam, shouldEndBattle);
-            
+            var turnContext = new TurnContext(battleState, currentTeam, player1Name, player2Name);
+            return ShouldEndBattleAfterTurn(turnContext);
+        }
+
+        private bool ShouldEndBattleAfterTurn(TurnContext turnContext)
+        {
+            ShowPlayerTurnHeader(turnContext);
+            return ShouldEndBattleAfterActions(turnContext);
+        }
+
+        private bool ShouldEndBattleAfterActions(TurnContext turnContext)
+        {
+            var shouldEndBattle = ShouldProcessPlayerActions(turnContext);
+            HandlePlayerTurnEnd(turnContext);
             return shouldEndBattle;
         }
 
@@ -38,16 +46,16 @@ namespace Shin_Megami_Tensei
             return battleState.IsPlayer1Turn ? battleState.Team1 : battleState.Team2;
         }
 
-        private void ShowPlayerTurnHeader(BattleState battleState, string player1Name, string player2Name)
+        private void ShowPlayerTurnHeader(TurnContext turnContext)
         {
-            var currentPlayerName = GetCurrentPlayerName(battleState, player1Name, player2Name);
-            var playerNumber = GetCurrentPlayerNumber(battleState);
+            var currentPlayerName = GetCurrentPlayerName(turnContext);
+            var playerNumber = GetCurrentPlayerNumber(turnContext.BattleState);
             battleView.ShowRoundHeader(currentPlayerName, playerNumber);
         }
 
-        private string GetCurrentPlayerName(BattleState battleState, string player1Name, string player2Name)
+        private string GetCurrentPlayerName(TurnContext turnContext)
         {
-            return battleState.IsPlayer1Turn ? player1Name : player2Name;
+            return turnContext.BattleState.IsPlayer1Turn ? turnContext.Player1Name : turnContext.Player2Name;
         }
 
         private string GetCurrentPlayerNumber(BattleState battleState)
@@ -55,40 +63,51 @@ namespace Shin_Megami_Tensei
             return battleState.IsPlayer1Turn ? PLAYER_1_LABEL : PLAYER_2_LABEL;
         }
 
-        // verbo auxiliar, recibe 4 argumentos
-        private bool ProcessPlayerActions(BattleState battleState, TeamState currentTeam, string player1Name, string player2Name)
+        private bool ShouldProcessPlayerActions(TurnContext turnContext)
         {
-            var actionOrder = combatService.CalculateActionOrder(currentTeam);
-            var battleContext = CreateBattleContext(battleState, player1Name, player2Name);
-            return actionProcessor.ProcessActionOrder(battleContext, actionOrder, currentTeam);
+            var actionOrder = combatService.GetCalculatedActionOrder(turnContext.CurrentTeam);
+            var battleContext = CreateBattleContext(turnContext);
+            return actionProcessor.ShouldProcessActionOrder(battleContext, actionOrder, turnContext.CurrentTeam);
         }
 
-        private BattleContext CreateBattleContext(BattleState battleState, string player1Name, string player2Name)
+        private BattleContext CreateBattleContext(TurnContext turnContext)
         {
-            return new BattleContext { BattleState = battleState, Player1Name = player1Name, Player2Name = player2Name };
+            return new BattleContext { BattleState = turnContext.BattleState, Player1Name = turnContext.Player1Name, Player2Name = turnContext.Player2Name };
         }
 
-        // recibe un bool, cambiar
-        private void HandlePlayerTurnEnd(BattleState battleState, TeamState currentTeam, bool shouldEndBattle)
+        private void HandlePlayerTurnEnd(TurnContext turnContext)
         {
-            if (ShouldSwitchTurn(shouldEndBattle))
+            if (ShouldContinueBattle(turnContext))
             {
-                SwitchPlayerTurn(battleState, currentTeam);
+                SwitchPlayerTurn(turnContext);
             }
         }
 
-        // recibe un bool
-        private bool ShouldSwitchTurn(bool shouldEndBattle)
+        private bool ShouldContinueBattle(TurnContext turnContext)
         {
-            return !shouldEndBattle;
+            return !IsBattleEnded(turnContext);
         }
 
-        // revisar parametros
-        private void SwitchPlayerTurn(BattleState battleState, TeamState currentTeam)
+        private bool IsBattleEnded(TurnContext turnContext)
         {
-            TogglePlayerTurn(battleState);
-            var newCurrentTeam = GetCurrentTeam(battleState);
-            UpdateTurnCounters(battleState, newCurrentTeam);
+            return IsTeamDefeated(turnContext.CurrentTeam) || IsTeamDefeated(GetOpponentTeam(turnContext));
+        }
+
+        private bool IsTeamDefeated(TeamState team)
+        {
+            return !team.AliveUnits.Any();
+        }
+
+        private TeamState GetOpponentTeam(TurnContext turnContext)
+        {
+            return turnContext.BattleState.IsPlayer1Turn ? turnContext.BattleState.Team2 : turnContext.BattleState.Team1;
+        }
+
+        private void SwitchPlayerTurn(TurnContext turnContext)
+        {
+            TogglePlayerTurn(turnContext.BattleState);
+            var newCurrentTeam = GetCurrentTeam(turnContext.BattleState);
+            UpdateTurnCounters(turnContext.BattleState, newCurrentTeam);
         }
 
         private void TogglePlayerTurn(BattleState battleState)
@@ -104,7 +123,7 @@ namespace Shin_Megami_Tensei
 
         private void SetFullTurns(BattleState battleState, TeamState newCurrentTeam)
         {
-            battleState.FullTurns = combatService.CalculateNextTurnCount(newCurrentTeam);
+            battleState.FullTurns = combatService.GetCalculatedNextTurnCount(newCurrentTeam);
         }
 
         private void ResetBlinkingTurns(BattleState battleState)

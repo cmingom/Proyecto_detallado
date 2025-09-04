@@ -15,30 +15,30 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             this.battleView = battleView;
         }
 
-        // recibe bool
-        public List<UnitInstance> GetAvailableTargetsForAttack(BattleState battleState, bool isPlayer1Turn)
+        public List<GetUnitInstance> GetAvailableTargetsForAttack(BattleState battleState)
         {
-            var enemyTeam = GetEnemyTeam(battleState, isPlayer1Turn);
+            var enemyTeam = GetEnemyTeam(battleState);
             return GetAvailableTargets(enemyTeam);
         }
 
-        // recibe bool
-        private TeamState GetEnemyTeam(BattleState battleState, bool isPlayer1Turn)
+        private TeamState GetEnemyTeam(BattleState battleState)
         {
-            return isPlayer1Turn ? battleState.Team2 : battleState.Team1;
+            return battleState.IsPlayer1Turn ? battleState.Team2 : battleState.Team1;
         }
 
-        private List<UnitInstance> GetAvailableTargets(TeamState enemyTeam)
+        private List<GetUnitInstance> GetAvailableTargets(TeamState enemyTeam)
         {
             return enemyTeam.AliveUnits.ToList();
         }
 
-        // falta get
-        // hace dos cosas
-        public UnitInstance SelectTargetForAttack(UnitInstance attacker, List<UnitInstance> availableTargets)
+        public GetUnitInstance SelectTargetForAttack(GetUnitInstance attacker, List<GetUnitInstance> availableTargets)
         {
             ShowTargetSelection(attacker, availableTargets);
+            return ProcessTargetSelection(availableTargets);
+        }
 
+        private GetUnitInstance ProcessTargetSelection(List<GetUnitInstance> availableTargets)
+        {
             var targetChoice = GetTargetChoice(availableTargets.Count);
             if (IsInvalidTargetChoice(targetChoice, availableTargets.Count))
                 return null;
@@ -46,7 +46,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             return GetSelectedTarget(availableTargets, targetChoice);
         }
 
-        private void ShowTargetSelection(UnitInstance attacker, List<UnitInstance> availableTargets)
+        private void ShowTargetSelection(GetUnitInstance attacker, List<GetUnitInstance> availableTargets)
         {
             battleView.ShowTargetSelection(attacker, availableTargets);
         }
@@ -61,7 +61,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             return targetChoice == INVALID_CHOICE || targetChoice == targetCount + CANCEL_CHOICE_OFFSET;
         }
 
-        private UnitInstance GetSelectedTarget(List<UnitInstance> availableTargets, int targetChoice)
+        private GetUnitInstance GetSelectedTarget(List<GetUnitInstance> availableTargets, int targetChoice)
         {
             return availableTargets[targetChoice - 1];
         }

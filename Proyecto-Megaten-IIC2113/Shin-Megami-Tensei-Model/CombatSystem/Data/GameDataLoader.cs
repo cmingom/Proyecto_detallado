@@ -18,21 +18,20 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 
         private void LoadAllUnits()
         {
-            var allUnits = LoadUnitsFromMultipleSources();
+            var allUnits = GetLoadedUnitsFromMultipleSources();
             AddValidUnitsToDictionary(allUnits);
         }
 
-        // poner get
-        private IEnumerable<Unit> LoadUnitsFromMultipleSources()
+        private IEnumerable<Unit> GetLoadedUnitsFromMultipleSources()
         {
-            var samurais = LoadUnitsFromJson("data/samurai.json");
-            var monsters = LoadUnitsFromJson("data/monsters.json");
+            var samurais = GetLoadedUnitsFromJson("data/samurai.json");
+            var monsters = GetLoadedUnitsFromJson("data/monsters.json");
             return samurais.Concat(monsters);
         }
 
         private void LoadAllSkills()
         {
-            var skills = LoadSkillsFromJson("data/skills.json");
+            var skills = GetLoadedSkillsFromJson("data/skills.json");
             BuildSkillSet(skills);
             AddValidSkillsToDictionary(skills);
         }
@@ -66,14 +65,12 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             return !string.IsNullOrWhiteSpace(name);
         }
 
-        // poner get
-        private List<Unit> LoadUnitsFromJson(string filePath)
+        private List<Unit> GetLoadedUnitsFromJson(string filePath)
         {
             return JsonSerializer.Deserialize<List<Unit>>(File.ReadAllText(filePath)) ?? new();
         }
 
-        // poner get
-        private List<Skill> LoadSkillsFromJson(string filePath)
+        private List<Skill> GetLoadedSkillsFromJson(string filePath)
         {
             return JsonSerializer.Deserialize<List<Skill>>(File.ReadAllText(filePath)) ?? new();
         }

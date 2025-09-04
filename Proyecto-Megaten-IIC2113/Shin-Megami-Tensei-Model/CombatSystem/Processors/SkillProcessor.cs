@@ -17,21 +17,19 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             this.skillData = skillData;
         }
 
-        // verbo auxiliar
-        // revisar aparmetros
-        public bool ProcessUseSkill(UnitInstance unit, BattleState battleState)
+        public bool CanProcessUseSkill(GetUnitInstance getUnit, BattleState battleState)
         {
-            var availableSkills = GetAvailableSkills(unit);
-            ShowSkillSelection(unit, availableSkills);
+            var availableSkills = GetAvailableSkills(getUnit);
+            ShowSkillSelection(getUnit, availableSkills);
 
             var skillChoice = GetSkillChoice(availableSkills.Count);
             return IsValidSkillChoice(skillChoice, availableSkills.Count);
         }
 
-        public List<Skill> GetAvailableSkills(UnitInstance unit)
+        public List<Skill> GetAvailableSkills(GetUnitInstance getUnit)
         {
             var availableSkills = CreateEmptySkillList();
-            PopulateAffordableSkills(availableSkills, unit);
+            PopulateAffordableSkills(availableSkills, getUnit);
             return availableSkills;
         }
 
@@ -40,26 +38,30 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             return new List<Skill>();
         }
 
-        private void PopulateAffordableSkills(List<Skill> availableSkills, UnitInstance unit)
+        private void PopulateAffordableSkills(List<Skill> availableSkills, GetUnitInstance getUnit)
         {
-            foreach (var skillName in unit.Skills)
+            foreach (var skillName in getUnit.Skills)
             {
-                AddSkillIfAffordable(availableSkills, skillName, unit.MP);
+                AddSkill(availableSkills, skillName, getUnit.MP);
             }
         }
 
-        // addskill y separar en dos (validate affordable)
-        private void AddSkillIfAffordable(List<Skill> availableSkills, string skillName, int unitMP)
+        private void AddSkill(List<Skill> availableSkills, string skillName, int unitMP)
         {
-            if (skillData.TryGetValue(skillName, out var skill) && skill.Cost <= unitMP)
+            if (IsAffordable(skillName, unitMP))
             {
-                availableSkills.Add(skill);
+                availableSkills.Add(skillData[skillName]);
             }
         }
-
-        private void ShowSkillSelection(UnitInstance unit, List<Skill> availableSkills)
+        
+        private bool IsAffordable(string skillName, int unitMP)
         {
-            battleView.ShowSkillSelection(unit, availableSkills);
+            return skillData.TryGetValue(skillName, out var skill) && skill.Cost <= unitMP;
+        }
+
+        private void ShowSkillSelection(GetUnitInstance getUnit, List<Skill> availableSkills)
+        {
+            battleView.ShowSkillSelection(getUnit, availableSkills);
         }
 
         private int GetSkillChoice(int skillCount)
@@ -78,3 +80,4 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
         }
     }
 }
+

@@ -1,4 +1,5 @@
 using Shin_Megami_Tensei_Model.Domain.Entities;
+using Shin_Megami_Tensei_Model.CombatSystem.Contexts;
 
 
 namespace Shin_Megami_Tensei_Model.CombatSystem.Core
@@ -18,13 +19,12 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 
         public (List<UnitInfo>, List<UnitInfo>) ParseTeamsFromFile(string filePath)
         {
-            var lines = ReadTeamFile(filePath);
+            var lines = GetTeamFile(filePath);
             var (team1, team2) = ParseTeamLines(lines);
             return BuildBothTeams(team1, team2);
         }
 
-        // poner get
-        private string[] ReadTeamFile(string filePath)
+        private string[] GetTeamFile(string filePath)
         {
             return File.ReadAllLines(filePath);
         }
@@ -35,7 +35,8 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             var team2 = new List<string>();
             var parsingState = CreateParsingState();
 
-            ProcessAllLines(lines, team1, team2, parsingState);
+            var context = new TeamParsingContext(lines, team1, team2, parsingState);
+            ProcessAllLines(context);
 
             return (team1, team2);
         }
@@ -44,32 +45,33 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
         {
             return new ParsingState();
         }
-        // recibe 4
-
-        private void ProcessAllLines(string[] lines, List<string> team1, List<string> team2, ParsingState state)
+        private void ProcessAllLines(TeamParsingContext context)
         {
-            foreach (var rawLine in lines)
+            foreach (var rawLine in context.Lines!)
             {
-                ProcessSingleLine(rawLine, team1, team2, state);
+                var lineContext = new TeamParsingContext(rawLine, context.Team1, context.Team2, context.State);
+                ProcessSingleLine(lineContext);
             }
         }
         
-// recibe 4
-// encapsular validaciones en un metodo (separar en 2)
-        private void ProcessSingleLine(string rawLine, List<string> team1, List<string> team2, ParsingState state)
+        private void ProcessSingleLine(TeamParsingContext context)
         {
-            var line = rawLine.Trim();
+            var line = context.RawLine!.Trim();
             if (IsEmptyLine(line)) return;
             
-// recibe bool
-// no se puede usar out
-            if (IsTeamHeader(line, out bool isTeam1))
+            ProcessValidLine(line, context);
+        }
+
+        private void ProcessValidLine(string line, TeamParsingContext context)
+        {
+            var headerResult = AnalyzeTeamHeader(line);
+            if (headerResult.IsTeamHeader)
             {
-                UpdateParsingState(state, isTeam1);
+                UpdateParsingState(context.State, headerResult);
                 return;
             }
 
-            AddLineToAppropriateTeam(line, team1, team2, state);
+            AddLineToAppropriateTeam(line, context);
         }
 
         private bool IsEmptyLine(string line)
@@ -77,35 +79,29 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             return line.Length == EMPTY_LINE_LENGTH;
         }
 
-        // bool y out
-        private bool IsTeamHeader(string line, out bool isTeam1)
+        private TeamHeaderResult AnalyzeTeamHeader(string line)
         {
             if (line.StartsWith(PLAYER_1_TEAM_HEADER, StringComparison.Ordinal))
             {
-                isTeam1 = true;
-                return true;
+                return new TeamHeaderResult(true, true);
             }
             if (line.StartsWith(PLAYER_2_TEAM_HEADER, StringComparison.Ordinal))
             {
-                isTeam1 = false;
-                return true;
+                return new TeamHeaderResult(true, false);
             }
-            isTeam1 = false;
-            return false;
+            return new TeamHeaderResult(false, false);
         }
 
-        // recibe bool
-        private void UpdateParsingState(ParsingState state, bool isTeam1)
+        private void UpdateParsingState(ParsingState state, TeamHeaderResult headerResult)
         {
-            state.ReadingTeam1 = isTeam1;
-            state.ReadingTeam2 = !isTeam1;
+            state.ReadingTeam1 = headerResult.IsTeam1;
+            state.ReadingTeam2 = !headerResult.IsTeam1;
         }
 
-        // recibe 4
-        private void AddLineToAppropriateTeam(string line, List<string> team1, List<string> team2, ParsingState state)
+        private void AddLineToAppropriateTeam(string line, TeamParsingContext context)
         {
-            if (state.ReadingTeam1) team1.Add(line);
-            if (state.ReadingTeam2) team2.Add(line);
+            if (context.State.ReadingTeam1) context.Team1.Add(line);
+            if (context.State.ReadingTeam2) context.Team2.Add(line);
         }
 
         public List<UnitInfo> BuildUnitInfoList(List<string> teamLines)
@@ -134,11 +130,5 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             return (parsedTeam1, parsedTeam2);
         }
 
-        // archivo aparte
-        private class ParsingState
-        {
-            public bool ReadingTeam1 { get; set; }
-            public bool ReadingTeam2 { get; set; }
-        }
     }
 }

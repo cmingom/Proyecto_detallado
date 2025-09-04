@@ -1,5 +1,5 @@
-using Shin_Megami_Tensei_Model.Domain.States;
 using Shin_Megami_Tensei_Model.Domain.Entities;
+using Shin_Megami_Tensei_Model.CombatSystem.Contexts;
 
 namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 {
@@ -23,17 +23,15 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             this.battleView = battleView;
             this.actionExecutor = actionExecutor;
         }
-
-        // verbo auxiliar
-        // dividir y ver manejo (no bool?)
-        public bool ProcessUnitAction(UnitInstance actingUnit, BattleState battleState, string player1Name, string player2Name)
+        
+        // Poner ojo
+        public bool CanProcessUnitAction(UnitActionContext context)
         {
             bool actionCompleted = false;
 
             while (!actionCompleted)
             {
-                // recibe 4
-                actionCompleted = ProcessSingleAction(actingUnit, battleState, player1Name, player2Name);
+                actionCompleted = CanProcessSingleAction(context);
                 
                 if (ShouldStopProcessing())
                 {
@@ -43,25 +41,26 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 
             return false;
         }
-
-        // recibe 4
-        // verbo auxiliar
-        // revisar divicion para no manejar bool (usar excepciones)
-        private bool ProcessSingleAction(UnitInstance actingUnit, BattleState battleState, string player1Name, string player2Name)
+        
+        private bool CanProcessSingleAction(UnitActionContext context)
         {
-            var availableActions = GetAvailableActions(actingUnit);
-            ShowActionMenu(actingUnit, availableActions);
-
-            var actionChoice = GetActionChoice(availableActions.Count);
+            var actionChoice = GetUserActionChoice(context.ActingUnit);
             if (IsInvalidActionChoice(actionChoice))
                 return false;
 
-            return ExecuteSelectedAction(actingUnit, battleState, player1Name, player2Name, actionChoice);
+            return CanExecuteSelectedAction(context, actionChoice);
         }
 
-        public List<string> GetAvailableActions(UnitInstance unit)
+        private int GetUserActionChoice(GetUnitInstance actingUnit)
         {
-            return unit.IsSamurai ? GetSamuraiActions() : GetRegularActions();
+            var availableActions = GetAvailableActions(actingUnit);
+            ShowActionMenu(actingUnit, availableActions);
+            return GetActionChoice(availableActions.Count);
+        }
+
+        public List<string> GetAvailableActions(GetUnitInstance getUnit)
+        {
+            return getUnit.IsSamurai ? GetSamuraiActions() : GetRegularActions();
         }
 
         private List<string> GetSamuraiActions()
@@ -77,7 +76,6 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             };
         }
 
-        // poner como atributo (los dos)
         private List<string> GetRegularActions()
         {
             return new List<string>
@@ -89,9 +87,9 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             };
         }
 
-        private void ShowActionMenu(UnitInstance actingUnit, List<string> availableActions)
+        private void ShowActionMenu(GetUnitInstance actingGetUnit, List<string> availableActions)
         {
-            battleView.ShowActionMenu(actingUnit, availableActions);
+            battleView.ShowActionMenu(actingGetUnit, availableActions);
         }
 
         private int GetActionChoice(int actionCount)
@@ -104,22 +102,26 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             return actionChoice == INVALID_ACTION_CHOICE;
         }
 
-        // verbo auxiliar
-        // recibe 5
-        // hace 2 cosas
-        private bool ExecuteSelectedAction(UnitInstance actingUnit, BattleState battleState, string player1Name, string player2Name, int actionChoice)
+        private bool CanExecuteSelectedAction(UnitActionContext context, int actionChoice)
         {
-            var availableActions = GetAvailableActions(actingUnit);
-            var selectedAction = GetSelectedAction(availableActions, actionChoice);
+            var selectedAction = GetSelectedAction(context.ActingUnit, actionChoice);
             StoreLastSelectedAction(selectedAction);
             
-            return actionExecutor.ExecuteSelectedAction(actingUnit, battleState, selectedAction, player1Name, player2Name);
+            return CanProcessAction(context, selectedAction);
         }
 
-        private string GetSelectedAction(List<string> availableActions, int actionChoice)
+        private string GetSelectedAction(GetUnitInstance actingUnit, int actionChoice)
         {
+            var availableActions = GetAvailableActions(actingUnit);
             return availableActions[actionChoice - ACTION_INDEX_OFFSET];
         }
+
+        private bool CanProcessAction(UnitActionContext context, string selectedAction)
+        {
+            var actionProcessingContext = new ActionProcessingContext(context.ActingUnit, context.BattleState, selectedAction, context.Player1Name, context.Player2Name);
+            return actionExecutor.CanProcessSelectedAction(actionProcessingContext);
+        }
+
 
         private void StoreLastSelectedAction(string action)
         {

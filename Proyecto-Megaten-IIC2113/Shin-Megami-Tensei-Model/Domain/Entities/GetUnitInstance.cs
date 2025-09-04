@@ -1,6 +1,6 @@
 namespace Shin_Megami_Tensei_Model.Domain.Entities
 {
-    public class UnitInstance
+    public class GetUnitInstance
     {
         public string Name { get; init; } = string.Empty;
         public int MaxHP { get; init; }
@@ -14,7 +14,7 @@ namespace Shin_Megami_Tensei_Model.Domain.Entities
         public char Position { get; init; }
         public List<string> Skills { get; init; } = new();
 
-        public UnitInstance(string name, int maxHP, int maxMP,
+        public GetUnitInstance(string name, int maxHP, int maxMP,
             int str, int skl, int spd,
             bool isSamurai, char position, List<string>? skills = null)
         {

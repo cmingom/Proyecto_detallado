@@ -1,6 +1,7 @@
 using Shin_Megami_Tensei_Model.Domain.States;
 using Shin_Megami_Tensei_Model.Domain.Entities;
 using Shin_Megami_Tensei_Model.CombatSystem.Core;
+using Shin_Megami_Tensei_Model.CombatSystem.Contexts;
 
 namespace Shin_Megami_Tensei_View.ConsoleLib
 {
@@ -34,14 +35,14 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
             battlefieldDisplayService.ShowTurnCounters(battleState);
         }
 
-        public void ShowActionOrderBySpeed(List<UnitInstance> actionOrder)
+        public void ShowActionOrderBySpeed(List<GetUnitInstance> actionOrder)
         {
             battlefieldDisplayService.ShowActionOrderBySpeed(actionOrder);
         }
 
-        public void ShowActionMenu(UnitInstance actingUnit, List<string> actions)
+        public void ShowActionMenu(GetUnitInstance actingGetUnit, List<string> actions)
         {
-            actionMenuDisplayService.ShowActionMenu(actingUnit, actions);
+            actionMenuDisplayService.ShowActionMenu(actingGetUnit, actions);
         }
 
         public int GetActionChoice(int maxActions)
@@ -49,7 +50,7 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
             return actionMenuDisplayService.GetActionChoice(maxActions);
         }
 
-        public void ShowTargetSelection(UnitInstance attacker, List<UnitInstance> targets)
+        public void ShowTargetSelection(GetUnitInstance attacker, List<GetUnitInstance> targets)
         {
             actionMenuDisplayService.ShowTargetSelection(attacker, targets);
         }
@@ -59,15 +60,14 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
             return actionMenuDisplayService.GetTargetChoice(maxTargets);
         }
 
-        // recibe bool y 4 parametros
-        public void ShowAttackResult(UnitInstance attacker, UnitInstance target, int damage, bool isGunAttack)
+        public void ShowAttackResult(AttackResultContext context)
         {
-            actionMenuDisplayService.ShowAttackResult(attacker, target, damage, isGunAttack);
+            actionMenuDisplayService.ShowAttackResult(context);
         }
 
-        public void ShowSkillSelection(UnitInstance unit, List<Skill> availableSkills)
+        public void ShowSkillSelection(GetUnitInstance getUnit, List<Skill> availableSkills)
         {
-            skillDisplayService.ShowSkillSelection(unit, availableSkills);
+            skillDisplayService.ShowSkillSelection(getUnit, availableSkills);
         }
 
         public int GetSkillChoice(int maxSkills)
@@ -75,10 +75,9 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
             return skillDisplayService.GetSkillChoice(maxSkills);
         }
 
-        // recibe 4
-        public void ShowSurrender(string playerName, string playerNumber, string winnerName, string winnerNumber)
+        public void ShowSurrender(SurrenderContext context)
         {
-            battleResultDisplayService.ShowSurrender(playerName, playerNumber, winnerName, winnerNumber);
+            battleResultDisplayService.ShowSurrender(context);
         }
 
         public void ShowTurnConsumption()

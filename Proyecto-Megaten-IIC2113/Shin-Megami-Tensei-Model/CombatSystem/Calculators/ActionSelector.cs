@@ -16,58 +16,49 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
         private readonly AttackProcessor attackExecutor;
         private readonly SkillProcessor skillManager;
 
-        // recibe 4
-        public ActionSelector(IBattleView battleView, SurrenderProcessor surrenderHandler, Dictionary<string, Skill> skillData)
+        public ActionSelector(ActionSelectorConfig config)
         {
-            this.surrenderHandler = surrenderHandler;
-            this.attackExecutor = new AttackProcessor(battleView);
-            this.skillManager = new SkillProcessor(battleView, skillData);
+            this.surrenderHandler = config.SurrenderHandler;
+            this.attackExecutor = new AttackProcessor(config.BattleView);
+            this.skillManager = new SkillProcessor(config.BattleView, config.SkillData);
         }
 
-        // recibe 4 
-        // verbo auxiliar, no es execute
-        public bool ExecuteSelectedAction(UnitInstance actingUnit, BattleState battleState, string selectedAction, string player1Name, string player2Name)
+        public bool CanProcessSelectedAction(ActionContext actionContext, string selectedAction)
         {
-            return GetActionResult(selectedAction, actingUnit, battleState, player1Name, player2Name);
+            return CanProcessSelectedAction(selectedAction, actionContext);
         }
 
-        // vrbo auxiliar
-        // recibe 5
-        private bool GetActionResult(string selectedAction, UnitInstance actingUnit, BattleState battleState, string player1Name, string player2Name)
+        private bool CanProcessSelectedAction(string selectedAction, ActionContext actionContext)
         {
             return selectedAction switch
             {
-                ATTACK_ACTION => attackExecutor.ExecutePhysicalAttack(actingUnit, battleState),
-                GUN_ACTION => attackExecutor.ExecuteGunAttack(actingUnit, battleState),
-                SKILL_ACTION => skillManager.ProcessUseSkill(actingUnit, battleState),
-                SUMMON_ACTION => GetSummonResult(),
-                PASS_TURN_ACTION => GetPassTurnResult(),
-                SURRENDER_ACTION => GetSurrenderResult(battleState, player1Name, player2Name),
-                _ => GetDefaultResult()
+                ATTACK_ACTION => attackExecutor.CanExecutePhysicalAttack(actionContext.ActingGetUnit, actionContext.BattleState),
+                GUN_ACTION => attackExecutor.CanExecuteGunAttack(actionContext.ActingGetUnit, actionContext.BattleState),
+                SKILL_ACTION => skillManager.CanProcessUseSkill(actionContext.ActingGetUnit, actionContext.BattleState),
+                SUMMON_ACTION => CanExecuteSummon(),
+                PASS_TURN_ACTION => CanPassTurn(),
+                SURRENDER_ACTION => CanProcessSurrenderAction(actionContext),
+                _ => IsValidAction()
             };
         }
 
-        // vrbo auxiliar
-        private bool GetSummonResult()
+        private bool CanExecuteSummon()
         {
             return true;
         }
 
-        // vrbo auxiliar
-        private bool GetPassTurnResult()
+        private bool CanPassTurn()
         {
             return true;
         }
 
-        // vrbo auxiliar
-        private bool GetSurrenderResult(BattleState battleState, string player1Name, string player2Name)
+        private bool CanProcessSurrenderAction(ActionContext actionContext)
         {
-            surrenderHandler.ProcessSurrender(battleState, player1Name, player2Name);
+            surrenderHandler.HasSurrender(actionContext.BattleState, actionContext.Player1Name, actionContext.Player2Name);
             return true;
         }
 
-        // vrbo auxiliar
-        private bool GetDefaultResult()
+        private bool IsValidAction()
         {
             return false;
         }

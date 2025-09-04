@@ -14,7 +14,6 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Rules
         private readonly Func<string, bool> _skillExists;
         private readonly UnitParser unitParser;
 
-        // ver si es cacho sacar el func
         public TeamValidationService(Func<string, bool> unitExists, Func<string, bool> skillExists)
         {
             _unitExists = unitExists ?? throw new ArgumentNullException(nameof(unitExists));
@@ -22,13 +21,17 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Rules
             this.unitParser = new UnitParser();
         }
 
-        // separar verificar y procesar
         public bool IsValidTeam(List<string> teamLines)
         {
             if (!IsValidTeamInput(teamLines)) return false;
             
+            return CanValidateTeam(teamLines);
+        }
+
+        private bool CanValidateTeam(List<string> teamLines)
+        {
             var validationContext = CreateValidationContext();
-            return ProcessTeamLines(teamLines, validationContext);
+            return CanProcessTeamLines(teamLines, validationContext);
         }
 
         private bool IsValidTeamInput(List<string>? teamLines)
@@ -42,50 +45,70 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Rules
             return new ValidationContext(new HashSet<string>(StringComparer.Ordinal));
         }
 
-        // verbo auxiliar
-        // hace dos cosas
-        private bool ProcessTeamLines(List<string> teamLines, ValidationContext context)
+        private bool CanProcessTeamLines(List<string> teamLines, ValidationContext context)
+        {
+            if (!CanProcessAllTeamLines(teamLines, context)) return false;
+            return IsValidSamuraiCount(context);
+        }
+
+        private bool CanProcessAllTeamLines(List<string> teamLines, ValidationContext context)
         {
             foreach (var rawLine in teamLines)
             {
-                if (!ProcessSingleTeamLine(rawLine, context)) return false;
+                if (!CanProcessSingleTeamLine(rawLine, context)) return false;
             }
+            return true;
+        }
+
+        private bool IsValidSamuraiCount(ValidationContext context)
+        {
             return context.SamuraiCount == REQUIRED_SAMURAI_COUNT;
         }
 
-        // verbo auxiliar
-        // hace dos cosas
-        private bool ProcessSingleTeamLine(string rawLine, ValidationContext context)
+        private bool CanProcessSingleTeamLine(string rawLine, ValidationContext context)
         {
-            var line = rawLine.Trim();
-            if (line.Length == EMPTY_LINE_LENGTH) return true;
+            var line = GetTrimmedLine(rawLine);
+            if (IsEmptyLine(line)) return true;
 
+            return CanProcessUnitLine(line, context);
+        }
+
+        private string GetTrimmedLine(string rawLine)
+        {
+            return rawLine.Trim();
+        }
+
+        private bool IsEmptyLine(string line)
+        {
+            return line.Length == EMPTY_LINE_LENGTH;
+        }
+
+        private bool CanProcessUnitLine(string line, ValidationContext context)
+        {
             var unitInfo = unitParser.ParseUnitDefinition(line);
             if (unitInfo == null) return false;
 
-            return ValidateUnitInfo(unitInfo, context);
+            return IsValidUnitInfo(unitInfo, context);
         }
 
-        // verbo auxiliar
-        private bool ValidateUnitInfo(UnitInfo unitInfo, ValidationContext context)
+        private bool IsValidUnitInfo(UnitInfo unitInfo, ValidationContext context)
         {
             if (unitInfo.IsSamurai)
             {
                 context.SamuraiCount++;
-                if (!ValidateSamuraiSkills(unitInfo.Skills)) return false;
+                if (!AreValidSamuraiSkills(unitInfo.Skills)) return false;
             }
 
             if (!_unitExists(unitInfo.Name)) return false;
             return context.SeenUnits.Add(unitInfo.Name);
         }
 
-        // verbo auxiliar
-        private bool ValidateSamuraiSkills(List<string> skills)
+        private bool AreValidSamuraiSkills(List<string> skills)
         {
             if (!IsValidSkillCount(skills)) return false;
             
             var uniqueSkills = new HashSet<string>(StringComparer.Ordinal);
-            return ValidateAllSkills(skills, uniqueSkills);
+            return AreAllValidSkills(skills, uniqueSkills);
         }
 
         private bool IsValidSkillCount(List<string> skills)
@@ -93,8 +116,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Rules
             return skills.Count <= MAX_SKILLS_PER_SAMURAI;
         }
 
-        // verbo auxiliar
-        private bool ValidateAllSkills(List<string> skills, HashSet<string> uniqueSkills)
+        private bool AreAllValidSkills(List<string> skills, HashSet<string> uniqueSkills)
         {
             foreach (var skill in skills)
             {

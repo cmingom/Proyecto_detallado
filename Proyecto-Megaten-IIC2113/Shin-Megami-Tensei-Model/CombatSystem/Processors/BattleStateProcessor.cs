@@ -17,14 +17,12 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             this.battleView = battleView;
         }
 
-        // get
-        public List<UnitInstance> CalculateActionOrder(TeamState team)
+        public List<GetUnitInstance> GetActionOrder(TeamState team)
         {
             return team.AliveUnits.OrderByDescending(u => u.Spd).ToList();
         }
 
-        // get
-        public int CalculateNextTurnCount(TeamState team)
+        public int GetNextTurnCount(TeamState team)
         {
             return team.AliveUnits.Count();
         }
@@ -42,12 +40,11 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 
         private void DecreaseFullTurns(BattleState battleState)
         {
-            var newTurnCount = CalculateNewTurnCount(battleState.FullTurns);
+            var newTurnCount = GetNewTurnCount(battleState.FullTurns);
             battleState.FullTurns = newTurnCount;
         }
 
-        // get
-        private int CalculateNewTurnCount(int currentTurns)
+        private int GetNewTurnCount(int currentTurns)
         {
             return Math.Max(MINIMUM_TURNS, currentTurns - TURN_DECREMENT);
         }
@@ -64,18 +61,17 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 
         public string GetWinner(BattleState battleState, string player1Name, string player2Name)
         {
-            return IsTeam1Defeated(battleState) ? player2Name : player1Name;
+            return IsTeamOneDefeated(battleState) ? player2Name : player1Name;
         }
 
-        // sacar numero del nombre (poner first)
-        private bool IsTeam1Defeated(BattleState battleState)
+        private bool IsTeamOneDefeated(BattleState battleState)
         {
             return !battleState.Team1.AliveUnits.Any();
         }
 
         public string GetWinnerNumber(BattleState battleState)
         {
-            return IsTeam1Defeated(battleState) ? PLAYER_2_LABEL : PLAYER_1_LABEL;
+            return IsTeamOneDefeated(battleState) ? PLAYER_2_LABEL : PLAYER_1_LABEL;
         }
     }
 }

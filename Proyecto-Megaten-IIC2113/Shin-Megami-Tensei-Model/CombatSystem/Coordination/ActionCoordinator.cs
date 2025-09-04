@@ -15,14 +15,14 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 
         private ActionSelector CreateActionSelector(ActionCoordinatorConfig config)
         {
-            return new ActionSelector(config.BattleView, config.SurrenderProcessor, config.SkillData);
+            var actionSelectorConfig = new ActionSelectorConfig(config.BattleView, config.SurrenderProcessor, config.SkillData);
+            return new ActionSelector(actionSelectorConfig);
         }
 
-        // recibe 5
-        // verbo auxiliar
-        public bool ExecuteSelectedAction(UnitInstance actingUnit, BattleState battleState, string selectedAction, string player1Name, string player2Name)
+        public bool CanProcessSelectedAction(ActionProcessingContext context)
         {
-            return actionSelector.ExecuteSelectedAction(actingUnit, battleState, selectedAction, player1Name, player2Name);
+            var actionContext = new ActionContext(context.ActingUnit, context.BattleState, context.Player1Name, context.Player2Name);
+            return actionSelector.CanProcessSelectedAction(actionContext, context.SelectedAction);
         }
         
     }

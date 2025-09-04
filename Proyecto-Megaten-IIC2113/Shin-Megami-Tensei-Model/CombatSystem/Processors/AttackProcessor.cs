@@ -1,5 +1,7 @@
 using Shin_Megami_Tensei_Model.Domain.States;
 using Shin_Megami_Tensei_Model.Domain.Entities;
+using Shin_Megami_Tensei_Model.CombatSystem.Enums;
+using Shin_Megami_Tensei_Model.CombatSystem.Contexts;
 
 namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 {
@@ -16,29 +18,25 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             this.damageCalculator = new DamageCalculator();
         }
 
-        // verbo auxiliar
-        public bool ExecutePhysicalAttack(UnitInstance attacker, BattleState battleState)
+        public bool CanExecutePhysicalAttack(GetUnitInstance attacker, BattleState battleState)
         {
             var attackContext = new AttackContext(attacker, battleState, AttackType.Physical);
-            return ProcessAttack(attackContext);
+            return CanProcessAttack(attackContext);
         }
 
-        // verbo auxiliar
-        public bool ExecuteGunAttack(UnitInstance attacker, BattleState battleState)
+        public bool CanExecuteGunAttack(GetUnitInstance attacker, BattleState battleState)
         {
             var attackContext = new AttackContext(attacker, battleState, AttackType.Gun);
-            return ProcessAttack(attackContext);
+            return CanProcessAttack(attackContext);
         }
 
-        // verbo auxiliar
-        // separar en 3
-        private bool ProcessAttack(AttackContext attackContext)
+        // ver como separarlo
+        private bool CanProcessAttack(AttackContext attackContext)
         {
-            var availableTargets = GetValidTargets(attackContext);
-            if (HasNoAvailableTargets(availableTargets))
+            if (!CanSelectValidTarget(attackContext))
                 return false;
 
-            var selectedTarget = SelectTarget(attackContext, availableTargets);
+            var selectedTarget = SelectTargetForAttack(attackContext);
             if (IsInvalidTarget(selectedTarget))
                 return false;
 
@@ -46,50 +44,56 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             return true;
         }
 
-        private List<UnitInstance> GetValidTargets(AttackContext attackContext)
+        private bool CanSelectValidTarget(AttackContext attackContext)
         {
-            return targetSelector.GetAvailableTargetsForAttack(attackContext.BattleState, attackContext.BattleState.IsPlayer1Turn);
+            var availableTargets = GetValidTargets(attackContext);
+            return !HasNoAvailableTargets(availableTargets);
         }
 
-        // get
-        private UnitInstance SelectTarget(AttackContext attackContext, List<UnitInstance> availableTargets)
+        private GetUnitInstance SelectTargetForAttack(AttackContext attackContext)
+        {
+            var availableTargets = GetValidTargets(attackContext);
+            return GetTarget(attackContext, availableTargets);
+        }
+
+        private List<GetUnitInstance> GetValidTargets(AttackContext attackContext)
+        {
+            return targetSelector.GetAvailableTargetsForAttack(attackContext.BattleState);
+        }
+
+        private GetUnitInstance GetTarget(AttackContext attackContext, List<GetUnitInstance> availableTargets)
         {
             return targetSelector.SelectTargetForAttack(attackContext.Attacker, availableTargets);
         }
 
-        private bool HasNoAvailableTargets(List<UnitInstance> availableTargets)
+        private bool HasNoAvailableTargets(List<GetUnitInstance> availableTargets)
         {
             return !availableTargets.Any();
         }
 
-        private bool IsInvalidTarget(UnitInstance selectedTarget)
+        private bool IsInvalidTarget(GetUnitInstance selectedTarget)
         {
             return selectedTarget == null;
         }
 
-        // hace dos cosas
-        private void ExecuteAttackOnTarget(AttackContext attackContext, UnitInstance selectedTarget)
+        private void ExecuteAttackOnTarget(AttackContext attackContext, GetUnitInstance selectedTarget)
         {
-            var damage = damageCalculator.CalculateAttackDamage(attackContext);
+            var damage = CalculateAndApplyDamage(attackContext, selectedTarget);
+            ShowAttackResult(attackContext, selectedTarget, damage);
+        }
+
+        private int CalculateAndApplyDamage(AttackContext attackContext, GetUnitInstance selectedTarget)
+        {
+            var damage = damageCalculator.GetCalculatedAttackDamage(attackContext);
             damageCalculator.ApplyDamageToTarget(selectedTarget, damage);
-            ShowAttackResult(attackContext, selectedTarget, damage); // separar
+            return damage;
         }
 
-        private void ShowAttackResult(AttackContext attackContext, UnitInstance target, int damage)
+        private void ShowAttackResult(AttackContext attackContext, GetUnitInstance target, int damage)
         {
-            var isGunAttack = IsGunAttack(attackContext.AttackType);
-            ShowAttackResultToView(attackContext.Attacker, target, damage, isGunAttack);
+            var attackResultContext = new AttackResultContext(attackContext.Attacker, target, damage, attackContext.AttackType);
+            battleView.ShowAttackResult(attackResultContext);
         }
-
-        // recibe 4 y un bool
-        private void ShowAttackResultToView(UnitInstance attacker, UnitInstance target, int damage, bool isGunAttack)
-        {
-            battleView.ShowAttackResult(attacker, target, damage, isGunAttack);
-        }
-
-        private bool IsGunAttack(AttackType attackType)
-        {
-            return attackType == AttackType.Gun;
-        }
+        
     }
 }

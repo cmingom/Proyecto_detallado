@@ -1,4 +1,6 @@
 using Shin_Megami_Tensei_Model.Domain.Entities;
+using Shin_Megami_Tensei_Model.CombatSystem.Contexts;
+using Shin_Megami_Tensei_Model.CombatSystem.Enums;
 
 namespace Shin_Megami_Tensei_View.ConsoleLib
 {
@@ -25,10 +27,10 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
             this.view = view;
         }
 
-        public void ShowActionMenu(UnitInstance actingUnit, List<string> actions)
+        public void ShowActionMenu(GetUnitInstance actingGetUnit, List<string> actions)
         {
             ShowSeparator();
-            ShowActionSelectionHeader(actingUnit.Name);
+            ShowActionSelectionHeader(actingGetUnit.Name);
             ShowActionOptions(actions);
         }
 
@@ -60,7 +62,7 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
             return GetValidatedChoice(maxActions);
         }
 
-        public void ShowTargetSelection(UnitInstance attacker, List<UnitInstance> targets)
+        public void ShowTargetSelection(GetUnitInstance attacker, List<GetUnitInstance> targets)
         {
             ShowSeparator();
             ShowTargetSelectionHeader(attacker.Name);
@@ -73,7 +75,7 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
             view.WriteLine(string.Format(TARGET_SELECTION_FORMAT, attackerName));
         }
 
-        private void ShowTargetOptions(List<UnitInstance> targets)
+        private void ShowTargetOptions(List<GetUnitInstance> targets)
         {
             for (int i = 0; i < targets.Count; i++)
             {
@@ -81,7 +83,7 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
             }
         }
 
-        private void ShowTargetOption(int index, UnitInstance target)
+        private void ShowTargetOption(int index, GetUnitInstance target)
         {
             view.WriteLine(string.Format(TARGET_OPTION_FORMAT, index, target.Name, target.HP, target.MaxHP, target.MP, target.MaxMP));
         }
@@ -112,27 +114,28 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
                    choice <= maxChoice;
         }
 
-        // recibe bool
-        // tiene 4
-        public void ShowAttackResult(UnitInstance attacker, UnitInstance target, int damage, bool isGunAttack)
+        public void ShowAttackResult(AttackResultContext context)
         {
             ShowSeparator();
-            ShowAttackAction(attacker.Name, target.Name, isGunAttack);
-            ShowDamageResult(target.Name, damage);
-            ShowHpResult(target.Name, target.HP, target.MaxHP);
+            ShowAttackAction(context.Attacker.Name, context.Target.Name, context.AttackType);
+            ShowDamageResult(context.Target.Name, context.Damage);
+            ShowHpResult(context.Target.Name, context.Target.HP, context.Target.MaxHP);
         }
 
-        // recibe bool
-        private void ShowAttackAction(string attackerName, string targetName, bool isGunAttack)
+        private bool IsGunAttack(AttackType attackType)
         {
-            string attackType = GetAttackTypeText(isGunAttack);
-            view.WriteLine(string.Format(ATTACK_RESULT_FORMAT, attackerName, attackType, targetName));
+            return attackType == AttackType.Gun;
         }
 
-        // recibe bool
-        private string GetAttackTypeText(bool isGunAttack)
+        private void ShowAttackAction(string attackerName, string targetName, AttackType attackType)
         {
-            return isGunAttack ? GUN_ATTACK_TEXT : PHYSICAL_ATTACK_TEXT;
+            string attackTypeText = GetAttackTypeText(attackType);
+            view.WriteLine(string.Format(ATTACK_RESULT_FORMAT, attackerName, attackTypeText, targetName));
+        }
+
+        private string GetAttackTypeText(AttackType attackType)
+        {
+            return IsGunAttack(attackType) ? GUN_ATTACK_TEXT : PHYSICAL_ATTACK_TEXT;
         }
 
         private void ShowDamageResult(string targetName, int damage)

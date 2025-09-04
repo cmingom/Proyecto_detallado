@@ -33,7 +33,7 @@ namespace Shin_Megami_Tensei
                 return;
             }
             
-            var battleState = battleStateFactory.CreateBattleState(file);
+            var battleState = battleStateFactory.GetBattleState(file);
             var playerNames = playerNameResolver.GetPlayerNames(file);
             
             StartBattle(battleState, playerNames);

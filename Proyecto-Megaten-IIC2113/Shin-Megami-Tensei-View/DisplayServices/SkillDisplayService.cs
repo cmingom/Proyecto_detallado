@@ -18,10 +18,10 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
             this.view = view;
         }
 
-        public void ShowSkillSelection(UnitInstance unit, List<Skill> availableSkills)
+        public void ShowSkillSelection(GetUnitInstance getUnit, List<Skill> availableSkills)
         {
             ShowSeparator();
-            ShowSkillSelectionHeader(unit.Name);
+            ShowSkillSelectionHeader(getUnit.Name);
             ShowSkillOptions(availableSkills);
             ShowCancelOption(availableSkills.Count);
         }
@@ -61,19 +61,33 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
 
         private int GetValidatedChoice(int maxChoice)
         {
-            var input = view.ReadLine();
-            if (!IsValidChoice(input, maxChoice, out int choice))
+            var input = GetUserInput();
+            return ValidateUserChoice(input, maxChoice);
+        }
+
+        private string GetUserInput()
+        {
+            return view.ReadLine();
+        }
+
+        private int ValidateUserChoice(string input, int maxChoice)
+        {
+            var choice = ParseChoice(input);
+            if (choice == INVALID_CHOICE)
+                return INVALID_CHOICE;
+            if (!IsValidChoiceRange(choice, maxChoice))
                 return INVALID_CHOICE;
             return choice;
         }
 
-        // recibe out
-        private bool IsValidChoice(string input, int maxChoice, out int choice)
+        private int ParseChoice(string input)
         {
-            choice = 0;
-            return int.TryParse(input, out choice) && 
-                   choice >= MINIMUM_CHOICE && 
-                   choice <= maxChoice;
+            return int.TryParse(input, out int choice) ? choice : INVALID_CHOICE;
+        }
+
+        private bool IsValidChoiceRange(int choice, int maxChoice)
+        {
+            return choice >= MINIMUM_CHOICE && choice <= maxChoice;
         }
     }
 }

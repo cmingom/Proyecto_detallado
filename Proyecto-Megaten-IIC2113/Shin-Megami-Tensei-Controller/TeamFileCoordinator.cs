@@ -37,13 +37,23 @@ namespace Shin_Megami_Tensei
         {
             var files = GetTeamFiles();
             DisplayFilesToUser(files);
-            return AttemptFileSelection(files);
+            return GetSelectedFile(files);
         }
 
-        // revisar return
         private string[] GetTeamFiles()
         {
-            return Directory.GetFiles(pathResolver.GetTeamsFolder(), TEXT_FILE_EXTENSION).OrderBy(f => f).ToArray();
+            var files = GetFilesFromDirectory();
+            return SortFilesAlphabetically(files);
+        }
+
+        private string[] GetFilesFromDirectory()
+        {
+            return Directory.GetFiles(pathResolver.GetTeamsFolder(), TEXT_FILE_EXTENSION);
+        }
+
+        private string[] SortFilesAlphabetically(string[] files)
+        {
+            return files.OrderBy(f => f).ToArray();
         }
 
         private void DisplayFilesToUser(string[] files)
@@ -51,23 +61,26 @@ namespace Shin_Megami_Tensei
             fileSelector.ShowTeamFiles(files);
         }
 
-        // cambiar nombre a mas descriptivo (si es accion no retorna)
-        private string AttemptFileSelection(string[] files)
+        private string GetSelectedFile(string[] files)
         {
-            var selectedFile = TrySelectFile(files);
+            var selectedFile = GetFileFromUserSelection(files);
             return selectedFile ?? string.Empty;
         }
 
-        // lo mismo que arriba (si retorna que tenga su get)
-        // hace dos cosas, dividir
-        private string? TrySelectFile(string[] files)
+        private string? GetFileFromUserSelection(string[] files)
         {
             var input = GetUserInput();
             if (!IsValidFileIndex(input, files.Length))
             {
                 return null;
             }
-            return GetSelectedFile(files, input);
+            return GetFileByIndex(files, input);
+        }
+
+        private string GetFileByIndex(string[] files, string input)
+        {
+            var fileIndex = int.Parse(input);
+            return files[fileIndex];
         }
 
         private string GetUserInput()
@@ -80,10 +93,6 @@ namespace Shin_Megami_Tensei
             return int.TryParse(input, out int index) && index >= MINIMUM_INDEX && index < filesLength;
         }
 
-        private string GetSelectedFile(string[] files, string input)
-        {
-            var fileIndex = int.Parse(input);
-            return files[fileIndex];
-        }
+
     }
 }

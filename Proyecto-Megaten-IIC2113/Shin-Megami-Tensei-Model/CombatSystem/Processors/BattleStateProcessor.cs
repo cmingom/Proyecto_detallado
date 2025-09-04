@@ -17,7 +17,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             this.battleView = battleView;
         }
 
-        public List<GetUnitInstance> GetActionOrder(TeamState team)
+        public List<UnitInstanceContext> GetActionOrder(TeamState team)
         {
             return team.AliveUnits.OrderByDescending(u => u.Spd).ToList();
         }

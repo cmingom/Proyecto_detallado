@@ -17,19 +17,19 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             this.skillData = skillData;
         }
 
-        public bool CanProcessUseSkill(GetUnitInstance getUnit, BattleState battleState)
+        public bool CanProcessUseSkill(UnitInstanceContext unit, BattleState battleState)
         {
-            var availableSkills = GetAvailableSkills(getUnit);
-            ShowSkillSelection(getUnit, availableSkills);
+            var availableSkills = GetAvailableSkills(unit);
+            ShowSkillSelection(unit, availableSkills);
 
             var skillChoice = GetSkillChoice(availableSkills.Count);
             return IsValidSkillChoice(skillChoice, availableSkills.Count);
         }
 
-        public List<Skill> GetAvailableSkills(GetUnitInstance getUnit)
+        public List<Skill> GetAvailableSkills(UnitInstanceContext unit)
         {
             var availableSkills = CreateEmptySkillList();
-            PopulateAffordableSkills(availableSkills, getUnit);
+            PopulateAffordableSkills(availableSkills, unit);
             return availableSkills;
         }
 
@@ -38,11 +38,11 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             return new List<Skill>();
         }
 
-        private void PopulateAffordableSkills(List<Skill> availableSkills, GetUnitInstance getUnit)
+        private void PopulateAffordableSkills(List<Skill> availableSkills, UnitInstanceContext unit)
         {
-            foreach (var skillName in getUnit.Skills)
+            foreach (var skillName in unit.Skills)
             {
-                AddSkill(availableSkills, skillName, getUnit.MP);
+                AddSkill(availableSkills, skillName, unit.MP);
             }
         }
 
@@ -59,9 +59,9 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             return skillData.TryGetValue(skillName, out var skill) && skill.Cost <= unitMP;
         }
 
-        private void ShowSkillSelection(GetUnitInstance getUnit, List<Skill> availableSkills)
+        private void ShowSkillSelection(UnitInstanceContext unit, List<Skill> availableSkills)
         {
-            battleView.ShowSkillSelection(getUnit, availableSkills);
+            battleView.ShowSkillSelection(unit, availableSkills);
         }
 
         private int GetSkillChoice(int skillCount)

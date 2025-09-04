@@ -33,7 +33,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             return (int)Math.Floor(strength * PHYSICAL_DAMAGE_MULTIPLIER);
         }
 
-        public void ApplyDamageToTarget(GetUnitInstance target, int damage)
+        public void ApplyDamageToTarget(UnitInstanceContext target, int damage)
         {
             var newHP = GetCalculatedNewHP(target.HP, damage);
             target.HP = newHP;

@@ -22,7 +22,7 @@ namespace Shin_Megami_Tensei
         }
         
         
-        public bool ShouldProcessActionOrder(BattleContext battleContext, List<GetUnitInstance> actionOrder, TeamState currentTeam)
+        public bool ShouldProcessActionOrder(BattleContext battleContext, List<UnitInstanceContext> actionOrder, TeamState currentTeam)
         {
             while (ShouldContinueProcessingActions(battleContext))
             {
@@ -37,7 +37,7 @@ namespace Shin_Megami_Tensei
             return battleContext.BattleState.FullTurns > NO_TURNS_REMAINING && !combatManager.IsBattleOver(battleContext.BattleState);
         }
 
-        private bool ShouldProcessSingleActionIteration(BattleContext battleContext, List<GetUnitInstance> actionOrder, TeamState currentTeam)
+        private bool ShouldProcessSingleActionIteration(BattleContext battleContext, List<UnitInstanceContext> actionOrder, TeamState currentTeam)
         {
             ShowBattleStatus(battleContext, actionOrder);
             
@@ -47,19 +47,19 @@ namespace Shin_Megami_Tensei
             return ShouldProcessCurrentUnit(battleContext, actionOrder, currentTeam);
         }
 
-        private void ShowBattleStatus(BattleContext battleContext, List<GetUnitInstance> actionOrder)
+        private void ShowBattleStatus(BattleContext battleContext, List<UnitInstanceContext> actionOrder)
         {
             battleView.ShowBattlefield(battleContext.BattleState, battleContext.Player1Name, battleContext.Player2Name);
             battleView.ShowTurnCounters(battleContext.BattleState);
             battleView.ShowActionOrderBySpeed(actionOrder);
         }
 
-        private bool IsActionOrderEmpty(List<GetUnitInstance> actionOrder)
+        private bool IsActionOrderEmpty(List<UnitInstanceContext> actionOrder)
         {
             return actionOrder.Count == EMPTY_LIST_COUNT;
         }
 
-        private bool ShouldProcessCurrentUnit(BattleContext battleContext, List<GetUnitInstance> actionOrder, TeamState currentTeam)
+        private bool ShouldProcessCurrentUnit(BattleContext battleContext, List<UnitInstanceContext> actionOrder, TeamState currentTeam)
         {
             var currentUnit = GetCurrentUnit(actionOrder);
             
@@ -70,14 +70,14 @@ namespace Shin_Megami_Tensei
             return false;
         }
 
-        private GetUnitInstance GetCurrentUnit(List<GetUnitInstance> actionOrder)
+        private UnitInstanceContext GetCurrentUnit(List<UnitInstanceContext> actionOrder)
         {
             return actionOrder[FIRST_UNIT_INDEX];
         }
 
-        private bool ShouldProcessSingleUnitAction(GetUnitInstance currentGetUnit, BattleContext battleContext)
+        private bool ShouldProcessSingleUnitAction(UnitInstanceContext currentUnit, BattleContext battleContext)
         {
-            if (IsUnitActionSuccessful(currentGetUnit, battleContext))
+            if (IsUnitActionSuccessful(currentUnit, battleContext))
                 return true;
             
             combatManager.ConsumeTurn(battleContext.BattleState);
@@ -85,9 +85,9 @@ namespace Shin_Megami_Tensei
             return ShouldEndBattle(battleContext);
         }
 
-        private bool IsUnitActionSuccessful(GetUnitInstance currentGetUnit, BattleContext battleContext)
+        private bool IsUnitActionSuccessful(UnitInstanceContext currentUnit, BattleContext battleContext)
         {
-            var unitActionContext = new UnitActionContext(currentGetUnit, battleContext.BattleState, battleContext.Player1Name, battleContext.Player2Name);
+            var unitActionContext = new UnitActionContext(currentUnit, battleContext.BattleState, battleContext.Player1Name, battleContext.Player2Name);
             return combatManager.CanProcessUnitAction(unitActionContext);
         }
 
@@ -118,12 +118,12 @@ namespace Shin_Megami_Tensei
             battleView.ShowWinner(winnerName, winnerNumber);
         }
 
-        private void ProcessUnitTurnEnd(List<GetUnitInstance> actionOrder, TeamState currentTeam, GetUnitInstance currentGetUnit)
+        private void ProcessUnitTurnEnd(List<UnitInstanceContext> actionOrder, TeamState currentTeam, UnitInstanceContext currentUnit)
         {
             actionOrder.RemoveAt(FIRST_UNIT_INDEX);
-            if (currentTeam.AliveUnits.Contains(currentGetUnit))
+            if (currentTeam.AliveUnits.Contains(currentUnit))
             {
-                actionOrder.Add(currentGetUnit);
+                actionOrder.Add(currentUnit);
             }
         }
     }

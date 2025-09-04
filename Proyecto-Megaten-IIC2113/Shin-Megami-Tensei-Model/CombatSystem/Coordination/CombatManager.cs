@@ -24,7 +24,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             return new ActionCoordinatorConfig(battleView, surrenderHandler, skillData);
         }
 
-        public List<GetUnitInstance> GetCalculatedActionOrder(TeamState team)
+        public List<UnitInstanceContext> GetCalculatedActionOrder(TeamState team)
         {
             return battleStateManager.GetActionOrder(team);
         }

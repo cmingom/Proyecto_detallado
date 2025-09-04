@@ -18,24 +18,23 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             this.damageCalculator = new DamageCalculator();
         }
 
-        public bool CanExecutePhysicalAttack(GetUnitInstance attacker, BattleState battleState)
+        public bool CanExecutePhysicalAttack(UnitInstanceContext attacker, BattleState battleState)
         {
             var attackContext = new AttackContext(attacker, battleState, AttackType.Physical);
             return CanProcessAttack(attackContext);
         }
 
-        public bool CanExecuteGunAttack(GetUnitInstance attacker, BattleState battleState)
+        public bool CanExecuteGunAttack(UnitInstanceContext attacker, BattleState battleState)
         {
             var attackContext = new AttackContext(attacker, battleState, AttackType.Gun);
             return CanProcessAttack(attackContext);
         }
 
-        // ver como separarlo
+        // poner ojo
         private bool CanProcessAttack(AttackContext attackContext)
         {
             if (!CanSelectValidTarget(attackContext))
                 return false;
-
             var selectedTarget = SelectTargetForAttack(attackContext);
             if (IsInvalidTarget(selectedTarget))
                 return false;
@@ -50,46 +49,46 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             return !HasNoAvailableTargets(availableTargets);
         }
 
-        private GetUnitInstance SelectTargetForAttack(AttackContext attackContext)
+        private UnitInstanceContext SelectTargetForAttack(AttackContext attackContext)
         {
             var availableTargets = GetValidTargets(attackContext);
             return GetTarget(attackContext, availableTargets);
         }
 
-        private List<GetUnitInstance> GetValidTargets(AttackContext attackContext)
+        private List<UnitInstanceContext> GetValidTargets(AttackContext attackContext)
         {
             return targetSelector.GetAvailableTargetsForAttack(attackContext.BattleState);
         }
 
-        private GetUnitInstance GetTarget(AttackContext attackContext, List<GetUnitInstance> availableTargets)
+        private UnitInstanceContext GetTarget(AttackContext attackContext, List<UnitInstanceContext> availableTargets)
         {
             return targetSelector.SelectTargetForAttack(attackContext.Attacker, availableTargets);
         }
 
-        private bool HasNoAvailableTargets(List<GetUnitInstance> availableTargets)
+        private bool HasNoAvailableTargets(List<UnitInstanceContext> availableTargets)
         {
             return !availableTargets.Any();
         }
 
-        private bool IsInvalidTarget(GetUnitInstance selectedTarget)
+        private bool IsInvalidTarget(UnitInstanceContext selectedTarget)
         {
             return selectedTarget == null;
         }
 
-        private void ExecuteAttackOnTarget(AttackContext attackContext, GetUnitInstance selectedTarget)
+        private void ExecuteAttackOnTarget(AttackContext attackContext, UnitInstanceContext selectedTarget)
         {
             var damage = CalculateAndApplyDamage(attackContext, selectedTarget);
             ShowAttackResult(attackContext, selectedTarget, damage);
         }
 
-        private int CalculateAndApplyDamage(AttackContext attackContext, GetUnitInstance selectedTarget)
+        private int CalculateAndApplyDamage(AttackContext attackContext, UnitInstanceContext selectedTarget)
         {
             var damage = damageCalculator.GetCalculatedAttackDamage(attackContext);
             damageCalculator.ApplyDamageToTarget(selectedTarget, damage);
             return damage;
         }
 
-        private void ShowAttackResult(AttackContext attackContext, GetUnitInstance target, int damage)
+        private void ShowAttackResult(AttackContext attackContext, UnitInstanceContext target, int damage)
         {
             var attackResultContext = new AttackResultContext(attackContext.Attacker, target, damage, attackContext.AttackType);
             battleView.ShowAttackResult(attackResultContext);
@@ -97,3 +96,4 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
         
     }
 }
+

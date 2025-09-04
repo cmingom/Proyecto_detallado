@@ -5,12 +5,12 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Contexts
 {
     public class AttackResultContext
     {
-        public GetUnitInstance Attacker { get; }
-        public GetUnitInstance Target { get; }
+        public UnitInstanceContext Attacker { get; }
+        public UnitInstanceContext Target { get; }
         public int Damage { get; }
         public AttackType AttackType { get; }
 
-        public AttackResultContext(GetUnitInstance attacker, GetUnitInstance target, int damage, AttackType attackType)
+        public AttackResultContext(UnitInstanceContext attacker, UnitInstanceContext target, int damage, AttackType attackType)
         {
             Attacker = attacker;
             Target = target;

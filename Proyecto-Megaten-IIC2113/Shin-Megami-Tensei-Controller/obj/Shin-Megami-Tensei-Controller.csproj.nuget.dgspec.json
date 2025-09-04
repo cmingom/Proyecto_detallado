@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\crist\\Dropbox\\8º semestre\\Diseño detallado\\Proyecto_detallado\\Proyecto-Megaten-IIC2113\\Shin-Megami-Tensei-Controller\\Shin-Megami-Tensei-Controller.csproj": {}
+    "/Users/cristobalmingo/Downloads/Proyecto/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/Shin-Megami-Tensei-Controller.csproj": {}
   },
   "projects": {
-    "C:\\Users\\crist\\Dropbox\\8º semestre\\Diseño detallado\\Proyecto_detallado\\Proyecto-Megaten-IIC2113\\Shin-Megami-Tensei-Controller\\Shin-Megami-Tensei-Controller.csproj": {
+    "/Users/cristobalmingo/Downloads/Proyecto/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/Shin-Megami-Tensei-Controller.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\crist\\Dropbox\\8º semestre\\Diseño detallado\\Proyecto_detallado\\Proyecto-Megaten-IIC2113\\Shin-Megami-Tensei-Controller\\Shin-Megami-Tensei-Controller.csproj",
+        "projectUniqueName": "/Users/cristobalmingo/Downloads/Proyecto/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/Shin-Megami-Tensei-Controller.csproj",
         "projectName": "Shin-Megami-Tensei-Controller",
-        "projectPath": "C:\\Users\\crist\\Dropbox\\8º semestre\\Diseño detallado\\Proyecto_detallado\\Proyecto-Megaten-IIC2113\\Shin-Megami-Tensei-Controller\\Shin-Megami-Tensei-Controller.csproj",
-        "packagesPath": "C:\\Users\\crist\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\crist\\Dropbox\\8º semestre\\Diseño detallado\\Proyecto_detallado\\Proyecto-Megaten-IIC2113\\Shin-Megami-Tensei-Controller\\obj\\",
+        "projectPath": "/Users/cristobalmingo/Downloads/Proyecto/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/Shin-Megami-Tensei-Controller.csproj",
+        "packagesPath": "/Users/cristobalmingo/.nuget/packages/",
+        "outputPath": "/Users/cristobalmingo/Downloads/Proyecto/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Controller/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\crist\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "/Users/cristobalmingo/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
@@ -26,11 +26,11 @@
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "C:\\Users\\crist\\Dropbox\\8º semestre\\Diseño detallado\\Proyecto_detallado\\Proyecto-Megaten-IIC2113\\Shin-Megami-Tensei-Model\\Shin-Megami-Tensei-Model.csproj": {
-                "projectPath": "C:\\Users\\crist\\Dropbox\\8º semestre\\Diseño detallado\\Proyecto_detallado\\Proyecto-Megaten-IIC2113\\Shin-Megami-Tensei-Model\\Shin-Megami-Tensei-Model.csproj"
+              "/Users/cristobalmingo/Downloads/Proyecto/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Model/Shin-Megami-Tensei-Model.csproj": {
+                "projectPath": "/Users/cristobalmingo/Downloads/Proyecto/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Model/Shin-Megami-Tensei-Model.csproj"
               },
-              "C:\\Users\\crist\\Dropbox\\8º semestre\\Diseño detallado\\Proyecto_detallado\\Proyecto-Megaten-IIC2113\\Shin-Megami-Tensei-View\\Shin-Megami-Tensei-View.csproj": {
-                "projectPath": "C:\\Users\\crist\\Dropbox\\8º semestre\\Diseño detallado\\Proyecto_detallado\\Proyecto-Megaten-IIC2113\\Shin-Megami-Tensei-View\\Shin-Megami-Tensei-View.csproj"
+              "/Users/cristobalmingo/Downloads/Proyecto/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-View/Shin-Megami-Tensei-View.csproj": {
+                "projectPath": "/Users/cristobalmingo/Downloads/Proyecto/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-View/Shin-Megami-Tensei-View.csproj"
               }
             }
           }
@@ -44,7 +44,8 @@
           "enableAudit": "true",
           "auditLevel": "low",
           "auditMode": "direct"
-        }
+        },
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
         "net8.0": {
@@ -65,21 +66,21 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.413/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/9.0.304/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "C:\\Users\\crist\\Dropbox\\8º semestre\\Diseño detallado\\Proyecto_detallado\\Proyecto-Megaten-IIC2113\\Shin-Megami-Tensei-Model\\Shin-Megami-Tensei-Model.csproj": {
+    "/Users/cristobalmingo/Downloads/Proyecto/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Model/Shin-Megami-Tensei-Model.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\crist\\Dropbox\\8º semestre\\Diseño detallado\\Proyecto_detallado\\Proyecto-Megaten-IIC2113\\Shin-Megami-Tensei-Model\\Shin-Megami-Tensei-Model.csproj",
+        "projectUniqueName": "/Users/cristobalmingo/Downloads/Proyecto/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Model/Shin-Megami-Tensei-Model.csproj",
         "projectName": "Shin-Megami-Tensei-Model",
-        "projectPath": "C:\\Users\\crist\\Dropbox\\8º semestre\\Diseño detallado\\Proyecto_detallado\\Proyecto-Megaten-IIC2113\\Shin-Megami-Tensei-Model\\Shin-Megami-Tensei-Model.csproj",
-        "packagesPath": "C:\\Users\\crist\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\crist\\Dropbox\\8º semestre\\Diseño detallado\\Proyecto_detallado\\Proyecto-Megaten-IIC2113\\Shin-Megami-Tensei-Model\\obj\\",
+        "projectPath": "/Users/cristobalmingo/Downloads/Proyecto/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Model/Shin-Megami-Tensei-Model.csproj",
+        "packagesPath": "/Users/cristobalmingo/.nuget/packages/",
+        "outputPath": "/Users/cristobalmingo/Downloads/Proyecto/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Model/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\crist\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "/Users/cristobalmingo/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
@@ -102,7 +103,8 @@
           "enableAudit": "true",
           "auditLevel": "low",
           "auditMode": "direct"
-        }
+        },
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
         "net8.0": {
@@ -123,21 +125,21 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.413/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/9.0.304/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "C:\\Users\\crist\\Dropbox\\8º semestre\\Diseño detallado\\Proyecto_detallado\\Proyecto-Megaten-IIC2113\\Shin-Megami-Tensei-View\\Shin-Megami-Tensei-View.csproj": {
+    "/Users/cristobalmingo/Downloads/Proyecto/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-View/Shin-Megami-Tensei-View.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\crist\\Dropbox\\8º semestre\\Diseño detallado\\Proyecto_detallado\\Proyecto-Megaten-IIC2113\\Shin-Megami-Tensei-View\\Shin-Megami-Tensei-View.csproj",
+        "projectUniqueName": "/Users/cristobalmingo/Downloads/Proyecto/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-View/Shin-Megami-Tensei-View.csproj",
         "projectName": "Shin-Megami-Tensei-View",
-        "projectPath": "C:\\Users\\crist\\Dropbox\\8º semestre\\Diseño detallado\\Proyecto_detallado\\Proyecto-Megaten-IIC2113\\Shin-Megami-Tensei-View\\Shin-Megami-Tensei-View.csproj",
-        "packagesPath": "C:\\Users\\crist\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\crist\\Dropbox\\8º semestre\\Diseño detallado\\Proyecto_detallado\\Proyecto-Megaten-IIC2113\\Shin-Megami-Tensei-View\\obj\\",
+        "projectPath": "/Users/cristobalmingo/Downloads/Proyecto/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-View/Shin-Megami-Tensei-View.csproj",
+        "packagesPath": "/Users/cristobalmingo/.nuget/packages/",
+        "outputPath": "/Users/cristobalmingo/Downloads/Proyecto/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-View/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\crist\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "/Users/cristobalmingo/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
@@ -149,8 +151,8 @@
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "C:\\Users\\crist\\Dropbox\\8º semestre\\Diseño detallado\\Proyecto_detallado\\Proyecto-Megaten-IIC2113\\Shin-Megami-Tensei-Model\\Shin-Megami-Tensei-Model.csproj": {
-                "projectPath": "C:\\Users\\crist\\Dropbox\\8º semestre\\Diseño detallado\\Proyecto_detallado\\Proyecto-Megaten-IIC2113\\Shin-Megami-Tensei-Model\\Shin-Megami-Tensei-Model.csproj"
+              "/Users/cristobalmingo/Downloads/Proyecto/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Model/Shin-Megami-Tensei-Model.csproj": {
+                "projectPath": "/Users/cristobalmingo/Downloads/Proyecto/Proyecto_detallado/Proyecto-Megaten-IIC2113/Shin-Megami-Tensei-Model/Shin-Megami-Tensei-Model.csproj"
               }
             }
           }
@@ -164,7 +166,8 @@
           "enableAudit": "true",
           "auditLevel": "low",
           "auditMode": "direct"
-        }
+        },
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
         "net8.0": {
@@ -185,7 +188,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.413/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/9.0.304/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

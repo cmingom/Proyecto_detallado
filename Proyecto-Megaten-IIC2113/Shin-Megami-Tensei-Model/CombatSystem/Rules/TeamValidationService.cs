@@ -91,6 +91,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Rules
             return IsValidUnitInfo(unitInfo, context);
         }
 
+        // poner ojo
         private bool IsValidUnitInfo(UnitInfo unitInfo, ValidationContext context)
         {
             if (unitInfo.IsSamurai)

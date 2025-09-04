@@ -35,7 +35,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             var team2 = new List<string>();
             var parsingState = CreateParsingState();
 
-            var context = new TeamParsingContext(lines, team1, team2, parsingState);
+            var context = new TeamParsingContext(team1, team2, parsingState, lines: lines);
             ProcessAllLines(context);
 
             return (team1, team2);
@@ -49,7 +49,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
         {
             foreach (var rawLine in context.Lines!)
             {
-                var lineContext = new TeamParsingContext(rawLine, context.Team1, context.Team2, context.State);
+                var lineContext = new TeamParsingContext(context.Team1, context.Team2, context.State, rawLine: rawLine);
                 ProcessSingleLine(lineContext);
             }
         }

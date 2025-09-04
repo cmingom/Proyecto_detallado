@@ -35,14 +35,14 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
             battlefieldDisplayService.ShowTurnCounters(battleState);
         }
 
-        public void ShowActionOrderBySpeed(List<GetUnitInstance> actionOrder)
+        public void ShowActionOrderBySpeed(List<UnitInstanceContext> actionOrder)
         {
             battlefieldDisplayService.ShowActionOrderBySpeed(actionOrder);
         }
 
-        public void ShowActionMenu(GetUnitInstance actingGetUnit, List<string> actions)
+        public void ShowActionMenu(UnitInstanceContext actingUnit, List<string> actions)
         {
-            actionMenuDisplayService.ShowActionMenu(actingGetUnit, actions);
+            actionMenuDisplayService.ShowActionMenu(actingUnit, actions);
         }
 
         public int GetActionChoice(int maxActions)
@@ -50,7 +50,7 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
             return actionMenuDisplayService.GetActionChoice(maxActions);
         }
 
-        public void ShowTargetSelection(GetUnitInstance attacker, List<GetUnitInstance> targets)
+        public void ShowTargetSelection(UnitInstanceContext attacker, List<UnitInstanceContext> targets)
         {
             actionMenuDisplayService.ShowTargetSelection(attacker, targets);
         }
@@ -65,9 +65,9 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
             actionMenuDisplayService.ShowAttackResult(context);
         }
 
-        public void ShowSkillSelection(GetUnitInstance getUnit, List<Skill> availableSkills)
+        public void ShowSkillSelection(UnitInstanceContext unit, List<Skill> availableSkills)
         {
-            skillDisplayService.ShowSkillSelection(getUnit, availableSkills);
+            skillDisplayService.ShowSkillSelection(unit, availableSkills);
         }
 
         public int GetSkillChoice(int maxSkills)

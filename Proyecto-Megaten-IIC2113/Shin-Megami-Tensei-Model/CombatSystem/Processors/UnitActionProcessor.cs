@@ -51,16 +51,16 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             return CanExecuteSelectedAction(context, actionChoice);
         }
 
-        private int GetUserActionChoice(GetUnitInstance actingUnit)
+        private int GetUserActionChoice(UnitInstanceContext actingUnit)
         {
             var availableActions = GetAvailableActions(actingUnit);
             ShowActionMenu(actingUnit, availableActions);
             return GetActionChoice(availableActions.Count);
         }
 
-        public List<string> GetAvailableActions(GetUnitInstance getUnit)
+        public List<string> GetAvailableActions(UnitInstanceContext unit)
         {
-            return getUnit.IsSamurai ? GetSamuraiActions() : GetRegularActions();
+            return unit.IsSamurai ? GetSamuraiActions() : GetRegularActions();
         }
 
         private List<string> GetSamuraiActions()
@@ -87,9 +87,9 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             };
         }
 
-        private void ShowActionMenu(GetUnitInstance actingGetUnit, List<string> availableActions)
+        private void ShowActionMenu(UnitInstanceContext actingUnit, List<string> availableActions)
         {
-            battleView.ShowActionMenu(actingGetUnit, availableActions);
+            battleView.ShowActionMenu(actingUnit, availableActions);
         }
 
         private int GetActionChoice(int actionCount)
@@ -110,7 +110,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             return CanProcessAction(context, selectedAction);
         }
 
-        private string GetSelectedAction(GetUnitInstance actingUnit, int actionChoice)
+        private string GetSelectedAction(UnitInstanceContext actingUnit, int actionChoice)
         {
             var availableActions = GetAvailableActions(actingUnit);
             return availableActions[actionChoice - ACTION_INDEX_OFFSET];

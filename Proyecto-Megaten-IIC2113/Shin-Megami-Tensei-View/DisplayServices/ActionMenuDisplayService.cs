@@ -27,10 +27,10 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
             this.view = view;
         }
 
-        public void ShowActionMenu(GetUnitInstance actingGetUnit, List<string> actions)
+        public void ShowActionMenu(UnitInstanceContext actingUnit, List<string> actions)
         {
             ShowSeparator();
-            ShowActionSelectionHeader(actingGetUnit.Name);
+            ShowActionSelectionHeader(actingUnit.Name);
             ShowActionOptions(actions);
         }
 
@@ -62,7 +62,7 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
             return GetValidatedChoice(maxActions);
         }
 
-        public void ShowTargetSelection(GetUnitInstance attacker, List<GetUnitInstance> targets)
+        public void ShowTargetSelection(UnitInstanceContext attacker, List<UnitInstanceContext> targets)
         {
             ShowSeparator();
             ShowTargetSelectionHeader(attacker.Name);
@@ -75,7 +75,7 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
             view.WriteLine(string.Format(TARGET_SELECTION_FORMAT, attackerName));
         }
 
-        private void ShowTargetOptions(List<GetUnitInstance> targets)
+        private void ShowTargetOptions(List<UnitInstanceContext> targets)
         {
             for (int i = 0; i < targets.Count; i++)
             {
@@ -83,7 +83,7 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
             }
         }
 
-        private void ShowTargetOption(int index, GetUnitInstance target)
+        private void ShowTargetOption(int index, UnitInstanceContext target)
         {
             view.WriteLine(string.Format(TARGET_OPTION_FORMAT, index, target.Name, target.HP, target.MaxHP, target.MP, target.MaxMP));
         }

@@ -5,12 +5,12 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Contexts
 {
     public class UnitActionContext
     {
-        public GetUnitInstance ActingUnit { get; }
+        public UnitInstanceContext ActingUnit { get; }
         public BattleState BattleState { get; }
         public string Player1Name { get; }
         public string Player2Name { get; }
 
-        public UnitActionContext(GetUnitInstance actingUnit, BattleState battleState, string player1Name, string player2Name)
+        public UnitActionContext(UnitInstanceContext actingUnit, BattleState battleState, string player1Name, string player2Name)
         {
             ActingUnit = actingUnit;
             BattleState = battleState;

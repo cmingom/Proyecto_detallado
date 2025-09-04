@@ -18,10 +18,10 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
             this.view = view;
         }
 
-        public void ShowSkillSelection(GetUnitInstance getUnit, List<Skill> availableSkills)
+        public void ShowSkillSelection(UnitInstanceContext unit, List<Skill> availableSkills)
         {
             ShowSeparator();
-            ShowSkillSelectionHeader(getUnit.Name);
+            ShowSkillSelectionHeader(unit.Name);
             ShowSkillOptions(availableSkills);
             ShowCancelOption(availableSkills.Count);
         }

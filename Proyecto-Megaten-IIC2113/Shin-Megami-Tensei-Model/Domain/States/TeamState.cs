@@ -16,17 +16,17 @@ namespace Shin_Megami_Tensei_Model.Domain.States
         private const char POSITION_C = 'C';
         private const char POSITION_D = 'D';
         
-        private readonly GetUnitInstance?[] unitsArray;
-        public IReadOnlyList<GetUnitInstance?> Units { get; }
+        private readonly UnitInstanceContext?[] unitsArray;
+        public IReadOnlyList<UnitInstanceContext?> Units { get; }
 
-        public TeamState(IEnumerable<GetUnitInstance> units)
+        public TeamState(IEnumerable<UnitInstanceContext> units)
         {
-            unitsArray = new GetUnitInstance?[MAX_TEAM_SIZE];
+            unitsArray = new UnitInstanceContext?[MAX_TEAM_SIZE];
             PopulateUnitsArray(units);
             Units = Array.AsReadOnly(unitsArray);
         }
 
-        private void PopulateUnitsArray(IEnumerable<GetUnitInstance> units)
+        private void PopulateUnitsArray(IEnumerable<UnitInstanceContext> units)
         {
             foreach (var unit in units)
             {
@@ -34,12 +34,12 @@ namespace Shin_Megami_Tensei_Model.Domain.States
             }
         }
 
-        private void PlaceUnitInArray(GetUnitInstance getUnit)
+        private void PlaceUnitInArray(UnitInstanceContext unit)
         {
-            int index = GetPositionIndex(getUnit.Position);
+            int index = GetPositionIndex(unit.Position);
             if (IsValidIndex(index))
             {
-                unitsArray[index] = getUnit;
+                unitsArray[index] = unit;
             }
         }
 
@@ -60,15 +60,15 @@ namespace Shin_Megami_Tensei_Model.Domain.States
             return index >= 0 && index < unitsArray.Length;
         }
 
-        public IEnumerable<GetUnitInstance> AliveUnits =>
+        public IEnumerable<UnitInstanceContext> AliveUnits =>
             GetAliveUnitsFromCollection();
 
-        private IEnumerable<GetUnitInstance> GetAliveUnitsFromCollection()
+        private IEnumerable<UnitInstanceContext> GetAliveUnitsFromCollection()
         {
-            return Units.Where(IsUnitAlive).Cast<GetUnitInstance>();
+            return Units.Where(IsUnitAlive).Cast<UnitInstanceContext>();
         }
 
-        private bool IsUnitAlive(GetUnitInstance? unit)
+        private bool IsUnitAlive(UnitInstanceContext? unit)
         {
             return unit != null && unit.HP > MINIMUM_HP;
         }

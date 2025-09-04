@@ -6,11 +6,11 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 {
     public class AttackContext
     {
-        public GetUnitInstance Attacker { get; }
+        public UnitInstanceContext Attacker { get; }
         public BattleState BattleState { get; }
         public AttackType AttackType { get; }
 
-        public AttackContext(GetUnitInstance attacker, BattleState battleState, AttackType attackType)
+        public AttackContext(UnitInstanceContext attacker, BattleState battleState, AttackType attackType)
         {
             Attacker = attacker;
             BattleState = battleState;

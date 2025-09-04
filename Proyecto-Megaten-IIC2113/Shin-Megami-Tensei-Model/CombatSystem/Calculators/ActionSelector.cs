@@ -1,6 +1,3 @@
-using Shin_Megami_Tensei_Model.Domain.States;
-using Shin_Megami_Tensei_Model.Domain.Entities;
-
 namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 {
     public class ActionSelector
@@ -32,9 +29,9 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
         {
             return selectedAction switch
             {
-                ATTACK_ACTION => attackExecutor.CanExecutePhysicalAttack(actionContext.ActingGetUnit, actionContext.BattleState),
-                GUN_ACTION => attackExecutor.CanExecuteGunAttack(actionContext.ActingGetUnit, actionContext.BattleState),
-                SKILL_ACTION => skillManager.CanProcessUseSkill(actionContext.ActingGetUnit, actionContext.BattleState),
+                ATTACK_ACTION => attackExecutor.CanExecutePhysicalAttack(actionContext.ActingUnit, actionContext.BattleState),
+                GUN_ACTION => attackExecutor.CanExecuteGunAttack(actionContext.ActingUnit, actionContext.BattleState),
+                SKILL_ACTION => skillManager.CanProcessUseSkill(actionContext.ActingUnit, actionContext.BattleState),
                 SUMMON_ACTION => CanExecuteSummon(),
                 PASS_TURN_ACTION => CanPassTurn(),
                 SURRENDER_ACTION => CanProcessSurrenderAction(actionContext),

@@ -63,9 +63,9 @@ namespace Shin_Megami_Tensei
             return new BattleState(battleTeam1, battleTeam2);
         }
 
-        private List<GetUnitInstance> GetTeamUnits(List<UnitInfo> team, Dictionary<string, Unit> unitData)
+        private List<UnitInstanceContext> GetTeamUnits(List<UnitInfo> team, Dictionary<string, Unit> unitData)
         {
-            var units = new List<GetUnitInstance>();
+            var units = new List<UnitInstanceContext>();
             var teamSize = GetTeamSize(team);
             
             var teamContext = new TeamPopulationContext(units, team, teamSize, unitData);
@@ -96,7 +96,7 @@ namespace Shin_Megami_Tensei
             return Math.Min(team.Count, MAX_UNITS_IN_BATTLE);
         }
 
-        private GetUnitInstance? CreateUnitInstance(UnitInfo unitInfo, char position, Dictionary<string, Unit> unitData)
+        private UnitInstanceContext? CreateUnitInstance(UnitInfo unitInfo, char position, Dictionary<string, Unit> unitData)
         {
             var unitTemplate = GetUnitTemplate(unitInfo.Name, unitData);
             if (unitTemplate == null)
@@ -112,9 +112,9 @@ namespace Shin_Megami_Tensei
             return unitData.TryGetValue(unitName, out var unitTemplate) ? unitTemplate : null;
         }
 
-        private GetUnitInstance BuildUnitInstance(UnitInfo unitInfo, char position, Unit unitTemplate)
+        private UnitInstanceContext BuildUnitInstance(UnitInfo unitInfo, char position, Unit unitTemplate)
         {
-            return new GetUnitInstance(
+            return new UnitInstanceContext(
                 name: unitInfo.Name,
                 maxHP: unitTemplate.Stats.HP,
                 maxMP: unitTemplate.Stats.MP,

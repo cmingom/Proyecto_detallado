@@ -30,7 +30,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             return CanProcessAttack(attackContext);
         }
 
-        // poner ojo
+        // to do: poner excepciones
         private bool CanProcessAttack(AttackContext attackContext)
         {
             if (!CanSelectValidTarget(attackContext))

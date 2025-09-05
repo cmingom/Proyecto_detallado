@@ -13,3 +13,5 @@ public class UnitInfo
         Skills = skills;
     }
 }
+
+// to do: crear clase abstracta y que samurai y montruo hereden

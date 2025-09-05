@@ -24,11 +24,35 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
         private UnitInfo? ParseSamuraiDefinition(string line)
         {
             var rest = GetSamuraiWhithoutTag(line);
-            var (name, skills) = ParseSamuraiNameAndSkills(rest);
+            var name = ParseSamuraiName(rest);
+            var skills = ParseSamuraiSkills(rest);
             
             if (name == null) return null;
             
             return CreateSamuraiUnitInfo(name, skills);
+        }
+
+        private string? ParseSamuraiName(string rest)
+        {
+            int openParen = rest.IndexOf(OPEN_PARENTHESIS);
+            
+            if (openParen < 0)
+                return rest;
+
+            return GetName(rest, openParen);
+        }
+
+        private List<string>? ParseSamuraiSkills(string rest)
+        {
+            int openParen = rest.IndexOf(OPEN_PARENTHESIS);
+            
+            if (openParen < 0)
+                return null;
+
+            var closeParen = GetCloseParenthesis(rest, openParen);
+            if (closeParen < 0) return null;
+
+            return ParseSkillsFromText(rest, openParen, closeParen);
         }
 
         private UnitInfo CreateSamuraiUnitInfo(string name, List<string>? skills)

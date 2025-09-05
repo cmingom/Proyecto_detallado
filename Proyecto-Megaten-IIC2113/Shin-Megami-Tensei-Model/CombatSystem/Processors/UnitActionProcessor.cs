@@ -24,7 +24,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             this.actionExecutor = actionExecutor;
         }
         
-        // Poner ojo
+        // to do: Unidad abstracta
         public bool CanProcessUnitAction(UnitActionContext context)
         {
             bool actionCompleted = false;

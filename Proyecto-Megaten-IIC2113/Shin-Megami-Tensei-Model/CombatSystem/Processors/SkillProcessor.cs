@@ -17,6 +17,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             this.skillData = skillData;
         }
 
+        // to do: poner excepcion
         public bool CanProcessUseSkill(UnitInstanceContext unit, BattleState battleState)
         {
             var availableSkills = GetAvailableSkills(unit);

@@ -24,6 +24,7 @@ namespace Shin_Megami_Tensei
             ExecuteBattleLoop(battleState, player1Name, player2Name);
         }
 
+        //TO DO:  agregar catch de excepciones
         private void ExecuteBattleLoop(BattleState battleState, string player1Name, string player2Name)
         {
             while (ShouldContinueBattle(battleState))

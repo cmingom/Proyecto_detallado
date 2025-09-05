@@ -67,3 +67,5 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
         }
     }
 }
+
+// to do: aplly recive array de unidades afectadas. viene definida por selector y viene definida segun habilidad.

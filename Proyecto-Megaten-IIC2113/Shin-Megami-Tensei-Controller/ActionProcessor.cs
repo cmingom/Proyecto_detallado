@@ -34,7 +34,7 @@ namespace Shin_Megami_Tensei
 
         private bool ShouldContinueProcessingActions(BattleContext battleContext)
         {
-            return battleContext.BattleState.FullTurns > NO_TURNS_REMAINING && !combatManager.IsBattleOver(battleContext.BattleState);
+            return battleContext.HasRemainingTurns() && !battleContext.IsBattleOver(combatManager);
         }
 
         private bool ShouldProcessSingleActionIteration(BattleContext battleContext, List<UnitInstanceContext> actionOrder, TeamState currentTeam)

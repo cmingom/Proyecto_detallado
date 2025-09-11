@@ -43,7 +43,7 @@ namespace Shin_Megami_Tensei
 
         private TeamState GetCurrentTeam(BattleState battleState)
         {
-            return battleState.IsPlayer1Turn ? battleState.Team1 : battleState.Team2;
+            return battleState.GetCurrentTeam();
         }
 
         private void ShowPlayerTurnHeader(TurnContext turnContext)
@@ -100,7 +100,7 @@ namespace Shin_Megami_Tensei
 
         private TeamState GetOpponentTeam(TurnContext turnContext)
         {
-            return turnContext.BattleState.IsPlayer1Turn ? turnContext.BattleState.Team2 : turnContext.BattleState.Team1;
+            return turnContext.BattleState.GetOpponentTeam();
         }
 
         private void SwitchPlayerTurn(TurnContext turnContext)
@@ -112,7 +112,7 @@ namespace Shin_Megami_Tensei
 
         private void TogglePlayerTurn(BattleState battleState)
         {
-            battleState.IsPlayer1Turn = !battleState.IsPlayer1Turn;
+            battleState.SwitchPlayer();
         }
 
         private void UpdateTurnCounters(BattleState battleState, TeamState newCurrentTeam)
@@ -123,12 +123,12 @@ namespace Shin_Megami_Tensei
 
         private void SetFullTurns(BattleState battleState, TeamState newCurrentTeam)
         {
-            battleState.FullTurns = combatService.GetCalculatedNextTurnCount(newCurrentTeam);
+            battleState.SetFullTurns(combatService.GetCalculatedNextTurnCount(newCurrentTeam));
         }
 
         private void ResetBlinkingTurns(BattleState battleState)
         {
-            battleState.BlinkingTurns = ZERO_TURNS;
+            battleState.ResetBlinkingTurns();
         }
     }
 }

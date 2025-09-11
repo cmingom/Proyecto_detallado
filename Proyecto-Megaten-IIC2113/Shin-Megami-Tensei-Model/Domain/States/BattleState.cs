@@ -5,19 +5,56 @@ namespace Shin_Megami_Tensei_Model.Domain.States
         private const int INITIAL_BLINKING_TURNS = 0;
         private const bool INITIAL_PLAYER_1_TURN = true;
         
+        private int fullTurns;
+        private int blinkingTurns;
+        private bool isPlayer1Turn;
+        
         public TeamState Team1 { get; }
         public TeamState Team2 { get; }
-        public int FullTurns { get; set; }
-        public int BlinkingTurns { get; set; }
-        public bool IsPlayer1Turn { get; set; }
+        public int FullTurns => fullTurns;
+        public int BlinkingTurns => blinkingTurns;
+        public bool IsPlayer1Turn => isPlayer1Turn;
 
         public BattleState(TeamState team1, TeamState team2)
         {
             Team1 = team1;
             Team2 = team2;
-            FullTurns = team1.AliveUnits.Count();
-            BlinkingTurns = INITIAL_BLINKING_TURNS;
-            IsPlayer1Turn = INITIAL_PLAYER_1_TURN;
+            fullTurns = team1.AliveUnits.Count();
+            blinkingTurns = INITIAL_BLINKING_TURNS;
+            isPlayer1Turn = INITIAL_PLAYER_1_TURN;
+        }
+
+        public void ConsumeTurn()
+        {
+            if (fullTurns > 0)
+            {
+                fullTurns--;
+            }
+        }
+
+        public void SwitchPlayer()
+        {
+            isPlayer1Turn = !isPlayer1Turn;
+        }
+
+        public void SetFullTurns(int turns)
+        {
+            fullTurns = turns;
+        }
+
+        public void ResetBlinkingTurns()
+        {
+            blinkingTurns = INITIAL_BLINKING_TURNS;
+        }
+
+        public TeamState GetCurrentTeam()
+        {
+            return isPlayer1Turn ? Team1 : Team2;
+        }
+
+        public TeamState GetOpponentTeam()
+        {
+            return isPlayer1Turn ? Team2 : Team1;
         }
     }
 }

@@ -41,7 +41,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
         private void DecreaseFullTurns(BattleState battleState)
         {
             var newTurnCount = GetNewTurnCount(battleState.FullTurns);
-            battleState.FullTurns = newTurnCount;
+            battleState.SetFullTurns(newTurnCount);
         }
 
         private int GetNewTurnCount(int currentTurns)

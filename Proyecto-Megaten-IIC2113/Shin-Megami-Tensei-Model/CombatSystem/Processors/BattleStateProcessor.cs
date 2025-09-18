@@ -29,8 +29,18 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 
         public void ConsumeTurn(BattleState battleState)
         {
-            ShowTurnConsumption();
-            DecreaseFullTurns(battleState);
+            System.Console.WriteLine("DEBUG BattleStateProcessor: ConsumeTurn llamado");
+            if (!battleState.IsTurnConsumptionMessageShown())
+            {
+                System.Console.WriteLine("DEBUG BattleStateProcessor: Mostrando consumo de turno");
+                ShowTurnConsumption();
+                DecreaseFullTurns(battleState);
+            }
+            else
+            {
+                System.Console.WriteLine("DEBUG BattleStateProcessor: NO mostrando consumo de turno (mensaje ya mostrado)");
+            }
+            System.Console.WriteLine("DEBUG BattleStateProcessor: ConsumeTurn completado");
         }
 
         private void ShowTurnConsumption()

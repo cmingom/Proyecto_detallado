@@ -29,6 +29,7 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
 
         public void ShowActionMenu(UnitInstanceContext actingUnit, List<string> actions)
         {
+            System.Console.WriteLine($"DEBUG ActionMenuDisplayService: ShowActionMenu() para {actingUnit.Name} con {actions.Count} acciones");
             ShowSeparator();
             ShowActionSelectionHeader(actingUnit.Name);
             ShowActionOptions(actions);
@@ -59,7 +60,10 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
 
         public int GetActionChoice(int maxActions)
         {
-            return GetValidatedChoice(maxActions);
+            System.Console.WriteLine($"DEBUG ActionMenuDisplayService: GetActionChoice() con máximo {maxActions}");
+            var choice = GetValidatedChoice(maxActions);
+            System.Console.WriteLine($"DEBUG ActionMenuDisplayService: GetActionChoice() - resultado: {choice}");
+            return choice;
         }
 
         public void ShowTargetSelection(UnitInstanceContext attacker, List<UnitInstanceContext> targets)
@@ -100,9 +104,15 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
 
         private int GetValidatedChoice(int maxChoice)
         {
+            System.Console.WriteLine($"DEBUG ActionMenuDisplayService: GetValidatedChoice() con máximo {maxChoice}");
             var input = view.ReadLine();
+            System.Console.WriteLine($"DEBUG ActionMenuDisplayService: Input recibido: '{input}'");
             if (!IsValidChoice(input, maxChoice, out int choice))
+            {
+                System.Console.WriteLine($"DEBUG ActionMenuDisplayService: Input inválido, retornando {INVALID_CHOICE}");
                 return INVALID_CHOICE;
+            }
+            System.Console.WriteLine($"DEBUG ActionMenuDisplayService: Input válido, retornando {choice}");
             return choice;
         }
 

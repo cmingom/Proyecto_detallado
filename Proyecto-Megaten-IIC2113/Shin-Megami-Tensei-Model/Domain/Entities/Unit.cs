@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace Shin_Megami_Tensei_Model.Domain.Entities;
 
-public sealed class Unit
+public abstract class Unit
 {
     [JsonPropertyName("name")]
     public string Name { get; init; } = string.Empty;
@@ -12,4 +12,10 @@ public sealed class Unit
     
     [JsonPropertyName("skills")]
     public List<string> Skills { get; init; } = new();
+
+    protected Unit() { }
+
+    public abstract List<string> GetAvailableActions();
 }
+
+

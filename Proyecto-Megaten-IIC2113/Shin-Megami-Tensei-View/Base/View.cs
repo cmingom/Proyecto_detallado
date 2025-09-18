@@ -7,7 +7,10 @@ public class View
     private readonly AbstractView viewImplementation;
 
     public static View BuildConsoleView()
-        => new View(new ConsoleView());
+    {
+        System.Console.WriteLine("DEBUG View: BuildConsoleView() - creando ConsoleView");
+        return new View(new ConsoleView());
+    }
 
     public static View BuildTestingView(string pathTestScript)
         => new View(new TestingView(pathTestScript));
@@ -20,10 +23,15 @@ public class View
         viewImplementation = newView;
     }
     
-    public string ReadLine() => viewImplementation.ReadLine();
+    public string ReadLine() 
+    {
+        System.Console.WriteLine("DEBUG View: ReadLine() - delegando a viewImplementation");
+        return viewImplementation.ReadLine();
+    }
     
     public void WriteLine(string message)
     {
+        System.Console.WriteLine($"DEBUG View: WriteLine() - '{message}'");
         viewImplementation.WriteLine(message);
     }
     

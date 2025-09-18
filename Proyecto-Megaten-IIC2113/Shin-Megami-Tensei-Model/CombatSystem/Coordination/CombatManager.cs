@@ -21,7 +21,8 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
         private ActionCoordinatorConfig CreateActionCoordinatorConfig(IBattleView battleView, Dictionary<string, Skill> skillData)
         {
             var surrenderHandler = new SurrenderProcessor(battleView);
-            return new ActionCoordinatorConfig(battleView, surrenderHandler, skillData);
+            var passTurnProcessor = new PassTurnProcessor(battleView);
+            return new ActionCoordinatorConfig(battleView, surrenderHandler, passTurnProcessor, skillData);
         }
 
 
@@ -37,7 +38,10 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 
         public bool CanProcessUnitAction(UnitActionContext context)
         {
-            return unitActionManager.CanProcessUnitAction(context);
+            System.Console.WriteLine($"DEBUG CombatManager: CanProcessUnitAction() para {context.ActingUnit.Name}");
+            var result = unitActionManager.CanProcessUnitAction(context);
+            System.Console.WriteLine($"DEBUG CombatManager: CanProcessUnitAction() - resultado: {result}");
+            return result;
         }
         public void ConsumeTurn(BattleState battleState)
         {

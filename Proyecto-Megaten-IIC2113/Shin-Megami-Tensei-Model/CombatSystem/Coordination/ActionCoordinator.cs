@@ -13,12 +13,13 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 
         private ActionSelector CreateActionSelector(ActionCoordinatorConfig config)
         {
-            var actionSelectorConfig = new ActionSelectorConfig(config.BattleView, config.SurrenderProcessor, config.SkillData);
+            var actionSelectorConfig = new ActionSelectorConfig(config.BattleView, config.SurrenderProcessor, config.PassTurnProcessor, config.SkillData);
             return new ActionSelector(actionSelectorConfig);
         }
 
         public bool CanProcessSelectedAction(ActionProcessingContext context)
         {
+            System.Console.WriteLine($"DEBUG ActionCoordinator: Procesando acción '{context.SelectedAction}'");
             var actionContext = new ActionContext(context.ActingUnit, context.BattleState, context.Player1Name, context.Player2Name);
             return actionSelector.CanProcessSelectedAction(actionContext, context.SelectedAction);
         }

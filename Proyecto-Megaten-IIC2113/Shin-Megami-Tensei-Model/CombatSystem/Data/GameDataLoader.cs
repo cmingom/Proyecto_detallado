@@ -24,9 +24,9 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 
         private IEnumerable<Unit> GetLoadedUnitsFromMultipleSources()
         {
-            var samurais = GetLoadedUnitsFromJson("data/samurai.json");
-            var monsters = GetLoadedUnitsFromJson("data/monsters.json");
-            return samurais.Concat(monsters);
+            var samurais = GetLoadedSamuraisFromJson("data/samurai.json");
+            var monsters = GetLoadedMonstersFromJson("data/monsters.json");
+            return samurais.Cast<Unit>().Concat(monsters.Cast<Unit>());
         }
 
         private void LoadAllSkills()
@@ -65,9 +65,14 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             return !string.IsNullOrWhiteSpace(name);
         }
 
-        private List<Unit> GetLoadedUnitsFromJson(string filePath)
+        private List<Samurai> GetLoadedSamuraisFromJson(string filePath)
         {
-            return JsonSerializer.Deserialize<List<Unit>>(File.ReadAllText(filePath)) ?? new();
+            return JsonSerializer.Deserialize<List<Samurai>>(File.ReadAllText(filePath)) ?? new();
+        }
+
+        private List<Monster> GetLoadedMonstersFromJson(string filePath)
+        {
+            return JsonSerializer.Deserialize<List<Monster>>(File.ReadAllText(filePath)) ?? new();
         }
 
         private List<Skill> GetLoadedSkillsFromJson(string filePath)

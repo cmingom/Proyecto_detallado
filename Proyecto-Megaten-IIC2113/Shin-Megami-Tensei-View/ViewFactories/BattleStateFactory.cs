@@ -6,7 +6,11 @@ namespace Shin_Megami_Tensei
 {
     public class BattleStateFactory
     {
-        private const int MAX_UNITS_IN_BATTLE = 4;
+        // Reglas del juego: 1 Samurai + hasta 7 monstruos = máximo 8 unidades total
+        // En el tablero: Samurai + primeros 3 monstruos = máximo 4 unidades activas
+        // En reserva: monstruos restantes = máximo 4 unidades en reserva
+        private const int MAX_ACTIVE_UNITS = 4; // Samurai + primeros 3 monstruos
+        private const int MAX_RESERVE_UNITS = 4; // Máximo 4 monstruos en reserva
         private const char POSITION_A = 'A';
         private const char POSITION_B = 'B';
         private const char POSITION_C = 'C';
@@ -54,13 +58,57 @@ namespace Shin_Megami_Tensei
             var (parsedTeam1, parsedTeam2) = gameManager.ParseTeamsFromFile(file);
             var unitData = gameManager.GetUnitData();
             
-            var team1Units = GetTeamUnits(parsedTeam1, unitData);
-            var team2Units = GetTeamUnits(parsedTeam2, unitData);
+            var (team1ActiveUnits, team1Reserves) = GetTeamUnitsWithReserves(parsedTeam1, unitData);
+            var (team2ActiveUnits, team2Reserves) = GetTeamUnitsWithReserves(parsedTeam2, unitData);
             
-            var battleTeam1 = new TeamState(team1Units);
-            var battleTeam2 = new TeamState(team2Units);
+            var battleTeam1 = new TeamState(team1ActiveUnits, team1Reserves);
+            var battleTeam2 = new TeamState(team2ActiveUnits, team2Reserves);
             
             return new BattleState(battleTeam1, battleTeam2);
+        }
+
+        private (List<UnitInstanceContext> activeUnits, List<UnitInstanceContext> reserves) GetTeamUnitsWithReserves(List<UnitInfo> team, Dictionary<string, Unit> unitData)
+        {
+            var activeUnits = new List<UnitInstanceContext>();
+            var reserves = new List<UnitInstanceContext>();
+            
+            // Separar Samurai y monstruos
+            var samurai = team.FirstOrDefault(u => u.IsSamurai);
+            var monsters = team.Where(u => !u.IsSamurai).ToList();
+            
+            // El Samurai siempre va al campo de batalla (posición A)
+            if (samurai != null)
+            {
+                var samuraiInstance = CreateUnitInstance(samurai, POSITION_A, unitData);
+                if (samuraiInstance != null)
+                {
+                    activeUnits.Add(samuraiInstance);
+                }
+            }
+            
+            // Los primeros 3 monstruos van al campo de batalla (posiciones B, C, D)
+            var activeMonstersCount = Math.Min(monsters.Count, MAX_ACTIVE_UNITS - 1); // -1 porque el Samurai ya ocupa una posición
+            for (int i = 0; i < activeMonstersCount; i++)
+            {
+                var monsterInstance = CreateUnitInstance(monsters[i], TEAM_POSITIONS[i + 1], unitData); // +1 porque posición A es para el Samurai
+                if (monsterInstance != null)
+                {
+                    activeUnits.Add(monsterInstance);
+                }
+            }
+            
+            // Los monstruos restantes van a las reservas (máximo 4)
+            var reserveMonsters = monsters.Skip(activeMonstersCount).Take(MAX_RESERVE_UNITS).ToList();
+            foreach (var monster in reserveMonsters)
+            {
+                var reserveInstance = CreateReserveUnitInstance(monster, unitData);
+                if (reserveInstance != null)
+                {
+                    reserves.Add(reserveInstance);
+                }
+            }
+            
+            return (activeUnits, reserves);
         }
 
         private List<UnitInstanceContext> GetTeamUnits(List<UnitInfo> team, Dictionary<string, Unit> unitData)
@@ -82,6 +130,14 @@ namespace Shin_Megami_Tensei
             }
         }
 
+        private void PopulateReserveUnits(TeamPopulationContext context)
+        {
+            for (int i = 0; i < context.TeamSize; i++)
+            {
+                AddUnitToReserves(context, i);
+            }
+        }
+
         private void AddUnitToTeam(TeamPopulationContext context, int index)
         {
             var unitInstance = CreateUnitInstance(context.Team[index], TEAM_POSITIONS[index], context.UnitData);
@@ -91,9 +147,18 @@ namespace Shin_Megami_Tensei
             }
         }
 
+        private void AddUnitToReserves(TeamPopulationContext context, int index)
+        {
+            var unitInstance = CreateReserveUnitInstance(context.Team[index], context.UnitData);
+            if (unitInstance != null)
+            {
+                context.Units.Add(unitInstance);
+            }
+        }
+
         private int GetTeamSize(List<UnitInfo> team)
         {
-            return Math.Min(team.Count, MAX_UNITS_IN_BATTLE);
+            return Math.Min(team.Count, MAX_ACTIVE_UNITS);
         }
 
         private UnitInstanceContext? CreateUnitInstance(UnitInfo unitInfo, char position, Dictionary<string, Unit> unitData)
@@ -105,6 +170,18 @@ namespace Shin_Megami_Tensei
             }
             
             return BuildUnitInstance(unitInfo, position, unitTemplate);
+        }
+
+        private UnitInstanceContext? CreateReserveUnitInstance(UnitInfo unitInfo, Dictionary<string, Unit> unitData)
+        {
+            var unitTemplate = GetUnitTemplate(unitInfo.Name, unitData);
+            if (unitTemplate == null)
+            {
+                return null;
+            }
+            
+            // Las unidades de reserva no tienen posición específica inicialmente
+            return BuildUnitInstance(unitInfo, 'R', unitTemplate); // 'R' para Reserve
         }
 
         private Unit? GetUnitTemplate(string unitName, Dictionary<string, Unit> unitData)

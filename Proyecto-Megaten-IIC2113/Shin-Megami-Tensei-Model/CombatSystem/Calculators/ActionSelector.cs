@@ -12,12 +12,14 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
         private readonly SurrenderProcessor surrenderHandler;
         private readonly AttackProcessor attackExecutor;
         private readonly SkillProcessor skillManager;
+        private readonly PassTurnProcessor passTurnProcessor;
 
         public ActionSelector(ActionSelectorConfig config)
         {
             this.surrenderHandler = config.SurrenderHandler;
             this.attackExecutor = new AttackProcessor(config.BattleView);
             this.skillManager = new SkillProcessor(config.BattleView, config.SkillData);
+            this.passTurnProcessor = config.PassTurnProcessor;
         }
 
         public bool CanProcessSelectedAction(ActionContext actionContext, string selectedAction)
@@ -33,7 +35,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
                 GUN_ACTION => attackExecutor.CanExecuteGunAttack(actionContext.ActingUnit, actionContext.BattleState),
                 SKILL_ACTION => skillManager.CanProcessUseSkill(actionContext.ActingUnit, actionContext.BattleState),
                 SUMMON_ACTION => CanExecuteSummon(),
-                PASS_TURN_ACTION => CanPassTurn(),
+                PASS_TURN_ACTION => CanPassTurn(actionContext),
                 SURRENDER_ACTION => CanProcessSurrenderAction(actionContext),
                 _ => IsValidAction()
             };
@@ -44,9 +46,11 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             return true;
         }
 
-        private bool CanPassTurn()
+        private bool CanPassTurn(ActionContext actionContext)
         {
-            return true;
+            System.Console.WriteLine("DEBUG ActionSelector: CanPassTurn llamado");
+            passTurnProcessor.ProcessPassTurn(actionContext.BattleState);
+            return true; // Pasar Turno siempre es exitoso
         }
 
         private bool CanProcessSurrenderAction(ActionContext actionContext)

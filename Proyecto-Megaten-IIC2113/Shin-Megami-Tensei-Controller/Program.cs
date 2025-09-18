@@ -1,6 +1,10 @@
 ﻿using Shin_Megami_Tensei_View;
 using Shin_Megami_Tensei;
 
+System.Console.WriteLine("*** DEBUG: Program.cs cargado ***");
+System.Console.WriteLine("*** DEBUG: Program.cs cargado ***");
+System.Console.WriteLine("*** DEBUG: Program.cs cargado ***");
+
 /* 
  * Este código permite replicar un test case. Primero pregunta por el grupo de test
  * case a replicar. Luego pregunta por el test case específico que se quiere replicar.
@@ -13,10 +17,13 @@ using Shin_Megami_Tensei;
 // Verificar si se proporcionó archivo de equipos como argumento de línea de comandos (para tests)
 if (args.Length > 0)
 {
+    System.Console.WriteLine($"DEBUG Program: Iniciando con archivo {args[0]}");
     string teamsFile = args[0];
     var view = View.BuildConsoleView();
     var game = new Game(view, teamsFile);
+    System.Console.WriteLine("DEBUG Program: Llamando game.Play()");
     game.Play();
+    System.Console.WriteLine("DEBUG Program: game.Play() completado");
 }
 else
 {

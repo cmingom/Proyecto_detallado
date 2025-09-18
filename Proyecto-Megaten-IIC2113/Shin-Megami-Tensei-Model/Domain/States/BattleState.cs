@@ -8,6 +8,7 @@ namespace Shin_Megami_Tensei_Model.Domain.States
         private int fullTurns;
         private int blinkingTurns;
         private bool isPlayer1Turn;
+        private bool turnConsumptionMessageShown;
         
         public TeamState Team1 { get; }
         public TeamState Team2 { get; }
@@ -45,6 +46,34 @@ namespace Shin_Megami_Tensei_Model.Domain.States
         public void ResetBlinkingTurns()
         {
             blinkingTurns = INITIAL_BLINKING_TURNS;
+        }
+
+        public void ConsumeBlinkingTurn()
+        {
+            if (blinkingTurns > 0)
+            {
+                blinkingTurns--;
+            }
+        }
+
+        public void GrantBlinkingTurn()
+        {
+            blinkingTurns++;
+        }
+
+        public void MarkTurnConsumptionMessageShown()
+        {
+            turnConsumptionMessageShown = true;
+        }
+
+        public bool IsTurnConsumptionMessageShown()
+        {
+            return turnConsumptionMessageShown;
+        }
+
+        public void ResetTurnConsumptionMessageFlag()
+        {
+            turnConsumptionMessageShown = false;
         }
 
         public TeamState GetCurrentTeam()

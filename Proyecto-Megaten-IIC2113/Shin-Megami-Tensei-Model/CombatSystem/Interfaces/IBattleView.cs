@@ -14,5 +14,6 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
         int GetSkillChoice(int skillCount);
         void ShowSurrender(SurrenderContext context);
         void ShowTurnConsumption();
+        void ShowTurnConsumptionWithBlinking(int fullTurnsConsumed, int blinkingTurnsConsumed, int blinkingTurnsGranted);
     }
 }

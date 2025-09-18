@@ -27,28 +27,40 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
         // to do: Unidad abstracta
         public bool CanProcessUnitAction(UnitActionContext context)
         {
+            System.Console.WriteLine($"DEBUG UnitActionProcessor: CanProcessUnitAction() iniciado para {context.ActingUnit.Name}");
             bool actionCompleted = false;
 
             while (!actionCompleted)
             {
+                System.Console.WriteLine($"DEBUG UnitActionProcessor: Procesando acción para {context.ActingUnit.Name}");
                 actionCompleted = CanProcessSingleAction(context);
+                System.Console.WriteLine($"DEBUG UnitActionProcessor: Acción completada: {actionCompleted}");
                 
                 if (ShouldStopProcessing())
                 {
+                    System.Console.WriteLine($"DEBUG UnitActionProcessor: Deteniendo procesamiento para {context.ActingUnit.Name}");
                     return true;
                 }
             }
 
+            System.Console.WriteLine($"DEBUG UnitActionProcessor: CanProcessUnitAction() completado para {context.ActingUnit.Name} - resultado: false");
             return false;
         }
         
         private bool CanProcessSingleAction(UnitActionContext context)
         {
+            System.Console.WriteLine($"DEBUG UnitActionProcessor: CanProcessSingleAction() para {context.ActingUnit.Name}");
             var actionChoice = GetUserActionChoice(context.ActingUnit);
+            System.Console.WriteLine($"DEBUG UnitActionProcessor: Elección de acción: {actionChoice}");
             if (IsInvalidActionChoice(actionChoice))
+            {
+                System.Console.WriteLine($"DEBUG UnitActionProcessor: Elección inválida para {context.ActingUnit.Name}");
                 return false;
+            }
 
-            return CanExecuteSelectedAction(context, actionChoice);
+            var result = CanExecuteSelectedAction(context, actionChoice);
+            System.Console.WriteLine($"DEBUG UnitActionProcessor: CanProcessSingleAction() - resultado: {result}");
+            return result;
         }
 
         private int GetUserActionChoice(UnitInstanceContext actingUnit)
@@ -118,8 +130,11 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 
         private bool CanProcessAction(UnitActionContext context, string selectedAction)
         {
+            System.Console.WriteLine($"DEBUG UnitActionProcessor: Procesando acción '{selectedAction}' para {context.ActingUnit.Name}");
             var actionProcessingContext = new ActionProcessingContext(context.ActingUnit, context.BattleState, selectedAction, context.Player1Name, context.Player2Name);
-            return actionExecutor.CanProcessSelectedAction(actionProcessingContext);
+            var result = actionExecutor.CanProcessSelectedAction(actionProcessingContext);
+            System.Console.WriteLine($"DEBUG UnitActionProcessor: Resultado de '{selectedAction}' para {context.ActingUnit.Name}: {result}");
+            return result;
         }
 
 

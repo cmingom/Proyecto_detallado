@@ -85,6 +85,11 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
             battleResultDisplayService.ShowTurnConsumption();
         }
 
+        public void ShowTurnConsumptionWithBlinking(int fullTurnsConsumed, int blinkingTurnsConsumed, int blinkingTurnsGranted)
+        {
+            battleResultDisplayService.ShowTurnConsumptionWithBlinking(fullTurnsConsumed, blinkingTurnsConsumed, blinkingTurnsGranted);
+        }
+
         public void ShowWinner(string winnerName, string winnerNumber)
         {
             battleResultDisplayService.ShowWinner(winnerName, winnerNumber);

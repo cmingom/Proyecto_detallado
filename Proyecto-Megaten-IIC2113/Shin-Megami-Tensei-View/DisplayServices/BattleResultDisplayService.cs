@@ -57,10 +57,22 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
             view.WriteLine(TURN_OBTAINED_MESSAGE);
         }
 
+        private void ShowTurnConsumptionMessage(int fullTurnsConsumed, int blinkingTurnsConsumed, int blinkingTurnsGranted)
+        {
+            view.WriteLine($"Se han consumido {fullTurnsConsumed} Full Turn(s) y {blinkingTurnsConsumed} Blinking Turn(s)");
+            view.WriteLine($"Se han obtenido {blinkingTurnsGranted} Blinking Turn(s)");
+        }
+
         public void ShowWinner(string winnerName, string winnerNumber)
         {
             ShowSeparator();
             ShowWinnerMessage(winnerName, winnerNumber);
+        }
+
+        public void ShowTurnConsumptionWithBlinking(int fullTurnsConsumed, int blinkingTurnsConsumed, int blinkingTurnsGranted)
+        {
+            ShowSeparator();
+            ShowTurnConsumptionMessage(fullTurnsConsumed, blinkingTurnsConsumed, blinkingTurnsGranted);
         }
     }
 }

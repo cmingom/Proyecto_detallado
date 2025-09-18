@@ -24,11 +24,17 @@ namespace Shin_Megami_Tensei
         
         public bool ShouldProcessActionOrder(BattleContext battleContext, List<UnitInstanceContext> actionOrder, TeamState currentTeam)
         {
+            System.Console.WriteLine("DEBUG ActionProcessor: ShouldProcessActionOrder llamado");
             while (ShouldContinueProcessingActions(battleContext))
             {
+                System.Console.WriteLine("DEBUG ActionProcessor: Procesando iteración de acción");
                 if (ShouldProcessSingleActionIteration(battleContext, actionOrder, currentTeam))
+                {
+                    System.Console.WriteLine("DEBUG ActionProcessor: Iteración exitosa, terminando");
                     return true;
+                }
             }
+            System.Console.WriteLine("DEBUG ActionProcessor: ShouldProcessActionOrder completado");
             return false;
         }
 
@@ -77,10 +83,28 @@ namespace Shin_Megami_Tensei
 
         private bool ShouldProcessSingleUnitAction(UnitInstanceContext currentUnit, BattleContext battleContext)
         {
-            if (IsUnitActionSuccessful(currentUnit, battleContext))
-                return true;
+            System.Console.WriteLine($"DEBUG ActionProcessor: Procesando acción para {currentUnit.Name}");
             
-            combatManager.ConsumeTurn(battleContext.BattleState);
+            // Resetear el flag de mensaje de consumo de turnos para cada nueva acción
+            battleContext.BattleState.ResetTurnConsumptionMessageFlag();
+            
+            if (IsUnitActionSuccessful(currentUnit, battleContext))
+            {
+                System.Console.WriteLine($"DEBUG ActionProcessor: Acción exitosa para {currentUnit.Name}");
+                return true;
+            }
+            
+            System.Console.WriteLine($"DEBUG ActionProcessor: Acción fallida para {currentUnit.Name}");
+            // Solo consumir turno si no se marcó el mensaje (evita duplicación con PassTurn)
+            if (!battleContext.BattleState.IsTurnConsumptionMessageShown())
+            {
+                System.Console.WriteLine($"DEBUG ActionProcessor: Consumiendo turno para {currentUnit.Name}");
+                combatManager.ConsumeTurn(battleContext.BattleState);
+            }
+            else
+            {
+                System.Console.WriteLine($"DEBUG ActionProcessor: NO consumiendo turno para {currentUnit.Name} (mensaje ya mostrado)");
+            }
             
             return ShouldEndBattle(battleContext);
         }

@@ -13,6 +13,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
         private readonly AttackProcessor attackExecutor;
         private readonly SkillProcessor skillManager;
         private readonly PassTurnProcessor passTurnProcessor;
+        private readonly SummonProcessor summonProcessor;
 
         public ActionSelector(ActionSelectorConfig config)
         {
@@ -20,6 +21,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             this.attackExecutor = new AttackProcessor(config.BattleView);
             this.skillManager = new SkillProcessor(config.BattleView, config.SkillData);
             this.passTurnProcessor = config.PassTurnProcessor;
+            this.summonProcessor = new SummonProcessor(config.BattleView);
         }
 
         public bool CanProcessSelectedAction(ActionContext actionContext, string selectedAction)
@@ -34,21 +36,16 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
                 ATTACK_ACTION => attackExecutor.CanExecutePhysicalAttack(actionContext.ActingUnit, actionContext.BattleState),
                 GUN_ACTION => attackExecutor.CanExecuteGunAttack(actionContext.ActingUnit, actionContext.BattleState),
                 SKILL_ACTION => skillManager.CanProcessUseSkill(actionContext.ActingUnit, actionContext.BattleState),
-                SUMMON_ACTION => CanExecuteSummon(),
+                SUMMON_ACTION => summonProcessor.CanProcessSummon(actionContext.ActingUnit, actionContext.BattleState),
                 PASS_TURN_ACTION => CanPassTurn(actionContext),
                 SURRENDER_ACTION => CanProcessSurrenderAction(actionContext),
                 _ => IsValidAction()
             };
         }
 
-        private bool CanExecuteSummon()
-        {
-            return true;
-        }
 
         private bool CanPassTurn(ActionContext actionContext)
         {
-            System.Console.WriteLine("DEBUG ActionSelector: CanPassTurn llamado");
             passTurnProcessor.ProcessPassTurn(actionContext.BattleState);
             return true; // Pasar Turno siempre es exitoso
         }

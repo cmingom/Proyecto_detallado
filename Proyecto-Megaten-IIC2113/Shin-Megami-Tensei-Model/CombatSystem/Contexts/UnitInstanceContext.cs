@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+
 namespace Shin_Megami_Tensei_Model.Domain.Entities
 {
     public class UnitInstanceContext
@@ -13,10 +16,12 @@ namespace Shin_Megami_Tensei_Model.Domain.Entities
         public bool IsSamurai { get; init; }
         public char Position { get; init; }
         public List<string> Skills { get; init; } = new();
+        public Dictionary<string, string> Affinities { get; }
+        public int OriginalOrder { get; }
 
         public UnitInstanceContext(string name, int maxHP, int maxMP,
             int str, int skl, int spd,
-            bool isSamurai, char position, List<string>? skills = null)
+            bool isSamurai, char position, int originalOrder, List<string>? skills = null, Dictionary<string, string>? affinities = null)
         {
             Name = name;
             MaxHP = maxHP;
@@ -29,6 +34,10 @@ namespace Shin_Megami_Tensei_Model.Domain.Entities
             IsSamurai = isSamurai;
             Position = position;
             Skills = skills ?? new();
+            Affinities = affinities != null
+                ? new Dictionary<string, string>(affinities, StringComparer.OrdinalIgnoreCase)
+                : new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            OriginalOrder = originalOrder;
         }
     }
 }

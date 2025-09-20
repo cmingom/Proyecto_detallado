@@ -77,20 +77,13 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 
         private void ExecuteAttackOnTarget(AttackContext attackContext, UnitInstanceContext selectedTarget)
         {
-            var damage = CalculateAndApplyDamage(attackContext, selectedTarget);
-            ShowAttackResult(attackContext, selectedTarget, damage);
+            var attackOutcome = damageCalculator.CalculateDamageOutcome(attackContext, selectedTarget);
+            ShowAttackResult(attackContext, selectedTarget, attackOutcome);
         }
 
-        private int CalculateAndApplyDamage(AttackContext attackContext, UnitInstanceContext selectedTarget)
+        private void ShowAttackResult(AttackContext attackContext, UnitInstanceContext target, AttackDamageResult outcome)
         {
-            var damage = damageCalculator.GetCalculatedAttackDamage(attackContext);
-            damageCalculator.ApplyDamageToTarget(selectedTarget, damage);
-            return damage;
-        }
-
-        private void ShowAttackResult(AttackContext attackContext, UnitInstanceContext target, int damage)
-        {
-            var attackResultContext = new AttackResultContext(attackContext.Attacker, target, damage, attackContext.AttackType);
+            var attackResultContext = new AttackResultContext(attackContext.Attacker, target, outcome.Damage, attackContext.AttackType, outcome.Reaction);
             battleView.ShowAttackResult(attackResultContext);
         }
         

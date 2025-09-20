@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using Shin_Megami_Tensei_Model.CombatSystem.Core;
 using Shin_Megami_Tensei_Model.Domain.States;
 using Shin_Megami_Tensei_Model.Domain.Entities;
@@ -71,6 +74,9 @@ namespace Shin_Megami_Tensei
         {
             var activeUnits = new List<UnitInstanceContext>();
             var reserves = new List<UnitInstanceContext>();
+            var orderMap = team
+                .Select((unit, index) => new { unit.Name, index })
+                .ToDictionary(item => item.Name, item => item.index, StringComparer.Ordinal);
             
             // Separar Samurai y monstruos
             var samurai = team.FirstOrDefault(u => u.IsSamurai);
@@ -79,7 +85,7 @@ namespace Shin_Megami_Tensei
             // El Samurai siempre va al campo de batalla (posición A)
             if (samurai != null)
             {
-                var samuraiInstance = CreateUnitInstance(samurai, POSITION_A, unitData);
+                var samuraiInstance = CreateUnitInstance(samurai, POSITION_A, unitData, orderMap[samurai.Name]);
                 if (samuraiInstance != null)
                 {
                     activeUnits.Add(samuraiInstance);
@@ -90,7 +96,7 @@ namespace Shin_Megami_Tensei
             var activeMonstersCount = Math.Min(monsters.Count, MAX_ACTIVE_UNITS - 1); // -1 porque el Samurai ya ocupa una posición
             for (int i = 0; i < activeMonstersCount; i++)
             {
-                var monsterInstance = CreateUnitInstance(monsters[i], TEAM_POSITIONS[i + 1], unitData); // +1 porque posición A es para el Samurai
+                var monsterInstance = CreateUnitInstance(monsters[i], TEAM_POSITIONS[i + 1], unitData, orderMap[monsters[i].Name]); // +1 porque posición A es para el Samurai
                 if (monsterInstance != null)
                 {
                     activeUnits.Add(monsterInstance);
@@ -101,7 +107,7 @@ namespace Shin_Megami_Tensei
             var reserveMonsters = monsters.Skip(activeMonstersCount).Take(MAX_RESERVE_UNITS).ToList();
             foreach (var monster in reserveMonsters)
             {
-                var reserveInstance = CreateReserveUnitInstance(monster, unitData);
+                var reserveInstance = CreateReserveUnitInstance(monster, unitData, orderMap[monster.Name]);
                 if (reserveInstance != null)
                 {
                     reserves.Add(reserveInstance);
@@ -161,7 +167,7 @@ namespace Shin_Megami_Tensei
             return Math.Min(team.Count, MAX_ACTIVE_UNITS);
         }
 
-        private UnitInstanceContext? CreateUnitInstance(UnitInfo unitInfo, char position, Dictionary<string, Unit> unitData)
+        private UnitInstanceContext? CreateUnitInstance(UnitInfo unitInfo, char position, Dictionary<string, Unit> unitData, int? originalOrder = null)
         {
             var unitTemplate = GetUnitTemplate(unitInfo.Name, unitData);
             if (unitTemplate == null)
@@ -169,10 +175,10 @@ namespace Shin_Megami_Tensei
                 return null;
             }
             
-            return BuildUnitInstance(unitInfo, position, unitTemplate);
+            return BuildUnitInstance(unitInfo, position, unitTemplate, originalOrder ?? 0);
         }
 
-        private UnitInstanceContext? CreateReserveUnitInstance(UnitInfo unitInfo, Dictionary<string, Unit> unitData)
+        private UnitInstanceContext? CreateReserveUnitInstance(UnitInfo unitInfo, Dictionary<string, Unit> unitData, int? originalOrder = null)
         {
             var unitTemplate = GetUnitTemplate(unitInfo.Name, unitData);
             if (unitTemplate == null)
@@ -181,7 +187,7 @@ namespace Shin_Megami_Tensei
             }
             
             // Las unidades de reserva no tienen posición específica inicialmente
-            return BuildUnitInstance(unitInfo, 'R', unitTemplate); // 'R' para Reserve
+            return BuildUnitInstance(unitInfo, 'R', unitTemplate, originalOrder ?? 0); // 'R' para Reserve
         }
 
         private Unit? GetUnitTemplate(string unitName, Dictionary<string, Unit> unitData)
@@ -189,7 +195,7 @@ namespace Shin_Megami_Tensei
             return unitData.TryGetValue(unitName, out var unitTemplate) ? unitTemplate : null;
         }
 
-        private UnitInstanceContext BuildUnitInstance(UnitInfo unitInfo, char position, Unit unitTemplate)
+        private UnitInstanceContext BuildUnitInstance(UnitInfo unitInfo, char position, Unit unitTemplate, int originalOrder)
         {
             return new UnitInstanceContext(
                 name: unitInfo.Name,
@@ -200,7 +206,9 @@ namespace Shin_Megami_Tensei
                 spd: unitTemplate.Stats.Spd,
                 isSamurai: unitInfo.IsSamurai,
                 position: position,
-                skills: GetUnitSkills(unitInfo, unitTemplate)
+                originalOrder: originalOrder,
+                skills: GetUnitSkills(unitInfo, unitTemplate),
+                affinities: unitTemplate.Affinity
             );
         }
 

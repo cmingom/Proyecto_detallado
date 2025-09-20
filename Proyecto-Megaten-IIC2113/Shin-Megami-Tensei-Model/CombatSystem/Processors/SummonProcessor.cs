@@ -116,7 +116,13 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 
             foreach (var slot in SAMURAI_POSITIONS)
             {
-                options.Add((slot, team.GetActiveUnitAt(slot)));
+                var unit = team.GetActiveUnitAt(slot);
+                if (unit != null && unit.HP <= 0)
+                {
+                    unit = null;
+                }
+
+                options.Add((slot, unit));
             }
 
             return options;

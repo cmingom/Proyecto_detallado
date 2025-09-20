@@ -19,6 +19,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
         {
             var surrenderInfo = CreateSurrenderInfo(battleState, player1Name, player2Name);
             battleState.MarkWinner(surrenderInfo.Winner.Number, surrenderInfo.Winner.Name);
+            battleState.MarkTurnConsumptionMessageShown();
             ShowSurrenderInfo(surrenderInfo);
         }
 

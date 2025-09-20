@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Shin_Megami_Tensei_View.ConsoleLib;
 using Shin_Megami_Tensei_Model.Domain.States;
@@ -81,10 +82,17 @@ namespace Shin_Megami_Tensei
         private bool ShouldProcessCurrentUnit(BattleContext battleContext, List<UnitInstanceContext> actionOrder, TeamState currentTeam)
         {
             var currentUnit = GetCurrentUnit(actionOrder);
-            
-            if (ShouldProcessSingleUnitAction(currentUnit, battleContext)) 
+
+            if (ShouldProcessSingleUnitAction(currentUnit, battleContext))
+            {
+                if (!battleContext.BattleState.IsBattleFinished)
+                {
+                    ProcessUnitTurnEnd(actionOrder, currentTeam, currentUnit);
+                }
+
                 return true;
-            
+            }
+
             ProcessUnitTurnEnd(actionOrder, currentTeam, currentUnit);
             return false;
         }
@@ -103,18 +111,19 @@ namespace Shin_Megami_Tensei
 
             // Resetear el flag de mensaje de consumo de turnos para cada nueva acciÃ³n
             battleContext.BattleState.ResetTurnConsumptionMessageFlag();
-            
+
             if (IsUnitActionSuccessful(currentUnit, battleContext))
             {
+                EnsureTurnConsumptionForSuccessfulAction(battleContext);
                 return true;
             }
-            
+
             // Solo consumir turno si no se marcÃ³ el mensaje (evita duplicaciÃ³n con PassTurn)
             if (!battleContext.BattleState.IsTurnConsumptionMessageShown())
             {
                 combatManager.ConsumeTurn(battleContext.BattleState);
             }
-            
+
             return ShouldEndBattle(battleContext);
         }
 
@@ -159,21 +168,56 @@ namespace Shin_Megami_Tensei
                 actionOrder.Add(currentUnit);
             }
 
-            SyncActionOrderWithTeam(actionOrder, currentTeam);
+            SyncActionOrderWithTeam(actionOrder, currentTeam, currentUnit);
         }
 
-        private void SyncActionOrderWithTeam(List<UnitInstanceContext> actionOrder, TeamState currentTeam)
+        private void SyncActionOrderWithTeam(List<UnitInstanceContext> actionOrder, TeamState currentTeam, UnitInstanceContext actingUnit)
         {
             var aliveUnits = currentTeam.AliveUnits.ToList();
             var aliveSet = new HashSet<UnitInstanceContext>(aliveUnits);
 
-            actionOrder.RemoveAll(unit => !aliveSet.Contains(unit));
+            var insertionIndexes = new Queue<int>();
+            var filteredOrder = new List<UnitInstanceContext>(actionOrder.Count);
+
+            foreach (var unit in actionOrder)
+            {
+                if (aliveSet.Contains(unit))
+                {
+                    filteredOrder.Add(unit);
+                }
+                else
+                {
+                    insertionIndexes.Enqueue(filteredOrder.Count);
+                }
+            }
+
+            actionOrder.Clear();
+            actionOrder.AddRange(filteredOrder);
 
             foreach (var unit in aliveUnits)
             {
-                if (!actionOrder.Contains(unit))
+                if (actionOrder.Contains(unit))
                 {
-                    InsertUnitByTurnPriority(actionOrder, unit);
+                    continue;
+                }
+
+                if (insertionIndexes.Count > 0)
+                {
+                    var index = insertionIndexes.Dequeue();
+                    index = Math.Min(index, actionOrder.Count);
+                    actionOrder.Insert(index, unit);
+                }
+                else
+                {
+                    var actingIndex = actionOrder.IndexOf(actingUnit);
+                    if (actingIndex >= 0)
+                    {
+                        actionOrder.Insert(actingIndex, unit);
+                    }
+                    else
+                    {
+                        actionOrder.Add(unit);
+                    }
                 }
             }
         }
@@ -213,10 +257,24 @@ namespace Shin_Megami_Tensei
                 _ => int.MaxValue
             };
         }
+
+        private void EnsureTurnConsumptionForSuccessfulAction(BattleContext battleContext)
+        {
+            if (battleContext.BattleState.IsBattleFinished)
+            {
+                return;
+            }
+
+            if (battleContext.BattleState.IsTurnConsumptionMessageShown())
+            {
+                return;
+            }
+
+            combatManager.ConsumeTurn(battleContext.BattleState);
+        }
     }
 }
 
 
 // to do: ojala que las funciones no retornen null. separacion por partes de lineas largas. ver bien los modificadores. las skills deben tener poliformismo
-
 

@@ -20,6 +20,7 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
         private const string HP_RESULT_FORMAT = "{0} termina con HP:{1}/{2}";
         private const string GUN_ATTACK_TEXT = "dispara a";
         private const string PHYSICAL_ATTACK_TEXT = "ataca a";
+        private const string RESIST_MESSAGE_FORMAT = "{0} es resistente el ataque de {1}";
         private const string SUMMON_POSITION_HEADER = "Seleccione una posición para invocar";
         private const string EMPTY_SLOT_TEXT = "Vacío";
 
@@ -123,8 +124,17 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
         {
             ShowSeparator();
             ShowAttackAction(context.Attacker.Name, context.Target.Name, context.AttackType);
+            ShowAffinityReaction(context);
             ShowDamageResult(context.Target.Name, context.Damage);
             ShowHpResult(context.Target.Name, context.Target.HP, context.Target.MaxHP);
+        }
+
+        private void ShowAffinityReaction(AttackResultContext context)
+        {
+            if (context.Reaction == AffinityReaction.Resist)
+            {
+                view.WriteLine(string.Format(RESIST_MESSAGE_FORMAT, context.Target.Name, context.Attacker.Name));
+            }
         }
 
         private bool IsGunAttack(AttackType attackType)

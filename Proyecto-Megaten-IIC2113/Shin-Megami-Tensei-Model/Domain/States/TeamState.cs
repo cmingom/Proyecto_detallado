@@ -189,7 +189,17 @@ namespace Shin_Megami_Tensei_Model.Domain.States
 
         public void AddToReserves(UnitInstanceContext unit)
         {
-            if (!reservesList.Contains(unit) && CanAddToReserves())
+            if (reservesList.Contains(unit) || !CanAddToReserves())
+            {
+                return;
+            }
+
+            var insertIndex = reservesList.FindIndex(existing => existing.OriginalOrder > unit.OriginalOrder);
+            if (insertIndex >= 0)
+            {
+                reservesList.Insert(insertIndex, unit);
+            }
+            else
             {
                 reservesList.Add(unit);
             }

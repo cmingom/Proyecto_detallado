@@ -94,5 +94,15 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
         {
             battleResultDisplayService.ShowWinner(winnerName, winnerNumber);
         }
+
+        public void ShowSummonMenu(List<UnitInstanceContext> availableUnits)
+        {
+            actionMenuDisplayService.ShowSummonMenu(availableUnits);
+        }
+
+        public int GetSummonChoice(int maxOptions)
+        {
+            return actionMenuDisplayService.GetSummonChoice(maxOptions);
+        }
     }
 }

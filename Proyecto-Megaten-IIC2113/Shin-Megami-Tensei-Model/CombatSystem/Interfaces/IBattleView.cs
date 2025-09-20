@@ -15,5 +15,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
         void ShowSurrender(SurrenderContext context);
         void ShowTurnConsumption();
         void ShowTurnConsumptionWithBlinking(int fullTurnsConsumed, int blinkingTurnsConsumed, int blinkingTurnsGranted);
+        void ShowSummonMenu(List<UnitInstanceContext> availableUnits);
+        int GetSummonChoice(int maxOptions);
     }
 }

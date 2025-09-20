@@ -1,6 +1,7 @@
 using Shin_Megami_Tensei_Model.Domain.States;
 using Shin_Megami_Tensei_Model.Domain.Entities;
 using Shin_Megami_Tensei_Model.CombatSystem.Contexts;
+using Shin_Megami_Tensei_Model.CombatSystem.Exceptions;
 
 namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 {
@@ -18,18 +19,13 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             var currentTeam = battleState.GetCurrentTeam();
             var availableUnits = GetAvailableUnitsFromReserve(currentTeam);
             
-            if (!availableUnits.Any())
+            battleView.ShowSummonMenu(availableUnits);
+            var unitChoice = battleView.GetSummonChoice(availableUnits.Count + 1);
+            
+            if (IsUnitChoiceCancelled(unitChoice, availableUnits.Count) || availableUnits.Count == 0)
             {
-                ShowCancelMenu();
-                var choice = battleView.GetActionChoice(1);
                 return false;
             }
-
-            ShowSummonMenu(availableUnits);
-            var unitChoice = GetUnitChoice(availableUnits.Count);
-            
-            if (IsUnitChoiceCancelled(unitChoice, availableUnits.Count))
-                return false;
 
             var selectedUnit = availableUnits[unitChoice - 1];
 
@@ -48,16 +44,6 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             return team.Reserves.Where(unit => unit.HP > 0).ToList();
         }
 
-        private void ShowCancelMenu()
-        {
-            var cancelOptions = new List<string> { "Cancelar" };
-            // Mostrar solo opción de cancelar
-        }
-
-        private void ShowSummonMenu(List<UnitInstanceContext> availableUnits)
-        {
-            // Mostrar lista de unidades disponibles en reserva + Cancelar
-        }
 
         private int GetUnitChoice(int unitCount)
         {
@@ -75,7 +61,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             var positionChoice = GetPositionChoice();
             
             if (IsPositionChoiceCancelled(positionChoice))
-                return false;
+                throw new ActionCancelledException();
 
             var targetPosition = positionChoice + 1; // Posiciones 2-4 (índices 1-3)
             

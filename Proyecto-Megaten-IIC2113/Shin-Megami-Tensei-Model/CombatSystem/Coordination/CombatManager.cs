@@ -38,9 +38,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 
         public bool CanProcessUnitAction(UnitActionContext context)
         {
-            System.Console.WriteLine($"DEBUG CombatManager: CanProcessUnitAction() para {context.ActingUnit.Name}");
             var result = unitActionManager.CanProcessUnitAction(context);
-            System.Console.WriteLine($"DEBUG CombatManager: CanProcessUnitAction() - resultado: {result}");
             return result;
         }
         public void ConsumeTurn(BattleState battleState)

@@ -1,4 +1,4 @@
-namespace Shin_Megami_Tensei_Model.Domain.States
+﻿namespace Shin_Megami_Tensei_Model.Domain.States
 {
     public class BattleState
     {
@@ -9,12 +9,18 @@ namespace Shin_Megami_Tensei_Model.Domain.States
         private int blinkingTurns;
         private bool isPlayer1Turn;
         private bool turnConsumptionMessageShown;
+        private bool battleEnded;
+        private string? winnerSide;
+        private string? winnerSamuraiName;
         
         public TeamState Team1 { get; }
         public TeamState Team2 { get; }
         public int FullTurns => fullTurns;
         public int BlinkingTurns => blinkingTurns;
         public bool IsPlayer1Turn => isPlayer1Turn;
+        public bool IsBattleFinished => battleEnded;
+        public string? WinnerSide => winnerSide;
+        public string? WinnerSamuraiName => winnerSamuraiName;
 
         public BattleState(TeamState team1, TeamState team2)
         {
@@ -74,6 +80,25 @@ namespace Shin_Megami_Tensei_Model.Domain.States
         public void ResetTurnConsumptionMessageFlag()
         {
             turnConsumptionMessageShown = false;
+        }
+
+        public void MarkWinner(string newWinnerSide, string samuraiName)
+        {
+            if (battleEnded)
+            {
+                return;
+            }
+
+            battleEnded = true;
+            winnerSide = newWinnerSide;
+            winnerSamuraiName = samuraiName;
+        }
+
+        public void ClearWinner()
+        {
+            battleEnded = false;
+            winnerSide = null;
+            winnerSamuraiName = null;
         }
 
         public TeamState GetCurrentTeam()

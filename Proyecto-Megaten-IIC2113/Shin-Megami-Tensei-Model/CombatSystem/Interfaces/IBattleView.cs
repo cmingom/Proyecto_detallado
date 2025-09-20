@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Shin_Megami_Tensei_Model.Domain.Entities;
 using Shin_Megami_Tensei_Model.CombatSystem.Contexts;
 
@@ -17,5 +18,8 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
         void ShowTurnConsumptionWithBlinking(int fullTurnsConsumed, int blinkingTurnsConsumed, int blinkingTurnsGranted);
         void ShowSummonMenu(List<UnitInstanceContext> availableUnits);
         int GetSummonChoice(int maxOptions);
+        void ShowSummonPositionMenu(List<(char Slot, UnitInstanceContext? Unit)> positionOptions);
+        int GetSummonPositionChoice(int maxOptions);
+        void ShowSummonResult(string unitName);
     }
 }

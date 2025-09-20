@@ -21,25 +21,19 @@ namespace Shin_Megami_Tensei
 
         public void StartBattle(BattleState battleState, string player1Name, string player2Name)
         {
-            System.Console.WriteLine("DEBUG BattleEngine: StartBattle() iniciado");
             ExecuteBattleLoop(battleState, player1Name, player2Name);
-            System.Console.WriteLine("DEBUG BattleEngine: StartBattle() completado");
         }
 
         //TO DO:  agregar catch de excepciones
         private void ExecuteBattleLoop(BattleState battleState, string player1Name, string player2Name)
         {
-            System.Console.WriteLine("DEBUG BattleEngine: ExecuteBattleLoop() iniciado");
             while (ShouldContinueBattle(battleState))
             {
-                System.Console.WriteLine("DEBUG BattleEngine: Procesando turno");
                 if (ShouldExitBattle(battleState, player1Name, player2Name))
                 {
-                    System.Console.WriteLine("DEBUG BattleEngine: Saliendo de la batalla");
                     return;
                 }
             }
-            System.Console.WriteLine("DEBUG BattleEngine: ExecuteBattleLoop() completado");
         }
 
         private bool ShouldContinueBattle(BattleState battleState)
@@ -49,9 +43,7 @@ namespace Shin_Megami_Tensei
 
         private bool ShouldExitBattle(BattleState battleState, string player1Name, string player2Name)
         {
-            System.Console.WriteLine("DEBUG BattleEngine: ShouldExitBattle() - llamando turnManager.IsPlayerTurnComplete()");
             var result = turnManager.IsPlayerTurnComplete(battleState, player1Name, player2Name);
-            System.Console.WriteLine($"DEBUG BattleEngine: ShouldExitBattle() - resultado: {result}");
             return result;
         }
     }

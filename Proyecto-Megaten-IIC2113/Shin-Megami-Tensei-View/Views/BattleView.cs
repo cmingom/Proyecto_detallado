@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Shin_Megami_Tensei_Model.Domain.States;
 using Shin_Megami_Tensei_Model.Domain.Entities;
 using Shin_Megami_Tensei_Model.CombatSystem.Core;
@@ -103,6 +104,21 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
         public int GetSummonChoice(int maxOptions)
         {
             return actionMenuDisplayService.GetSummonChoice(maxOptions);
+        }
+
+        public void ShowSummonPositionMenu(List<(char Slot, UnitInstanceContext? Unit)> positionOptions)
+        {
+            actionMenuDisplayService.ShowSummonPositionMenu(positionOptions);
+        }
+
+        public int GetSummonPositionChoice(int maxOptions)
+        {
+            return actionMenuDisplayService.GetSummonPositionChoice(maxOptions);
+        }
+
+        public void ShowSummonResult(string unitName)
+        {
+            battleResultDisplayService.ShowSummonResult(unitName);
         }
     }
 }

@@ -11,7 +11,10 @@ namespace Shin_Megami_Tensei
 
         public bool HasRemainingTurns()
         {
-            return BattleState?.FullTurns > 0;
+            var hasFullTurns = BattleState?.FullTurns > 0;
+            var hasBlinkingTurns = BattleState?.BlinkingTurns > 0;
+            var result = hasFullTurns || hasBlinkingTurns;
+            return result;
         }
 
         public bool IsBattleOver(CombatManager combatManager)

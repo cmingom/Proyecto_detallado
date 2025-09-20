@@ -1,3 +1,5 @@
+﻿using System.Collections.Generic;
+using System.Linq;
 using Shin_Megami_Tensei_View.ConsoleLib;
 using Shin_Megami_Tensei_Model.Domain.States;
 using Shin_Megami_Tensei_Model.Domain.Entities;
@@ -24,17 +26,23 @@ namespace Shin_Megami_Tensei
         
         public bool ShouldProcessActionOrder(BattleContext battleContext, List<UnitInstanceContext> actionOrder, TeamState currentTeam)
         {
-            System.Console.WriteLine("DEBUG ActionProcessor: ShouldProcessActionOrder llamado");
+            if (battleContext.BattleState.IsBattleFinished)
+            {
+                return true;
+            }
+
             while (ShouldContinueProcessingActions(battleContext))
             {
-                System.Console.WriteLine("DEBUG ActionProcessor: Procesando iteración de acción");
+                if (battleContext.BattleState.IsBattleFinished)
+                {
+                    return true;
+                }
+
                 if (ShouldProcessSingleActionIteration(battleContext, actionOrder, currentTeam))
                 {
-                    System.Console.WriteLine("DEBUG ActionProcessor: Iteración exitosa, terminando");
                     return true;
                 }
             }
-            System.Console.WriteLine("DEBUG ActionProcessor: ShouldProcessActionOrder completado");
             return false;
         }
 
@@ -45,6 +53,11 @@ namespace Shin_Megami_Tensei
 
         private bool ShouldProcessSingleActionIteration(BattleContext battleContext, List<UnitInstanceContext> actionOrder, TeamState currentTeam)
         {
+            if (battleContext.BattleState.IsBattleFinished)
+            {
+                return true;
+            }
+
             ShowBattleStatus(battleContext, actionOrder);
             
             if (IsActionOrderEmpty(actionOrder)) 
@@ -83,27 +96,23 @@ namespace Shin_Megami_Tensei
 
         private bool ShouldProcessSingleUnitAction(UnitInstanceContext currentUnit, BattleContext battleContext)
         {
-            System.Console.WriteLine($"DEBUG ActionProcessor: Procesando acción para {currentUnit.Name}");
-            
-            // Resetear el flag de mensaje de consumo de turnos para cada nueva acción
+            if (battleContext.BattleState.IsBattleFinished)
+            {
+                return true;
+            }
+
+            // Resetear el flag de mensaje de consumo de turnos para cada nueva acciÃ³n
             battleContext.BattleState.ResetTurnConsumptionMessageFlag();
             
             if (IsUnitActionSuccessful(currentUnit, battleContext))
             {
-                System.Console.WriteLine($"DEBUG ActionProcessor: Acción exitosa para {currentUnit.Name}");
                 return true;
             }
             
-            System.Console.WriteLine($"DEBUG ActionProcessor: Acción fallida para {currentUnit.Name}");
-            // Solo consumir turno si no se marcó el mensaje (evita duplicación con PassTurn)
+            // Solo consumir turno si no se marcÃ³ el mensaje (evita duplicaciÃ³n con PassTurn)
             if (!battleContext.BattleState.IsTurnConsumptionMessageShown())
             {
-                System.Console.WriteLine($"DEBUG ActionProcessor: Consumiendo turno para {currentUnit.Name}");
                 combatManager.ConsumeTurn(battleContext.BattleState);
-            }
-            else
-            {
-                System.Console.WriteLine($"DEBUG ActionProcessor: NO consumiendo turno para {currentUnit.Name} (mensaje ya mostrado)");
             }
             
             return ShouldEndBattle(battleContext);
@@ -149,9 +158,65 @@ namespace Shin_Megami_Tensei
             {
                 actionOrder.Add(currentUnit);
             }
+
+            SyncActionOrderWithTeam(actionOrder, currentTeam);
+        }
+
+        private void SyncActionOrderWithTeam(List<UnitInstanceContext> actionOrder, TeamState currentTeam)
+        {
+            var aliveUnits = currentTeam.AliveUnits.ToList();
+            var aliveSet = new HashSet<UnitInstanceContext>(aliveUnits);
+
+            actionOrder.RemoveAll(unit => !aliveSet.Contains(unit));
+
+            foreach (var unit in aliveUnits)
+            {
+                if (!actionOrder.Contains(unit))
+                {
+                    InsertUnitByTurnPriority(actionOrder, unit);
+                }
+            }
+        }
+
+        private void InsertUnitByTurnPriority(List<UnitInstanceContext> actionOrder, UnitInstanceContext newUnit)
+        {
+            var insertIndex = actionOrder.Count;
+            for (int i = 0; i < actionOrder.Count; i++)
+            {
+                if (ShouldInsertBefore(newUnit, actionOrder[i]))
+                {
+                    insertIndex = i;
+                    break;
+                }
+            }
+            actionOrder.Insert(insertIndex, newUnit);
+        }
+
+        private bool ShouldInsertBefore(UnitInstanceContext candidate, UnitInstanceContext current)
+        {
+            if (candidate.Spd == current.Spd)
+            {
+                return GetPositionPriority(candidate.Position) < GetPositionPriority(current.Position);
+            }
+
+            return candidate.Spd > current.Spd;
+        }
+
+        private int GetPositionPriority(char position)
+        {
+            return position switch
+            {
+                'A' => 0,
+                'B' => 1,
+                'C' => 2,
+                'D' => 3,
+                _ => int.MaxValue
+            };
         }
     }
 }
 
 
 // to do: ojala que las funciones no retornen null. separacion por partes de lineas largas. ver bien los modificadores. las skills deben tener poliformismo
+
+

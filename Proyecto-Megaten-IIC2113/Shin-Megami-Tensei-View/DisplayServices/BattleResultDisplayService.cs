@@ -74,5 +74,11 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
             ShowSeparator();
             ShowTurnConsumptionMessage(fullTurnsConsumed, blinkingTurnsConsumed, blinkingTurnsGranted);
         }
+
+        public void ShowSummonResult(string unitName)
+        {
+            ShowSeparator();
+            view.WriteLine($"{unitName} ha sido invocado");
+        }
     }
 }

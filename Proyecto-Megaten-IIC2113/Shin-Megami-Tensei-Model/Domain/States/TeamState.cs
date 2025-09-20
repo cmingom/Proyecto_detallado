@@ -164,5 +164,35 @@ namespace Shin_Megami_Tensei_Model.Domain.States
 
         // Propiedad de compatibilidad para mantener funcionalidad existente
         public IReadOnlyList<UnitInstanceContext?> Units => ActiveUnits;
+
+        public UnitInstanceContext? GetActiveUnitAt(char position)
+        {
+            int index = GetPositionIndex(position);
+            if (!IsValidIndex(index))
+            {
+                throw new ArgumentException("Invalid position", nameof(position));
+            }
+
+            return activeUnitsArray[index];
+        }
+
+        public void SetActiveUnitAt(char position, UnitInstanceContext? unit)
+        {
+            int index = GetPositionIndex(position);
+            if (!IsValidIndex(index))
+            {
+                throw new ArgumentException("Invalid position", nameof(position));
+            }
+
+            activeUnitsArray[index] = unit;
+        }
+
+        public void AddToReserves(UnitInstanceContext unit)
+        {
+            if (!reservesList.Contains(unit) && CanAddToReserves())
+            {
+                reservesList.Add(unit);
+            }
+        }
     }
 }

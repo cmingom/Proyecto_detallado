@@ -1,29 +1,23 @@
-ï»¿using Shin_Megami_Tensei_View;
+using Shin_Megami_Tensei_View;
 using Shin_Megami_Tensei;
 
-System.Console.WriteLine("*** DEBUG: Program.cs cargado ***");
-System.Console.WriteLine("*** DEBUG: Program.cs cargado ***");
-System.Console.WriteLine("*** DEBUG: Program.cs cargado ***");
 
 /* 
- * Este cÃ³digo permite replicar un test case. Primero pregunta por el grupo de test
- * case a replicar. Luego pregunta por el test case especÃ­fico que se quiere replicar.
+ * Este código permite replicar un test case. Primero pregunta por el grupo de test
+ * case a replicar. Luego pregunta por el test case específico que se quiere replicar.
  *
- * Al presionar enter, se ingresa el input del test case en forma automÃ¡tica. Si el
+ * Al presionar enter, se ingresa el input del test case en forma automática. Si el
  * color es azul significa que el output de tu programa es el esperado. Si es rojo
- * significa que el output de tu programa es distinto al esperado (i.e., el test fallÃ³).
+ * significa que el output de tu programa es distinto al esperado (i.e., el test falló).
  */
 
-// Verificar si se proporcionÃ³ archivo de equipos como argumento de lÃ­nea de comandos (para tests)
+// Verificar si se proporcionó archivo de equipos como argumento de línea de comandos (para tests)
 if (args.Length > 0)
 {
-    System.Console.WriteLine($"DEBUG Program: Iniciando con archivo {args[0]}");
     string teamsFile = args[0];
     var view = View.BuildConsoleView();
     var game = new Game(view, teamsFile);
-    System.Console.WriteLine("DEBUG Program: Llamando game.Play()");
     game.Play();
-    System.Console.WriteLine("DEBUG Program: game.Play() completado");
 }
 else
 {
@@ -40,7 +34,7 @@ else
 
 string SelectTestFolder()
 {
-    Console.WriteLine("Â¿QuÃ© grupo de test quieres usar?");
+    Console.WriteLine("¿Qué grupo de test quieres usar?");
     string[] dirs = GetAvailableTestsInOrder();
     ShowArrayOfOptions(dirs);
     return AskUserToSelectAnOption(dirs);
@@ -69,7 +63,7 @@ string AskUserToSelectAnOption(string[] options)
 
 int AskUserToSelectNumber(int minValue, int maxValue)
 {
-    Console.WriteLine($"(Ingresa un nÃºmero entre {minValue} y {maxValue})");
+    Console.WriteLine($"(Ingresa un número entre {minValue} y {maxValue})");
     int value;
     bool wasParsePossible;
     do
@@ -86,7 +80,7 @@ bool IsValueOutsideTheValidRange(int minValue, int value, int maxValue)
 
 string SelectTest(string testFolder)
 {
-    Console.WriteLine("Â¿QuÃ© test quieres ejecutar?");
+    Console.WriteLine("¿Qué test quieres ejecutar?");
     string[] tests = Directory.GetFiles(testFolder, "*.txt" );
     Array.Sort(tests);
     return AskUserToSelectAnOption(tests);

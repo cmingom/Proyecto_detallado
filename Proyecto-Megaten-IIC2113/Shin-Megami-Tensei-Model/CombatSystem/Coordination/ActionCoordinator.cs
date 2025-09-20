@@ -19,7 +19,6 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 
         public bool CanProcessSelectedAction(ActionProcessingContext context)
         {
-            System.Console.WriteLine($"DEBUG ActionCoordinator: Procesando acción '{context.SelectedAction}'");
             var actionContext = new ActionContext(context.ActingUnit, context.BattleState, context.Player1Name, context.Player2Name);
             return actionSelector.CanProcessSelectedAction(actionContext, context.SelectedAction);
         }

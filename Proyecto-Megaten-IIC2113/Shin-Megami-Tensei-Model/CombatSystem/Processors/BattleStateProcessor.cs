@@ -29,23 +29,27 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 
         public void ConsumeTurn(BattleState battleState)
         {
-            System.Console.WriteLine("DEBUG BattleStateProcessor: ConsumeTurn llamado");
-            if (!battleState.IsTurnConsumptionMessageShown())
+            if (battleState.IsTurnConsumptionMessageShown())
             {
-                System.Console.WriteLine("DEBUG BattleStateProcessor: Mostrando consumo de turno");
-                ShowTurnConsumption();
-                DecreaseFullTurns(battleState);
+                return;
+            }
+
+            int fullTurnsConsumed = 0;
+            int blinkingTurnsConsumed = 0;
+
+            if (battleState.BlinkingTurns > 0)
+            {
+                battleState.ConsumeBlinkingTurn();
+                blinkingTurnsConsumed = 1;
             }
             else
             {
-                System.Console.WriteLine("DEBUG BattleStateProcessor: NO mostrando consumo de turno (mensaje ya mostrado)");
+                DecreaseFullTurns(battleState);
+                fullTurnsConsumed = 1;
             }
-            System.Console.WriteLine("DEBUG BattleStateProcessor: ConsumeTurn completado");
-        }
 
-        private void ShowTurnConsumption()
-        {
-            battleView.ShowTurnConsumption();
+            battleState.MarkTurnConsumptionMessageShown();
+            battleView.ShowTurnConsumptionWithBlinking(fullTurnsConsumed, blinkingTurnsConsumed, 0);
         }
 
         private void DecreaseFullTurns(BattleState battleState)
@@ -61,7 +65,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 
         public bool IsBattleOver(BattleState battleState)
         {
-            return IsTeamDefeated(battleState.Team1) || IsTeamDefeated(battleState.Team2);
+            return battleState.IsBattleFinished || IsTeamDefeated(battleState.Team1) || IsTeamDefeated(battleState.Team2);
         }
 
         private bool IsTeamDefeated(TeamState team)
@@ -71,7 +75,15 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 
         public string GetWinner(BattleState battleState, string player1Name, string player2Name)
         {
-            return IsTeamOneDefeated(battleState) ? player2Name : player1Name;
+            if (battleState.WinnerSide != null)
+            {
+                return battleState.WinnerSide == PLAYER_1_LABEL ? battleState.WinnerSamuraiName ?? player1Name : battleState.WinnerSamuraiName ?? player2Name;
+            }
+
+            var winnerName = IsTeamOneDefeated(battleState) ? player2Name : player1Name;
+            var winnerSide = IsTeamOneDefeated(battleState) ? PLAYER_2_LABEL : PLAYER_1_LABEL;
+            battleState.MarkWinner(winnerSide, winnerName);
+            return winnerName;
         }
 
         private bool IsTeamOneDefeated(BattleState battleState)
@@ -81,7 +93,13 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 
         public string GetWinnerNumber(BattleState battleState)
         {
-            return IsTeamOneDefeated(battleState) ? PLAYER_2_LABEL : PLAYER_1_LABEL;
+            if (battleState.WinnerSide != null)
+            {
+                return battleState.WinnerSide;
+            }
+
+            var winnerSide = IsTeamOneDefeated(battleState) ? PLAYER_2_LABEL : PLAYER_1_LABEL;
+            return winnerSide;
         }
     }
 }

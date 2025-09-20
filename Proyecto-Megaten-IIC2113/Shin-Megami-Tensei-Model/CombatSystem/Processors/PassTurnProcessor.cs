@@ -20,20 +20,18 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 
             if (battleState.BlinkingTurns > 0)
             {
-                // Consume 1 Blinking Turn si hay disponible
                 battleState.ConsumeBlinkingTurn();
                 blinkingTurnsConsumed = 1;
             }
             else
             {
-                // Si no hay Blinking, consume 1 Full Turn y otorga 1 Blinking Turn
                 battleState.ConsumeTurn();
                 battleState.GrantBlinkingTurn();
                 fullTurnsConsumed = 1;
                 blinkingTurnsGranted = 1;
             }
 
-            // Mostrar resumen de turnos
+            battleState.MarkTurnConsumptionMessageShown();
             battleView.ShowTurnConsumptionWithBlinking(fullTurnsConsumed, blinkingTurnsConsumed, blinkingTurnsGranted);
         }
     }

@@ -23,31 +23,23 @@ namespace Shin_Megami_Tensei
 
         public bool IsPlayerTurnComplete(BattleState battleState, string player1Name, string player2Name)
         {
-            System.Console.WriteLine("DEBUG TurnManager: IsPlayerTurnComplete() iniciado");
             var currentTeam = GetCurrentTeam(battleState);
-            System.Console.WriteLine($"DEBUG TurnManager: Equipo actual: {currentTeam.AliveUnits.Count()} unidades vivas");
             var turnContext = new TurnContext(battleState, currentTeam, player1Name, player2Name);
             var result = ShouldEndBattleAfterTurn(turnContext);
-            System.Console.WriteLine($"DEBUG TurnManager: IsPlayerTurnComplete() - resultado: {result}");
             return result;
         }
 
         private bool ShouldEndBattleAfterTurn(TurnContext turnContext)
         {
-            System.Console.WriteLine("DEBUG TurnManager: ShouldEndBattleAfterTurn() iniciado");
             ShowPlayerTurnHeader(turnContext);
             var result = ShouldEndBattleAfterActions(turnContext);
-            System.Console.WriteLine($"DEBUG TurnManager: ShouldEndBattleAfterTurn() - resultado: {result}");
             return result;
         }
 
         private bool ShouldEndBattleAfterActions(TurnContext turnContext)
         {
-            System.Console.WriteLine("DEBUG TurnManager: ShouldEndBattleAfterActions() iniciado");
             var shouldEndBattle = ShouldProcessPlayerActions(turnContext);
-            System.Console.WriteLine($"DEBUG TurnManager: ShouldProcessPlayerActions() - resultado: {shouldEndBattle}");
             HandlePlayerTurnEnd(turnContext);
-            System.Console.WriteLine($"DEBUG TurnManager: ShouldEndBattleAfterActions() - resultado final: {shouldEndBattle}");
             return shouldEndBattle;
         }
 
@@ -75,10 +67,8 @@ namespace Shin_Megami_Tensei
 
         private bool ShouldProcessPlayerActions(TurnContext turnContext)
         {
-            System.Console.WriteLine("DEBUG TurnManager: ShouldProcessPlayerActions llamado");
             var actionOrder = combatService.GetCalculatedActionOrder(turnContext.CurrentTeam);
             var battleContext = CreateBattleContext(turnContext);
-            System.Console.WriteLine($"DEBUG TurnManager: Llamando ActionProcessor con {actionOrder.Count} unidades");
             return actionProcessor.ShouldProcessActionOrder(battleContext, actionOrder, turnContext.CurrentTeam);
         }
 

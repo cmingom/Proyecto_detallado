@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Shin_Megami_Tensei_Model.Domain.Entities;
 using Shin_Megami_Tensei_Model.CombatSystem.Contexts;
 using Shin_Megami_Tensei_Model.CombatSystem.Enums;
@@ -19,6 +20,8 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
         private const string HP_RESULT_FORMAT = "{0} termina con HP:{1}/{2}";
         private const string GUN_ATTACK_TEXT = "dispara a";
         private const string PHYSICAL_ATTACK_TEXT = "ataca a";
+        private const string SUMMON_POSITION_HEADER = "Seleccione una posición para invocar";
+        private const string EMPTY_SLOT_TEXT = "Vacío";
 
         private readonly View view;
 
@@ -165,6 +168,41 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
         }
 
         public int GetSummonChoice(int maxOptions)
+        {
+            return GetValidatedChoice(maxOptions);
+        }
+
+        public void ShowSummonPositionMenu(List<(char Slot, UnitInstanceContext? Unit)> positionOptions)
+        {
+            ShowSeparator();
+            view.WriteLine(SUMMON_POSITION_HEADER);
+
+            for (int i = 0; i < positionOptions.Count; i++)
+            {
+                var (slot, unit) = positionOptions[i];
+                var baseDescription = unit == null
+                    ? EMPTY_SLOT_TEXT
+                    : $"{unit.Name} HP:{unit.HP}/{unit.MaxHP} MP:{unit.MP}/{unit.MaxMP}";
+                var positionNumber = GetPositionNumber(slot);
+                view.WriteLine($"{i + 1}-{baseDescription} (Puesto {positionNumber})");
+            }
+
+            view.WriteLine(string.Format(CANCEL_OPTION_FORMAT, positionOptions.Count + 1));
+        }
+
+        private static int GetPositionNumber(char slot)
+        {
+            return slot switch
+            {
+                'A' => 1,
+                'B' => 2,
+                'C' => 3,
+                'D' => 4,
+                _ => 0
+            };
+        }
+
+        public int GetSummonPositionChoice(int maxOptions)
         {
             return GetValidatedChoice(maxOptions);
         }

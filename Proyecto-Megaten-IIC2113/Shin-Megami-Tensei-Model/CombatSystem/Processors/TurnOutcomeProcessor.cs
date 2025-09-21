@@ -39,20 +39,25 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
         {
             int fullConsumed = 0;
             int blinkingConsumed = 0;
+            int blinkingGranted = 0;
 
             if (battleState.FullTurns > 0)
             {
+                // Al golpear Weak con al menos 1 Full Turn disponible: consumes 1 Full y obtienes 1 Blinking
                 battleState.ConsumeTurn();
                 fullConsumed = 1;
+                battleState.GrantBlinkingTurn();
+                blinkingGranted = 1;
             }
             else if (battleState.BlinkingTurns > 0)
             {
+                // Si no hay Full, consumes 1 Blinking y no se crea otro
                 battleState.ConsumeBlinkingTurn();
                 blinkingConsumed = 1;
+                blinkingGranted = 0;
             }
 
-            battleState.GrantBlinkingTurn();
-            return new TurnOutcome(fullConsumed, blinkingConsumed, 1);
+            return new TurnOutcome(fullConsumed, blinkingConsumed, blinkingGranted);
         }
 
         private TurnOutcome ApplyNullOutcome(BattleState battleState)

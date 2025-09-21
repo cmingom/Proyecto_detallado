@@ -1,21 +1,29 @@
-using Shin_Megami_Tensei_Model.Domain.States;
-using Shin_Megami_Tensei_Model.Domain.Entities;
-using Shin_Megami_Tensei_Model.CombatSystem.Enums;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using Shin_Megami_Tensei_Model.CombatSystem.Contexts;
+using Shin_Megami_Tensei_Model.CombatSystem.Enums;
+using Shin_Megami_Tensei_Model.Domain.Entities;
+using Shin_Megami_Tensei_Model.Domain.States;
 
 namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 {
     public class AttackProcessor
     {
+        private const string PhysicalAttackName = "Atacar";
+        private const string GunAttackName = "Disparar";
+
         private readonly IBattleView battleView;
         private readonly TargetSelector targetSelector;
         private readonly DamageCalculator damageCalculator;
+        private readonly TurnOutcomeProcessor turnOutcomeProcessor;
 
-        public AttackProcessor(IBattleView battleView)
+        public AttackProcessor(IBattleView battleView, TargetSelector targetSelector, DamageCalculator damageCalculator, TurnOutcomeProcessor turnOutcomeProcessor)
         {
             this.battleView = battleView;
-            this.targetSelector = new TargetSelector(battleView);
-            this.damageCalculator = new DamageCalculator();
+            this.targetSelector = targetSelector;
+            this.damageCalculator = damageCalculator;
+            this.turnOutcomeProcessor = turnOutcomeProcessor;
         }
 
         public bool CanExecutePhysicalAttack(UnitInstanceContext attacker, BattleState battleState)
@@ -30,29 +38,22 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             return CanProcessAttack(attackContext);
         }
 
-        // to do: poner excepciones
         private bool CanProcessAttack(AttackContext attackContext)
         {
-            if (!CanSelectValidTarget(attackContext))
+            var availableTargets = GetValidTargets(attackContext);
+            if (!availableTargets.Any())
+            {
                 return false;
-            var selectedTarget = SelectTargetForAttack(attackContext);
-            if (IsInvalidTarget(selectedTarget))
+            }
+
+            var selectedTarget = targetSelector.SelectTargetForAttack(attackContext.Attacker, availableTargets);
+            if (selectedTarget == null)
+            {
                 return false;
+            }
 
             ExecuteAttackOnTarget(attackContext, selectedTarget);
             return true;
-        }
-
-        private bool CanSelectValidTarget(AttackContext attackContext)
-        {
-            var availableTargets = GetValidTargets(attackContext);
-            return !HasNoAvailableTargets(availableTargets);
-        }
-
-        private UnitInstanceContext SelectTargetForAttack(AttackContext attackContext)
-        {
-            var availableTargets = GetValidTargets(attackContext);
-            return GetTarget(attackContext, availableTargets);
         }
 
         private List<UnitInstanceContext> GetValidTargets(AttackContext attackContext)
@@ -60,33 +61,40 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             return targetSelector.GetAvailableTargetsForAttack(attackContext.BattleState);
         }
 
-        private UnitInstanceContext GetTarget(AttackContext attackContext, List<UnitInstanceContext> availableTargets)
-        {
-            return targetSelector.SelectTargetForAttack(attackContext.Attacker, availableTargets);
-        }
-
-        private bool HasNoAvailableTargets(List<UnitInstanceContext> availableTargets)
-        {
-            return !availableTargets.Any();
-        }
-
-        private bool IsInvalidTarget(UnitInstanceContext selectedTarget)
-        {
-            return selectedTarget == null;
-        }
-
         private void ExecuteAttackOnTarget(AttackContext attackContext, UnitInstanceContext selectedTarget)
         {
-            var attackOutcome = damageCalculator.CalculateDamageOutcome(attackContext, selectedTarget);
-            ShowAttackResult(attackContext, selectedTarget, attackOutcome);
+            var element = attackContext.AttackType == AttackType.Gun ? DamageElement.Gun : DamageElement.Phys;
+            var abilityName = attackContext.AttackType == AttackType.Gun ? GunAttackName : PhysicalAttackName;
+            var baseDamage = damageCalculator.GetBasicAttackBaseDamage(attackContext.Attacker, element);
+            var resolution = damageCalculator.ResolveDamage(attackContext.Attacker, selectedTarget, element, baseDamage);
+            var context = BuildAttackResultContext(attackContext.Attacker, selectedTarget, abilityName, element, resolution, 1, 1);
+
+            battleView.ShowAttackResult(context);
+            turnOutcomeProcessor.ApplyOutcome(attackContext.BattleState, resolution.Reaction);
         }
 
-        private void ShowAttackResult(AttackContext attackContext, UnitInstanceContext target, AttackDamageResult outcome)
+        private AttackResultContext BuildAttackResultContext(
+            UnitInstanceContext attacker,
+            UnitInstanceContext target,
+            string actionName,
+            DamageElement element,
+            DamageResolutionResult resolution,
+            int hitNumber,
+            int totalHits)
         {
-            var attackResultContext = new AttackResultContext(attackContext.Attacker, target, outcome.Damage, attackContext.AttackType, outcome.Reaction);
-            battleView.ShowAttackResult(attackResultContext);
+            return new AttackResultContext(
+                attacker,
+                target,
+                actionName,
+                element,
+                resolution.Reaction,
+                resolution.DamageToTarget,
+                resolution.DamageToAttacker,
+                hitNumber,
+                totalHits,
+                resolution.TargetHpAfter,
+                resolution.AttackerHpAfter,
+                resolution.IsCritical);
         }
-        
     }
 }
-

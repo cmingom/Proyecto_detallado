@@ -66,6 +66,11 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
             actionMenuDisplayService.ShowAttackResult(context);
         }
 
+        public void ShowGuardAction(UnitInstanceContext unit)
+        {
+            actionMenuDisplayService.ShowGuardAction(unit);
+        }
+
         public void ShowSkillSelection(UnitInstanceContext unit, List<Skill> availableSkills)
         {
             skillDisplayService.ShowSkillSelection(unit, availableSkills);
@@ -122,3 +127,5 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
         }
     }
 }
+
+

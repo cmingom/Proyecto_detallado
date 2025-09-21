@@ -7,6 +7,9 @@
         Resist,
         Null,
         Repel,
-        Drain
+        Drain,
+        Miss
     }
 }
+
+

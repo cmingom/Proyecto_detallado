@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Shin_Megami_Tensei_View.ConsoleLib;
@@ -109,8 +109,9 @@ namespace Shin_Megami_Tensei
                 return true;
             }
 
-            // Resetear el flag de mensaje de consumo de turnos para cada nueva acciÃ³n
+            // Resetear el flag de mensaje de consumo de turnos para cada nueva acci�n
             battleContext.BattleState.ResetTurnConsumptionMessageFlag();
+            currentUnit.OnTurnStart();
 
             if (IsUnitActionSuccessful(currentUnit, battleContext))
             {
@@ -118,7 +119,7 @@ namespace Shin_Megami_Tensei
                 return true;
             }
 
-            // Solo consumir turno si no se marcÃ³ el mensaje (evita duplicaciÃ³n con PassTurn)
+            // Solo consumir turno si no se marcó el mensaje (evita duplicación con PassTurn)
             if (!battleContext.BattleState.IsTurnConsumptionMessageShown())
             {
                 combatManager.ConsumeTurn(battleContext.BattleState);
@@ -161,8 +162,7 @@ namespace Shin_Megami_Tensei
         }
 
         private void ProcessUnitTurnEnd(List<UnitInstanceContext> actionOrder, TeamState currentTeam, UnitInstanceContext currentUnit)
-        {
-            actionOrder.RemoveAt(FIRST_UNIT_INDEX);
+        {            actionOrder.RemoveAt(FIRST_UNIT_INDEX);
             if (currentTeam.AliveUnits.Contains(currentUnit))
             {
                 actionOrder.Add(currentUnit);
@@ -277,4 +277,8 @@ namespace Shin_Megami_Tensei
 
 
 // to do: ojala que las funciones no retornen null. separacion por partes de lineas largas. ver bien los modificadores. las skills deben tener poliformismo
+
+
+
+
 

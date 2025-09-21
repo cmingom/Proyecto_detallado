@@ -10,7 +10,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
         private const string SUMMON_ACTION = "Invocar";
         private const string PASS_TURN_ACTION = "Pasar Turno";
         private const string SURRENDER_ACTION = "Rendirse";
-        
+
         private readonly SurrenderProcessor surrenderHandler;
         private readonly AttackProcessor attackExecutor;
         private readonly SkillProcessor skillManager;
@@ -19,19 +19,14 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 
         public ActionSelector(ActionSelectorConfig config)
         {
-            this.surrenderHandler = config.SurrenderHandler;
-            this.attackExecutor = new AttackProcessor(config.BattleView);
-            this.skillManager = new SkillProcessor(config.BattleView, config.SkillData);
-            this.passTurnProcessor = config.PassTurnProcessor;
-            this.summonProcessor = new SummonProcessor(config.BattleView);
+            surrenderHandler = config.SurrenderHandler;
+            attackExecutor = new AttackProcessor(config.BattleView, config.TargetSelector, config.DamageCalculator, config.TurnOutcomeProcessor);
+            skillManager = new SkillProcessor(config.BattleView, config.SkillData, config.TargetSelector, config.DamageCalculator, config.TurnOutcomeProcessor);
+            passTurnProcessor = config.PassTurnProcessor;
+            summonProcessor = new SummonProcessor(config.BattleView);
         }
 
         public bool CanProcessSelectedAction(ActionContext actionContext, string selectedAction)
-        {
-            return CanProcessSelectedAction(selectedAction, actionContext);
-        }
-
-        private bool CanProcessSelectedAction(string selectedAction, ActionContext actionContext)
         {
             return selectedAction switch
             {
@@ -45,11 +40,10 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             };
         }
 
-
         private bool CanPassTurn(ActionContext actionContext)
         {
             passTurnProcessor.ProcessPassTurn(actionContext.BattleState);
-            return true; // Pasar Turno siempre es exitoso
+            return true;
         }
 
         private bool CanProcessSurrenderAction(ActionContext actionContext)

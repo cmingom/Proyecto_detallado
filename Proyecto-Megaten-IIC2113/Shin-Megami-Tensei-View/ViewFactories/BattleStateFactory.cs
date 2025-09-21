@@ -203,6 +203,7 @@ namespace Shin_Megami_Tensei
                 maxMP: unitTemplate.Stats.MP,
                 str: unitTemplate.Stats.Str,
                 skl: unitTemplate.Stats.Skl,
+                mag: unitTemplate.Stats.Mag,
                 spd: unitTemplate.Stats.Spd,
                 isSamurai: unitInfo.IsSamurai,
                 position: position,

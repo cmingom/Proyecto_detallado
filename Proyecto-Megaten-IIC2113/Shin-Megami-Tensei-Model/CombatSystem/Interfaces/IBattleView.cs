@@ -11,6 +11,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
         void ShowTargetSelection(UnitInstanceContext attacker, List<UnitInstanceContext> targets);
         int GetTargetChoice(int targetCount);
         void ShowAttackResult(AttackResultContext context);
+        void ShowGuardAction(UnitInstanceContext unit);
         void ShowSkillSelection(UnitInstanceContext unit, List<Skill> skills);
         int GetSkillChoice(int skillCount);
         void ShowSurrender(SurrenderContext context);
@@ -23,3 +24,4 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
         void ShowSummonResult(string unitName);
     }
 }
+

@@ -20,9 +20,17 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
         private const string HP_RESULT_FORMAT = "{0} termina con HP:{1}/{2}";
         private const string GUN_ATTACK_TEXT = "dispara a";
         private const string PHYSICAL_ATTACK_TEXT = "ataca a";
-        private const string RESIST_MESSAGE_FORMAT = "{0} es resistente el ataque de {1}";
+        private const string FIRE_ATTACK_TEXT = "lanza fuego a";
+        private const string ICE_ATTACK_TEXT = "lanza hielo a";
+        private const string ELEC_ATTACK_TEXT = "lanza electricidad a";
+        private const string FORCE_ATTACK_TEXT = "lanza viento a";
         private const string SUMMON_POSITION_HEADER = "Seleccione una posición para invocar";
         private const string EMPTY_SLOT_TEXT = "Vacío";
+        private const string RESIST_MESSAGE_FORMAT = "{0} es resistente el ataque de {1}";
+        private const string WEAK_MESSAGE_FORMAT = "{0} es débil contra el ataque de {1}";
+        private const string BLOCK_MESSAGE_FORMAT = "{0} bloquea el ataque de {1}";
+        private const string ABSORB_MESSAGE_FORMAT = "{0} absorbe {1} daño";
+        private const string REPEL_MESSAGE_FORMAT = "{0} devuelve {1} daño a {2}";
 
         private readonly View view;
 
@@ -109,53 +117,101 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
             {
                 return INVALID_CHOICE;
             }
+
             return choice;
         }
 
         private bool IsValidChoice(string input, int maxChoice, out int choice)
         {
             choice = 0;
-            return int.TryParse(input, out choice) && 
-                   choice >= MINIMUM_CHOICE && 
+            return int.TryParse(input, out choice) &&
+                   choice >= MINIMUM_CHOICE &&
                    choice <= maxChoice;
         }
 
         public void ShowAttackResult(AttackResultContext context)
         {
-            ShowSeparator();
-            ShowAttackAction(context.Attacker.Name, context.Target.Name, context.AttackType);
+            if (context.IsFirstHit)
+            {
+                ShowSeparator();
+            }
+
+            ShowAttackAction(context);
             ShowAffinityReaction(context);
-            ShowDamageResult(context.Target.Name, context.Damage);
-            ShowHpResult(context.Target.Name, context.Target.HP, context.Target.MaxHP);
+
+            if (ShouldShowDamageLine(context.Reaction))
+            {
+                ShowDamageResult(context.Target.Name, context.DamageToTarget);
+            }
+
+            if (context.IsFinalHit)
+            {
+                ShowHpAfterAttack(context);
+            }
+        }
+
+        private void ShowAttackAction(AttackResultContext context)
+        {
+            var verb = GetAttackVerb(context.Element);
+            view.WriteLine(string.Format(ATTACK_RESULT_FORMAT, context.Attacker.Name, verb, context.Target.Name));
+        }
+
+        private static string GetAttackVerb(DamageElement element)
+        {
+            return element switch
+            {
+                DamageElement.Gun => GUN_ATTACK_TEXT,
+                DamageElement.Fire => FIRE_ATTACK_TEXT,
+                DamageElement.Ice => ICE_ATTACK_TEXT,
+                DamageElement.Elec => ELEC_ATTACK_TEXT,
+                DamageElement.Force => FORCE_ATTACK_TEXT,
+                _ => PHYSICAL_ATTACK_TEXT
+            };
         }
 
         private void ShowAffinityReaction(AttackResultContext context)
         {
-            if (context.Reaction == AffinityReaction.Resist)
+            switch (context.Reaction)
             {
-                view.WriteLine(string.Format(RESIST_MESSAGE_FORMAT, context.Target.Name, context.Attacker.Name));
+                case AffinityReaction.Weak:
+                    view.WriteLine(string.Format(WEAK_MESSAGE_FORMAT, context.Target.Name, context.Attacker.Name));
+                    break;
+                case AffinityReaction.Resist:
+                    view.WriteLine(string.Format(RESIST_MESSAGE_FORMAT, context.Target.Name, context.Attacker.Name));
+                    break;
+                case AffinityReaction.Null:
+                    view.WriteLine(string.Format(BLOCK_MESSAGE_FORMAT, context.Target.Name, context.Attacker.Name));
+                    break;
+                case AffinityReaction.Repel:
+                    view.WriteLine(string.Format(REPEL_MESSAGE_FORMAT, context.Target.Name, context.DamageToAttacker, context.Attacker.Name));
+                    break;
+                case AffinityReaction.Drain:
+                    view.WriteLine(string.Format(ABSORB_MESSAGE_FORMAT, context.Target.Name, context.DamageToTarget));
+                    break;
             }
         }
 
-        private bool IsGunAttack(AttackType attackType)
+        private static bool ShouldShowDamageLine(AffinityReaction reaction)
         {
-            return attackType == AttackType.Gun;
-        }
-
-        private void ShowAttackAction(string attackerName, string targetName, AttackType attackType)
-        {
-            string attackTypeText = GetAttackTypeText(attackType);
-            view.WriteLine(string.Format(ATTACK_RESULT_FORMAT, attackerName, attackTypeText, targetName));
-        }
-
-        private string GetAttackTypeText(AttackType attackType)
-        {
-            return IsGunAttack(attackType) ? GUN_ATTACK_TEXT : PHYSICAL_ATTACK_TEXT;
+            return reaction == AffinityReaction.Neutral ||
+                   reaction == AffinityReaction.Resist ||
+                   reaction == AffinityReaction.Weak;
         }
 
         private void ShowDamageResult(string targetName, int damage)
         {
             view.WriteLine(string.Format(DAMAGE_RESULT_FORMAT, targetName, damage));
+        }
+
+        private void ShowHpAfterAttack(AttackResultContext context)
+        {
+            if (context.Reaction == AffinityReaction.Repel)
+            {
+                ShowHpResult(context.Attacker.Name, context.AttackerHpAfter, context.Attacker.MaxHP);
+                return;
+            }
+
+            ShowHpResult(context.Target.Name, context.TargetHpAfter, context.Target.MaxHP);
         }
 
         private void ShowHpResult(string targetName, int currentHp, int maxHp)
@@ -167,13 +223,13 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
         {
             ShowSeparator();
             view.WriteLine("Seleccione un monstruo para invocar");
-            
+
             for (int i = 0; i < availableUnits.Count; i++)
             {
                 var unit = availableUnits[i];
                 view.WriteLine($"{i + 1}-{unit.Name} HP:{unit.HP}/{unit.MaxHP} MP:{unit.MP}/{unit.MaxMP}");
             }
-            
+
             view.WriteLine($"{availableUnits.Count + 1}-Cancelar");
         }
 
@@ -190,11 +246,11 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
             for (int i = 0; i < positionOptions.Count; i++)
             {
                 var (slot, unit) = positionOptions[i];
-                var baseDescription = unit == null
+                var description = unit == null
                     ? EMPTY_SLOT_TEXT
                     : $"{unit.Name} HP:{unit.HP}/{unit.MaxHP} MP:{unit.MP}/{unit.MaxMP}";
                 var positionNumber = GetPositionNumber(slot);
-                view.WriteLine($"{i + 1}-{baseDescription} (Puesto {positionNumber})");
+                view.WriteLine($"{i + 1}-{description} (Puesto {positionNumber})");
             }
 
             view.WriteLine(string.Format(CANCEL_OPTION_FORMAT, positionOptions.Count + 1));
@@ -215,6 +271,12 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
         public int GetSummonPositionChoice(int maxOptions)
         {
             return GetValidatedChoice(maxOptions);
+        }
+
+        public void ShowGuardAction(UnitInstanceContext unit)
+        {
+            ShowSeparator();
+            view.WriteLine($"{unit.Name} se defiende");
         }
     }
 }

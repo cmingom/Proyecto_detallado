@@ -12,9 +12,11 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
         private readonly ActionMenuDisplayService actionMenuDisplayService;
         private readonly SkillDisplayService skillDisplayService;
         private readonly BattleResultDisplayService battleResultDisplayService;
+        private readonly View view;
 
         public BattleView(View view)
         {
+            this.view = view;
             this.battlefieldDisplayService = new BattlefieldDisplayService(view);
             this.actionMenuDisplayService = new ActionMenuDisplayService(view);
             this.skillDisplayService = new SkillDisplayService(view);
@@ -124,6 +126,16 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
         public void ShowSummonResult(string unitName)
         {
             battleResultDisplayService.ShowSummonResult(unitName);
+        }
+
+        public void StartActionBuffer()
+        {
+            view.StartActionBuffer();
+        }
+
+        public void FlushActionBuffer()
+        {
+            view.FlushActionBuffer();
         }
     }
 }

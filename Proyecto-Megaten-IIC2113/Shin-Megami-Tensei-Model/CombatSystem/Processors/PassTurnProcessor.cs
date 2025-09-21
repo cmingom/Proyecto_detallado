@@ -1,4 +1,4 @@
-using Shin_Megami_Tensei_Model.Domain.States;
+﻿using Shin_Megami_Tensei_Model.Domain.States;
 using Shin_Megami_Tensei_Model.CombatSystem.Contexts;
 
 namespace Shin_Megami_Tensei_Model.CombatSystem.Core
@@ -18,6 +18,9 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             int blinkingTurnsConsumed = 0;
             int blinkingTurnsGranted = 0;
 
+            // Iniciar buffer atómico para Pasar Turno
+            battleView.StartActionBuffer();
+
             if (battleState.BlinkingTurns > 0)
             {
                 battleState.ConsumeBlinkingTurn();
@@ -33,6 +36,9 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 
             battleState.MarkTurnConsumptionMessageShown();
             battleView.ShowTurnConsumptionWithBlinking(fullTurnsConsumed, blinkingTurnsConsumed, blinkingTurnsGranted);
+            
+            // Emitir buffer atómico
+            battleView.FlushActionBuffer();
         }
     }
 }

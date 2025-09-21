@@ -69,8 +69,11 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             var resolution = damageCalculator.ResolveDamage(attackContext.Attacker, selectedTarget, element, baseDamage);
             var context = BuildAttackResultContext(attackContext.Attacker, selectedTarget, abilityName, element, resolution, 1, 1);
 
+            // Ejecutar acción como bloque atómico
+            battleView.StartActionBuffer();
             battleView.ShowAttackResult(context);
             turnOutcomeProcessor.ApplyOutcome(attackContext.BattleState, resolution.Reaction);
+            battleView.FlushActionBuffer();
         }
 
         private AttackResultContext BuildAttackResultContext(

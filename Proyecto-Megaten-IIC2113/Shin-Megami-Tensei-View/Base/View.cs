@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Shin_Megami_Tensei_View.ConsoleLib;
 
 namespace Shin_Megami_Tensei_View;
@@ -5,6 +6,8 @@ namespace Shin_Megami_Tensei_View;
 public class View
 {
     private readonly AbstractView viewImplementation;
+    private readonly List<string> actionBuffer = new List<string>();
+    private bool isBuffering = false;
 
     public static View BuildConsoleView()
     {
@@ -29,7 +32,30 @@ public class View
     
     public void WriteLine(string message)
     {
-        viewImplementation.WriteLine(message);
+        if (isBuffering)
+        {
+            actionBuffer.Add(message);
+        }
+        else
+        {
+            viewImplementation.WriteLine(message);
+        }
+    }
+
+    public void StartActionBuffer()
+    {
+        isBuffering = true;
+        actionBuffer.Clear();
+    }
+
+    public void FlushActionBuffer()
+    {
+        foreach (var line in actionBuffer)
+        {
+            viewImplementation.WriteLine(line);
+        }
+        actionBuffer.Clear();
+        isBuffering = false;
     }
     
     public string[] GetScript()

@@ -162,7 +162,9 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             var intendedHits = DetermineHitCount(skill);
             var executedHits = 0;
             var reactions = new List<AffinityReaction>();
+            var hitResults = new List<AttackResultContext>();
 
+            // Ejecutar todos los golpes silenciosamente, acumulando resultados
             for (var hitNumber = 1; hitNumber <= intendedHits; hitNumber++)
             {
                 if (unit.HP <= 0 || target.HP <= 0)
@@ -174,24 +176,40 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
                 reactions.Add(resolution.Reaction);
                 executedHits = hitNumber;
 
+                // Acumular resultado para mostrar después
+                var context = BuildAttackResultContext(unit, target, skill.Name, element, resolution, hitNumber, intendedHits);
+                hitResults.Add(context);
+
                 var attackerDefeated = unit.HP <= 0;
                 var targetDefeated = target.HP <= 0;
-                var shouldStop = attackerDefeated || targetDefeated || resolution.Reaction == AffinityReaction.Repel;
-                var totalHitsForContext = shouldStop ? hitNumber : intendedHits;
-
-                var context = BuildAttackResultContext(unit, target, skill.Name, element, resolution, hitNumber, totalHitsForContext);
-                battleView.ShowAttackResult(context);
-
-                if (shouldStop)
+                if (attackerDefeated || targetDefeated)
                 {
                     break;
                 }
             }
 
+            // Ahora mostrar todos los resultados de una vez
             if (executedHits > 0)
             {
+                battleView.StartActionBuffer();
+                
+                // Mostrar todos los golpes
+                for (int i = 0; i < hitResults.Count; i++)
+                {
+                    var hitResult = hitResults[i];
+                    // Marcar correctamente cuál es el último golpe ejecutado
+                    var finalContext = new AttackResultContext(
+                        hitResult.Attacker, hitResult.Target, hitResult.ActionName, hitResult.Element,
+                        hitResult.Reaction, hitResult.DamageToTarget, hitResult.DamageToAttacker,
+                        hitResult.HitNumber, hitResults.Count, // Usar el número real de golpes ejecutados
+                        hitResult.TargetHpAfter, hitResult.AttackerHpAfter, hitResult.IsCritical);
+                    
+                    battleView.ShowAttackResult(finalContext);
+                }
+
                 var netReaction = DetermineNetReaction(reactions);
                 turnOutcomeProcessor.ApplyOutcome(battleState, netReaction);
+                battleView.FlushActionBuffer();
             }
         }
 

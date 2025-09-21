@@ -120,7 +120,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
                    element == DamageElement.Force;
         }
 
-        private int DetermineHitCount(Skill skill)
+        private int DetermineHitCount(Skill skill, BattleState battleState)
         {
             if (string.IsNullOrWhiteSpace(skill.Hits))
             {
@@ -131,17 +131,19 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             {
                 var parts = skill.Hits.Split('-', StringSplitOptions.RemoveEmptyEntries);
                 if (parts.Length == 2 &&
-                    int.TryParse(parts[0], out var minHits) &&
-                    int.TryParse(parts[1], out var maxHits))
+                    int.TryParse(parts[0], out var A) &&
+                    int.TryParse(parts[1], out var B))
                 {
-                    if (maxHits < minHits)
+                    if (B < A)
                     {
-                        (minHits, maxHits) = (maxHits, minHits);
+                        (A, B) = (B, A);
                     }
 
-                    var lowerBound = Math.Max(1, minHits);
-                    var upperBound = Math.Max(lowerBound, maxHits);
-                    return MultiHitRandom.Next(lowerBound, upperBound + 1);
+                    // Usar la nueva lógica: K mod (B-A+1) + A
+                    var K = battleState.GetCurrentPlayerActionCounter();
+                    var offset = K % (B - A + 1);
+                    var X = A + offset;
+                    return Math.Max(1, X);
                 }
             }
 
@@ -159,14 +161,15 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 
             var element = damageCalculator.ParseElement(skill.Type);
             var baseDamage = damageCalculator.GetSkillBaseDamage(unit, skill);
-            var intendedHits = DetermineHitCount(skill);
+            var intendedHits = DetermineHitCount(skill, battleState);
             var executedHits = 0;
             var reactions = new List<AffinityReaction>();
             var hitResults = new List<AttackResultContext>();
 
-            // Ejecutar todos los golpes silenciosamente, acumulando resultados
+            // Ejecutar exactamente X golpes como especifica la regla
             for (var hitNumber = 1; hitNumber <= intendedHits; hitNumber++)
             {
+                // Solo detener si el atacante o objetivo está muerto ANTES del golpe
                 if (unit.HP <= 0 || target.HP <= 0)
                 {
                     break;
@@ -180,9 +183,9 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
                 var context = BuildAttackResultContext(unit, target, skill.Name, element, resolution, hitNumber, intendedHits);
                 hitResults.Add(context);
 
-                var attackerDefeated = unit.HP <= 0;
-                var targetDefeated = target.HP <= 0;
-                if (attackerDefeated || targetDefeated)
+                // NO interrumpir por Repel - ejecutar exactamente X golpes
+                // Solo detener si alguien muere DESPUÉS del golpe
+                if (unit.HP <= 0 || target.HP <= 0)
                 {
                     break;
                 }
@@ -209,6 +212,10 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 
                 var netReaction = DetermineNetReaction(reactions);
                 turnOutcomeProcessor.ApplyOutcome(battleState, netReaction);
+                
+                // Incrementar contador del jugador después de completar la acción
+                battleState.IncrementCurrentPlayerActionCounter();
+                
                 battleView.FlushActionBuffer();
             }
         }

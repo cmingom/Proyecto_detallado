@@ -73,6 +73,10 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             battleView.StartActionBuffer();
             battleView.ShowAttackResult(context);
             turnOutcomeProcessor.ApplyOutcome(attackContext.BattleState, resolution.Reaction);
+            
+            // Incrementar contador del jugador después de completar la acción
+            attackContext.BattleState.IncrementCurrentPlayerActionCounter();
+            
             battleView.FlushActionBuffer();
         }
 

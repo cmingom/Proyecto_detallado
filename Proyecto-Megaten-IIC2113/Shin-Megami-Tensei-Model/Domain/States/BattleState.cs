@@ -4,6 +4,7 @@
     {
         private const int INITIAL_BLINKING_TURNS = 0;
         private const bool INITIAL_PLAYER_1_TURN = true;
+        private const int INITIAL_ACTION_COUNTER = 0;
         
         private int fullTurns;
         private int blinkingTurns;
@@ -12,6 +13,8 @@
         private bool battleEnded;
         private string? winnerSide;
         private string? winnerSamuraiName;
+        private int player1ActionCounter;
+        private int player2ActionCounter;
         
         public TeamState Team1 { get; }
         public TeamState Team2 { get; }
@@ -29,6 +32,8 @@
             fullTurns = team1.AliveUnits.Count();
             blinkingTurns = INITIAL_BLINKING_TURNS;
             isPlayer1Turn = INITIAL_PLAYER_1_TURN;
+            player1ActionCounter = INITIAL_ACTION_COUNTER;
+            player2ActionCounter = INITIAL_ACTION_COUNTER;
         }
 
         public void ConsumeTurn()
@@ -109,6 +114,23 @@
         public TeamState GetOpponentTeam()
         {
             return isPlayer1Turn ? Team2 : Team1;
+        }
+
+        public int GetCurrentPlayerActionCounter()
+        {
+            return isPlayer1Turn ? player1ActionCounter : player2ActionCounter;
+        }
+
+        public void IncrementCurrentPlayerActionCounter()
+        {
+            if (isPlayer1Turn)
+            {
+                player1ActionCounter++;
+            }
+            else
+            {
+                player2ActionCounter++;
+            }
         }
     }
 }

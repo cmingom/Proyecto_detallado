@@ -189,7 +189,15 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             }
 
             battleState.MarkTurnConsumptionMessageShown();
+            
+            // Usar buffering atómico para invocación
+            battleView.StartActionBuffer();
             battleView.ShowTurnConsumptionWithBlinking(fullTurnsConsumed, blinkingTurnsConsumed, blinkingTurnsGranted);
+            
+            // Incrementar contador del jugador después de completar la acción
+            battleState.IncrementCurrentPlayerActionCounter();
+            
+            battleView.FlushActionBuffer();
         }
     }
 }

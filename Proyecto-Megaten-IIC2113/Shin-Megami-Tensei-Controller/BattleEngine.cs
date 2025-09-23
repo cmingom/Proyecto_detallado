@@ -33,6 +33,12 @@ namespace Shin_Megami_Tensei
                 {
                     return;
                 }
+                
+                // Verificar si la batalla terminó después de procesar el turno (ej: rendirse)
+                if (battleState.IsBattleFinished)
+                {
+                    return;
+                }
             }
         }
 

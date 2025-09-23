@@ -7,7 +7,7 @@ public class View
 {
     private readonly AbstractView viewImplementation;
     private readonly List<string> actionBuffer = new List<string>();
-    private bool isBuffering = false;
+    private int bufferDepth = 0;
 
     public static View BuildConsoleView()
     {
@@ -32,7 +32,7 @@ public class View
     
     public void WriteLine(string message)
     {
-        if (isBuffering)
+        if (bufferDepth > 0)
         {
             actionBuffer.Add(message);
         }
@@ -44,18 +44,27 @@ public class View
 
     public void StartActionBuffer()
     {
-        isBuffering = true;
-        actionBuffer.Clear();
+        bufferDepth++;
+        if (bufferDepth == 1)
+        {
+            actionBuffer.Clear();
+        }
     }
 
     public void FlushActionBuffer()
     {
-        foreach (var line in actionBuffer)
+        if (bufferDepth > 0)
         {
-            viewImplementation.WriteLine(line);
+            bufferDepth--;
+            if (bufferDepth == 0)
+            {
+                foreach (var line in actionBuffer)
+                {
+                    viewImplementation.WriteLine(line);
+                }
+                actionBuffer.Clear();
+            }
         }
-        actionBuffer.Clear();
-        isBuffering = false;
     }
     
     public string[] GetScript()

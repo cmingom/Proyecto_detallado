@@ -15,6 +15,8 @@
         private string? winnerSamuraiName;
         private int player1ActionCounter;
         private int player2ActionCounter;
+        private int player1SkillCounter;
+        private int player2SkillCounter;
         
         public TeamState Team1 { get; }
         public TeamState Team2 { get; }
@@ -34,6 +36,8 @@
             isPlayer1Turn = INITIAL_PLAYER_1_TURN;
             player1ActionCounter = INITIAL_ACTION_COUNTER;
             player2ActionCounter = INITIAL_ACTION_COUNTER;
+            player1SkillCounter = INITIAL_ACTION_COUNTER;
+            player2SkillCounter = INITIAL_ACTION_COUNTER;
         }
 
         public void ConsumeTurn()
@@ -130,6 +134,23 @@
             else
             {
                 player2ActionCounter++;
+            }
+        }
+
+        public int GetCurrentPlayerSkillCounter()
+        {
+            return isPlayer1Turn ? player1SkillCounter : player2SkillCounter;
+        }
+
+        public void IncrementCurrentPlayerSkillCounter()
+        {
+            if (isPlayer1Turn)
+            {
+                player1SkillCounter++;
+            }
+            else
+            {
+                player2SkillCounter++;
             }
         }
     }

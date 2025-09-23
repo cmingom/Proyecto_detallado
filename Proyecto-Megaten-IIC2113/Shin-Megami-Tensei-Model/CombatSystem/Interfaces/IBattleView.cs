@@ -22,6 +22,8 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
         void ShowSummonPositionMenu(List<(char Slot, UnitInstanceContext? Unit)> positionOptions);
         int GetSummonPositionChoice(int maxOptions);
         void ShowSummonResult(string unitName);
+        void ShowHealResult(UnitInstanceContext unit, UnitInstanceContext target, string skillName, int healAmount);
+        void ShowReviveResult(UnitInstanceContext unit, UnitInstanceContext target, string skillName);
         void StartActionBuffer();
         void FlushActionBuffer();
     }

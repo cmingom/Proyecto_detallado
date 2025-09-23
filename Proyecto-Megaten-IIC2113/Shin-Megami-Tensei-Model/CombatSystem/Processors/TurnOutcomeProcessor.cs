@@ -114,6 +114,55 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 
             return blinkingConsumed;
         }
+        
+        public void ApplyHealTurnOutcome(BattleState battleState)
+        {
+            // Habilidades de curación: consume 1 Blinking si hay, sino 1 Full. No otorga Blinking extra.
+            var outcome = CalculateHealOutcome(battleState);
+            battleState.MarkTurnConsumptionMessageShown();
+            battleView.ShowTurnConsumptionWithBlinking(outcome.FullTurnsConsumed, outcome.BlinkingTurnsConsumed, outcome.BlinkingTurnsGranted);
+        }
+        
+        public void ApplySummonTurnOutcome(BattleState battleState)
+        {
+            // Sabbatma e Invitation: siguen reglas de Invocar
+            var outcome = CalculateSummonOutcome(battleState);
+            battleState.MarkTurnConsumptionMessageShown();
+            battleView.ShowTurnConsumptionWithBlinking(outcome.FullTurnsConsumed, outcome.BlinkingTurnsConsumed, outcome.BlinkingTurnsGranted);
+        }
+        
+        private TurnOutcome CalculateHealOutcome(BattleState battleState)
+        {
+            if (battleState.BlinkingTurns > 0)
+            {
+                battleState.ConsumeBlinkingTurn();
+                return new TurnOutcome(0, 1, 0);
+            }
+            else if (battleState.FullTurns > 0)
+            {
+                battleState.ConsumeTurn();
+                return new TurnOutcome(1, 0, 0);
+            }
+            
+            return new TurnOutcome(0, 0, 0);
+        }
+        
+        private TurnOutcome CalculateSummonOutcome(BattleState battleState)
+        {
+            // Sabbatma e Invitation: habilidades no ofensivas (NO otorgan Blinking)
+            if (battleState.BlinkingTurns > 0)
+            {
+                battleState.ConsumeBlinkingTurn();
+                return new TurnOutcome(0, 1, 0); // Solo consume Blinking
+            }
+            else if (battleState.FullTurns > 0)
+            {
+                battleState.ConsumeTurn();
+                return new TurnOutcome(1, 0, 0); // Consume Full, NO otorga Blinking
+            }
+            
+            return new TurnOutcome(0, 0, 0);
+        }
     }
 }
 

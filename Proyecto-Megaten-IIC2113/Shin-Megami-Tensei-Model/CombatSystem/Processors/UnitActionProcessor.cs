@@ -42,8 +42,9 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
                 }
 
                 actionCompleted = CanProcessSingleAction(context);
-
-                if (ShouldStopProcessing())
+                
+                // Verificar si la batalla terminó después de procesar la acción
+                if (context.BattleState.IsBattleFinished)
                 {
                     return true;
                 }
@@ -142,10 +143,6 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             lastSelectedAction = action;
         }
 
-        private bool ShouldStopProcessing()
-        {
-            return IsPlayerSurrendering(GetLastSelectedAction());
-        }
 
         private string GetLastSelectedAction()
         {

@@ -39,6 +39,13 @@ namespace Shin_Megami_Tensei
         private bool ShouldEndBattleAfterActions(TurnContext turnContext)
         {
             var shouldEndBattle = ShouldProcessPlayerActions(turnContext);
+            
+            // Verificar si la batalla terminó después de procesar las acciones (ej: rendirse)
+            if (turnContext.BattleState.IsBattleFinished)
+            {
+                return true;
+            }
+            
             HandlePlayerTurnEnd(turnContext);
             return shouldEndBattle;
         }

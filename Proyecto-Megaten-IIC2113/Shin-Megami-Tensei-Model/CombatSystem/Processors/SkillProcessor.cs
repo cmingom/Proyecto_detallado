@@ -26,6 +26,9 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
         private readonly TargetSelector targetSelector;
         private readonly DamageCalculator damageCalculator;
         private readonly TurnOutcomeProcessor turnOutcomeProcessor;
+        private readonly HealProcessor healProcessor;
+        private readonly SabbatmaProcessor sabbatmaProcessor;
+        private readonly BasicSkillsProcessor basicSkillsProcessor;
 
         public SkillProcessor(
             IBattleView battleView,
@@ -39,6 +42,9 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             this.targetSelector = targetSelector;
             this.damageCalculator = damageCalculator;
             this.turnOutcomeProcessor = turnOutcomeProcessor;
+            this.healProcessor = new HealProcessor(battleView, targetSelector, turnOutcomeProcessor);
+            this.sabbatmaProcessor = new SabbatmaProcessor(battleView, turnOutcomeProcessor);
+            this.basicSkillsProcessor = new BasicSkillsProcessor();
         }
 
         public bool CanProcessUseSkill(UnitInstanceContext unit, BattleState battleState)
@@ -52,27 +58,56 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             }
 
             var selectedSkill = availableSkills[skillChoice - 1];
-            if (!IsSupportedOffensiveSkill(selectedSkill))
+            
+            // Delegar a procesadores especializados según el tipo de habilidad
+            if (IsHealSkill(selectedSkill))
             {
-                return false;
+                return healProcessor.CanProcessHeal(unit, battleState, selectedSkill);
+            }
+            else if (IsSabbatmaSkill(selectedSkill))
+            {
+                return sabbatmaProcessor.CanProcessSabbatma(unit, battleState);
+            }
+            else if (IsInvitationSkill(selectedSkill))
+            {
+                // Para Invitation, necesitamos seleccionar un objetivo primero
+                var targets = GetAvailableTargetsForHeal(battleState);
+                if (targets.Count == 0)
+                {
+                    return false;
+                }
+
+                battleView.ShowTargetSelection(unit, targets);
+                var targetChoice = battleView.GetTargetChoice(targets.Count);
+                if (IsInvalidTargetChoice(targetChoice, targets.Count))
+                {
+                    return false;
+                }
+
+                var target = targets[targetChoice - 1];
+                return sabbatmaProcessor.CanProcessInvitation(unit, target, battleState);
+            }
+            else if (basicSkillsProcessor.IsOffensiveSkillSupported(selectedSkill))
+            {
+                var targets = targetSelector.GetAvailableTargetsForAttack(battleState);
+                if (targets.Count == 0)
+                {
+                    return false;
+                }
+
+                battleView.ShowTargetSelection(unit, targets);
+                var targetChoice = battleView.GetTargetChoice(targets.Count);
+                if (IsInvalidTargetChoice(targetChoice, targets.Count))
+                {
+                    return false;
+                }
+
+                var target = targets[targetChoice - 1];
+                ExecuteSkill(unit, target, battleState, selectedSkill);
+                return true;
             }
 
-            var targets = targetSelector.GetAvailableTargetsForAttack(battleState);
-            if (targets.Count == 0)
-            {
-                return false;
-            }
-
-            battleView.ShowTargetSelection(unit, targets);
-            var targetChoice = battleView.GetTargetChoice(targets.Count);
-            if (IsInvalidTargetChoice(targetChoice, targets.Count))
-            {
-                return false;
-            }
-
-            var target = targets[targetChoice - 1];
-            ExecuteSkill(unit, target, battleState, selectedSkill);
-            return true;
+            return false;
         }
 
         public List<Skill> GetAvailableSkills(UnitInstanceContext unit)
@@ -104,56 +139,28 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             return targetChoice == InvalidSkillChoice || targetChoice == targetCount + CancelSkillChoiceOffset;
         }
 
-        private bool IsSupportedOffensiveSkill(Skill skill)
+        private bool IsHealSkill(Skill skill)
         {
-            if (!string.Equals(skill.Target, "Single", StringComparison.OrdinalIgnoreCase))
-            {
-                return false;
-            }
-
-            var element = damageCalculator.ParseElement(skill.Type);
-            return element == DamageElement.Phys ||
-                   element == DamageElement.Gun ||
-                   element == DamageElement.Fire ||
-                   element == DamageElement.Ice ||
-                   element == DamageElement.Elec ||
-                   element == DamageElement.Force;
+            return skill.Name == "Dia" || skill.Name == "Diarama" || skill.Name == "Diarahan" ||
+                   skill.Name == "Recarm" || skill.Name == "Samarecarm";
         }
 
-        private int DetermineHitCount(Skill skill, BattleState battleState)
+        private bool IsSabbatmaSkill(Skill skill)
         {
-            if (string.IsNullOrWhiteSpace(skill.Hits))
-            {
-                return 1;
-            }
-
-            if (skill.Hits.Contains('-'))
-            {
-                var parts = skill.Hits.Split('-', StringSplitOptions.RemoveEmptyEntries);
-                if (parts.Length == 2 &&
-                    int.TryParse(parts[0], out var A) &&
-                    int.TryParse(parts[1], out var B))
-                {
-                    if (B < A)
-                    {
-                        (A, B) = (B, A);
-                    }
-
-                    // Usar la nueva lógica: K mod (B-A+1) + A
-                    var K = battleState.GetCurrentPlayerActionCounter();
-                    var offset = K % (B - A + 1);
-                    var X = A + offset;
-                    return Math.Max(1, X);
-                }
-            }
-
-            if (int.TryParse(skill.Hits, out var fixedHits) && fixedHits > 0)
-            {
-                return fixedHits;
-            }
-
-            return 1;
+            return skill.Name == "Sabbatma";
         }
+
+        private bool IsInvitationSkill(Skill skill)
+        {
+            return skill.Name == "Invitation";
+        }
+
+        private List<UnitInstanceContext> GetAvailableTargetsForHeal(BattleState battleState)
+        {
+            var allyTeam = battleState.IsPlayer1Turn ? battleState.Team1 : battleState.Team2;
+            return allyTeam.AliveUnits.ToList();
+        }
+
 
         private void ExecuteSkill(UnitInstanceContext unit, UnitInstanceContext target, BattleState battleState, Skill skill)
         {
@@ -161,7 +168,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 
             var element = damageCalculator.ParseElement(skill.Type);
             var baseDamage = damageCalculator.GetSkillBaseDamage(unit, skill);
-            var intendedHits = DetermineHitCount(skill, battleState);
+            var intendedHits = basicSkillsProcessor.CalculateHitCount(skill, battleState);
             var executedHits = 0;
             var reactions = new List<AffinityReaction>();
             var hitResults = new List<AttackResultContext>();
@@ -169,8 +176,8 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             // Ejecutar exactamente X golpes como especifica la regla
             for (var hitNumber = 1; hitNumber <= intendedHits; hitNumber++)
             {
-                // Solo detener si el atacante o objetivo está muerto ANTES del golpe
-                if (unit.HP <= 0 || target.HP <= 0)
+                // Solo detener si el atacante está muerto ANTES del golpe
+                if (unit.HP <= 0)
                 {
                     break;
                 }
@@ -215,6 +222,9 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
                 
                 // Incrementar contador del jugador después de completar la acción
                 battleState.IncrementCurrentPlayerActionCounter();
+                
+                // Incrementar contador de habilidades del jugador después de usar cualquier habilidad
+                battleState.IncrementCurrentPlayerSkillCounter();
                 
                 battleView.FlushActionBuffer();
             }

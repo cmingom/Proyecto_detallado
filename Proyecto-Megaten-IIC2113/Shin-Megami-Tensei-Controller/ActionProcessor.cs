@@ -6,6 +6,7 @@ using Shin_Megami_Tensei_Model.Domain.States;
 using Shin_Megami_Tensei_Model.Domain.Entities;
 using Shin_Megami_Tensei_Model.CombatSystem.Core;
 using Shin_Megami_Tensei_Model.CombatSystem.Contexts;
+using Shin_Megami_Tensei_Model.Domain.Exceptions;
 
 namespace Shin_Megami_Tensei
 {
@@ -81,6 +82,12 @@ namespace Shin_Megami_Tensei
 
         private bool ShouldProcessCurrentUnit(BattleContext battleContext, List<UnitInstanceContext> actionOrder, TeamState currentTeam)
         {
+            // Verificar si la batalla terminó antes de procesar cualquier unidad
+            if (battleContext.BattleState.IsBattleFinished)
+            {
+                return false;
+            }
+
             var currentUnit = GetCurrentUnit(actionOrder);
 
             if (ShouldProcessSingleUnitAction(currentUnit, battleContext))
@@ -109,13 +116,27 @@ namespace Shin_Megami_Tensei
                 return true;
             }
 
-            // Resetear el flag de mensaje de consumo de turnos para cada nueva acci�n
+            // Resetear el flag de mensaje de consumo de turnos para cada nueva accion
             battleContext.BattleState.ResetTurnConsumptionMessageFlag();
             currentUnit.OnTurnStart();
 
             if (IsUnitActionSuccessful(currentUnit, battleContext))
             {
+                // Verificar inmediatamente si la batalla terminó (ej: por rendición)
+                if (battleContext.BattleState.IsBattleFinished)
+                {
+                    return true;
+                }
+                
                 EnsureTurnConsumptionForSuccessfulAction(battleContext);
+                
+                // Verificar si la batalla terminó después de una acción exitosa (ej: rendirse)
+                if (IsBattleOver(battleContext.BattleState))
+                {
+                    HandleBattleEnd(battleContext);
+                    return true;
+                }
+                
                 return true;
             }
 
@@ -151,7 +172,19 @@ namespace Shin_Megami_Tensei
 
         private void HandleBattleEnd(BattleContext battleContext)
         {
-            AnnounceWinner(battleContext.BattleState, battleContext.Player1Name, battleContext.Player2Name);
+            // Solo anunciar el ganador si no se estableció previamente (ej: por rendirse)
+            if (battleContext.BattleState.WinnerSide == null)
+            {
+                try
+                {
+                    AnnounceWinner(battleContext.BattleState, battleContext.Player1Name, battleContext.Player2Name);
+                }
+                catch (GameEndedException)
+                {
+                    // La excepción se maneja aquí - la batalla terminó por KO
+                    // No hacer nada, la excepción ya terminó el flujo
+                }
+            }
         }
 
         private void AnnounceWinner(BattleState battleState, string player1Name, string player2Name)
@@ -159,6 +192,9 @@ namespace Shin_Megami_Tensei
             var winnerName = combatManager.GetWinner(battleState, player1Name, player2Name);
             var winnerNumber = combatManager.GetWinnerNumber(battleState);
             battleView.ShowWinner(winnerName, winnerNumber);
+            
+            // Lanzar GameEndedException después de imprimir el ganador por KO
+            throw new GameEndedException();
         }
 
         private void ProcessUnitTurnEnd(List<UnitInstanceContext> actionOrder, TeamState currentTeam, UnitInstanceContext currentUnit)

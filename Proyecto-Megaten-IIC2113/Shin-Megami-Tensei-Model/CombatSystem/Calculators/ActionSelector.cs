@@ -1,4 +1,5 @@
 using Shin_Megami_Tensei_Model.CombatSystem.Exceptions;
+using Shin_Megami_Tensei_Model.Domain.Exceptions;
 
 namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 {
@@ -48,8 +49,17 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 
         private bool CanProcessSurrenderAction(ActionContext actionContext)
         {
-            surrenderHandler.HasSurrender(actionContext.BattleState, actionContext.Player1Name, actionContext.Player2Name);
-            return true;
+            try
+            {
+                surrenderHandler.HasSurrender(actionContext.BattleState, actionContext.Player1Name, actionContext.Player2Name);
+                return true;
+            }
+            catch (GameEndedException)
+            {
+                // La excepción se maneja aquí - la batalla terminó por rendirse
+                // Retornar true para indicar que la acción se completó exitosamente
+                return true;
+            }
         }
 
         private bool IsValidAction()

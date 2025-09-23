@@ -1,5 +1,6 @@
 using Shin_Megami_Tensei_Model.Domain.States;
 using Shin_Megami_Tensei_Model.CombatSystem.Contexts;
+using Shin_Megami_Tensei_Model.Domain.Exceptions;
 
 namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 {
@@ -21,6 +22,9 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             battleState.MarkWinner(surrenderInfo.Winner.Number, surrenderInfo.Winner.Name);
             battleState.MarkTurnConsumptionMessageShown();
             ShowSurrenderInfo(surrenderInfo);
+            
+            // Lanzar GameEndedException después de imprimir rendición y ganador
+            throw new GameEndedException();
         }
 
         private SurrenderInfo CreateSurrenderInfo(BattleState battleState, string player1Name, string player2Name)

@@ -128,6 +128,16 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
             battleResultDisplayService.ShowSummonResult(unitName);
         }
 
+        public void ShowHealResult(UnitInstanceContext unit, UnitInstanceContext target, string skillName, int healAmount)
+        {
+            actionMenuDisplayService.ShowHealResult(unit, target, skillName, healAmount);
+        }
+
+        public void ShowReviveResult(UnitInstanceContext unit, UnitInstanceContext target, string skillName)
+        {
+            actionMenuDisplayService.ShowReviveResult(unit, target, skillName);
+        }
+
         public void StartActionBuffer()
         {
             view.StartActionBuffer();

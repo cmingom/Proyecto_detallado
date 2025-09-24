@@ -191,8 +191,9 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
                 hitResults.Add(context);
 
                 // NO interrumpir por Repel - ejecutar exactamente X golpes
-                // Solo detener si alguien muere DESPUÉS del golpe
-                if (unit.HP <= 0 || target.HP <= 0)
+                // NO detener si el objetivo muere - continuar con todos los hits
+                // Solo detener si el atacante muere (por Repel)
+                if (unit.HP <= 0)
                 {
                     break;
                 }

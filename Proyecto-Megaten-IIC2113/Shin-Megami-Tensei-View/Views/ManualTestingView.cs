@@ -1,4 +1,6 @@
-﻿namespace Shin_Megami_Tensei_View.ConsoleLib;
+﻿using Shin_Megami_Tensei_View.Exceptions;
+
+namespace Shin_Megami_Tensei_View.ConsoleLib;
 
 public class ManualTestingView : TestingView
 {

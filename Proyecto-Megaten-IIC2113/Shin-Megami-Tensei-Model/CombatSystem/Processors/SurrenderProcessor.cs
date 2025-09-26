@@ -1,6 +1,6 @@
 using Shin_Megami_Tensei_Model.Domain.States;
 using Shin_Megami_Tensei_Model.CombatSystem.Contexts;
-using Shin_Megami_Tensei_Model.Domain.Exceptions;
+using Shin_Megami_Tensei_Model.CombatSystem.Exceptions;
 
 namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 {

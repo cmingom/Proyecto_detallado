@@ -1,6 +1,6 @@
 using System;
 
-namespace Shin_Megami_Tensei_Model.Domain.Exceptions
+namespace Shin_Megami_Tensei_Model.CombatSystem.Exceptions
 {
     public class GameEndedException : Exception
     {
@@ -17,4 +17,3 @@ namespace Shin_Megami_Tensei_Model.Domain.Exceptions
         }
     }
 }
-

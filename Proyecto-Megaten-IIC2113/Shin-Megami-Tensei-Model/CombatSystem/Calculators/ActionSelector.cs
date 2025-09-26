@@ -1,5 +1,4 @@
 using Shin_Megami_Tensei_Model.CombatSystem.Exceptions;
-using Shin_Megami_Tensei_Model.Domain.Exceptions;
 
 namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 {

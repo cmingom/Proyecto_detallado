@@ -37,12 +37,7 @@ namespace Shin_Megami_Tensei_Model.Domain.States
             ActiveUnits = Array.AsReadOnly(activeUnitsArray);
             Reserves = reservesList.AsReadOnly();
         }
-
-        // Constructor de compatibilidad para mantener funcionalidad existente
-        public TeamState(IEnumerable<UnitInstanceContext> units) : this(units, new List<UnitInstanceContext>())
-        {
-        }
-
+        
         private void PopulateActiveUnitsArray(IEnumerable<UnitInstanceContext> units)
         {
             foreach (var unit in units)
@@ -98,69 +93,19 @@ namespace Shin_Megami_Tensei_Model.Domain.States
             return unit != null && unit.HP > MINIMUM_HP;
         }
 
-        // Métodos para manejar reservas
-        public bool CanSummonFromReserves()
-        {
-            return Reserves.Any() && HasEmptyActiveSlot() && Reserves.Count <= MAX_RESERVE_UNITS;
-        }
 
-        public bool HasEmptyActiveSlot()
-        {
-            return ActiveUnits.Any(unit => unit == null);
-        }
 
         public bool CanAddToReserves()
         {
             return Reserves.Count < MAX_RESERVE_UNITS;
         }
-
-        public int GetReserveCapacity()
-        {
-            return MAX_RESERVE_UNITS - Reserves.Count;
-        }
-
-        public char? GetFirstEmptyPosition()
-        {
-            for (int i = 0; i < ActiveUnits.Count; i++)
-            {
-                if (ActiveUnits[i] == null)
-                {
-                    return GetPositionFromIndex(i);
-                }
-            }
-            return null;
-        }
-
-        private char GetPositionFromIndex(int index)
-        {
-            return index switch
-            {
-                POSITION_A_INDEX => POSITION_A,
-                POSITION_B_INDEX => POSITION_B,
-                POSITION_C_INDEX => POSITION_C,
-                POSITION_D_INDEX => POSITION_D,
-                _ => throw new ArgumentException("Invalid position index")
-            };
-        }
-
-        public UnitInstanceContext? GetFirstReserve()
-        {
-            return Reserves.FirstOrDefault();
-        }
+        
 
         public void RemoveFromReserves(UnitInstanceContext unit)
         {
             reservesList.Remove(unit);
         }
 
-        public void AddToActiveUnits(UnitInstanceContext unit, char position)
-        {
-            int index = GetPositionIndex(position);
-            if (IsValidIndex(index) && ActiveUnits[index] == null)
-            {
-                activeUnitsArray[index] = unit;
-            }
-        }
 
         // Propiedad de compatibilidad para mantener funcionalidad existente
         public IReadOnlyList<UnitInstanceContext?> Units => ActiveUnits;

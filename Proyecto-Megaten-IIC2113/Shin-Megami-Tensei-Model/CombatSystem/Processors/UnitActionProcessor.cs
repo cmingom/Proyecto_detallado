@@ -142,17 +142,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
         {
             lastSelectedAction = action;
         }
-
-
-        private string GetLastSelectedAction()
-        {
-            return lastSelectedAction;
-        }
-
-        private bool IsPlayerSurrendering(string selectedAction)
-        {
-            return selectedAction == SURRENDER_ACTION;
-        }
+        
     }
 }
 

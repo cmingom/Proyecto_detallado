@@ -1,9 +1,6 @@
-using System;
-using System.Collections.Generic;
 using Shin_Megami_Tensei_Model.Domain.Entities;
 using Shin_Megami_Tensei_Model.Domain.States;
 using Shin_Megami_Tensei_Model.CombatSystem.Enums;
-using Shin_Megami_Tensei_Model.CombatSystem.Contexts;
 
 namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 {
@@ -59,22 +56,6 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             return IsSupportedElement(element);
         }
 
-        public List<Skill> GetAvailableOffensiveSkills(UnitInstanceContext unit, Dictionary<string, Skill> skillData)
-        {
-            var availableSkills = new List<Skill>();
-            foreach (var skillName in unit.Skills)
-            {
-                if (skillData.TryGetValue(skillName, out var skill) && 
-                    HasEnoughMana(unit, skill) && 
-                    IsOffensiveSkillSupported(skill))
-                {
-                    availableSkills.Add(skill);
-                }
-            }
-
-            return availableSkills;
-        }
-
         public int CalculateHitCount(Skill skill, BattleState battleState)
         {
             if (string.IsNullOrWhiteSpace(skill.Hits))
@@ -109,11 +90,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
                    element == DamageElement.Elec ||
                    element == DamageElement.Force;
         }
-
-        private bool HasEnoughMana(UnitInstanceContext unit, Skill skill)
-        {
-            return unit.MP >= skill.Cost;
-        }
+        
 
         private bool IsRangeHitCount(string hits)
         {

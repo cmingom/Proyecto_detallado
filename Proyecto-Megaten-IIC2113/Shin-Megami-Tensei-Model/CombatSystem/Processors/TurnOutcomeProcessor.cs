@@ -30,7 +30,6 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
                 AffinityReaction.Repel => ApplyConsumeAllOutcome(battleState),
                 AffinityReaction.Drain => ApplyConsumeAllOutcome(battleState),
                 AffinityReaction.Miss => ApplyNullOutcome(battleState),
-                AffinityReaction.Resist => ApplyNeutralOutcome(battleState),
                 _ => ApplyNeutralOutcome(battleState)
             };
         }

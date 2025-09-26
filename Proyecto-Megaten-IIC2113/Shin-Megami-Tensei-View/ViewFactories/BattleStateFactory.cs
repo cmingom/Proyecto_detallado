@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Shin_Megami_Tensei_Model.CombatSystem.Core;
 using Shin_Megami_Tensei_Model.Domain.States;
 using Shin_Megami_Tensei_Model.Domain.Entities;
@@ -116,56 +113,7 @@ namespace Shin_Megami_Tensei
             
             return (activeUnits, reserves);
         }
-
-        private List<UnitInstanceContext> GetTeamUnits(List<UnitInfo> team, Dictionary<string, Unit> unitData)
-        {
-            var units = new List<UnitInstanceContext>();
-            var teamSize = GetTeamSize(team);
-            
-            var teamContext = new TeamPopulationContext(units, team, teamSize, unitData);
-            PopulateTeamUnits(teamContext);
-            
-            return units;
-        }
-
-        private void PopulateTeamUnits(TeamPopulationContext context)
-        {
-            for (int i = 0; i < context.TeamSize; i++)
-            {
-                AddUnitToTeam(context, i);
-            }
-        }
-
-        private void PopulateReserveUnits(TeamPopulationContext context)
-        {
-            for (int i = 0; i < context.TeamSize; i++)
-            {
-                AddUnitToReserves(context, i);
-            }
-        }
-
-        private void AddUnitToTeam(TeamPopulationContext context, int index)
-        {
-            var unitInstance = CreateUnitInstance(context.Team[index], TEAM_POSITIONS[index], context.UnitData);
-            if (unitInstance != null)
-            {
-                context.Units.Add(unitInstance);
-            }
-        }
-
-        private void AddUnitToReserves(TeamPopulationContext context, int index)
-        {
-            var unitInstance = CreateReserveUnitInstance(context.Team[index], context.UnitData);
-            if (unitInstance != null)
-            {
-                context.Units.Add(unitInstance);
-            }
-        }
-
-        private int GetTeamSize(List<UnitInfo> team)
-        {
-            return Math.Min(team.Count, MAX_ACTIVE_UNITS);
-        }
+        
 
         private UnitInstanceContext? CreateUnitInstance(UnitInfo unitInfo, char position, Dictionary<string, Unit> unitData, int? originalOrder = null)
         {

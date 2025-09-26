@@ -1,5 +1,3 @@
-using System.Text.Json.Serialization;
-
 namespace Shin_Megami_Tensei_Model.Domain.Entities;
 
 public sealed class Monster : Unit

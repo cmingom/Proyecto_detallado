@@ -1,5 +1,4 @@
 ﻿using Shin_Megami_Tensei_Model.Domain.States;
-using Shin_Megami_Tensei_Model.CombatSystem.Contexts;
 
 namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 {

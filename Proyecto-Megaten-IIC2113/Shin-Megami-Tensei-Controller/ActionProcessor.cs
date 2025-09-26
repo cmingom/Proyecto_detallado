@@ -257,42 +257,8 @@ namespace Shin_Megami_Tensei
                 }
             }
         }
+        
 
-        private void InsertUnitByTurnPriority(List<UnitInstanceContext> actionOrder, UnitInstanceContext newUnit)
-        {
-            var insertIndex = actionOrder.Count;
-            for (int i = 0; i < actionOrder.Count; i++)
-            {
-                if (ShouldInsertBefore(newUnit, actionOrder[i]))
-                {
-                    insertIndex = i;
-                    break;
-                }
-            }
-            actionOrder.Insert(insertIndex, newUnit);
-        }
-
-        private bool ShouldInsertBefore(UnitInstanceContext candidate, UnitInstanceContext current)
-        {
-            if (candidate.Spd == current.Spd)
-            {
-                return GetPositionPriority(candidate.Position) < GetPositionPriority(current.Position);
-            }
-
-            return candidate.Spd > current.Spd;
-        }
-
-        private int GetPositionPriority(char position)
-        {
-            return position switch
-            {
-                'A' => 0,
-                'B' => 1,
-                'C' => 2,
-                'D' => 3,
-                _ => int.MaxValue
-            };
-        }
 
         private void EnsureTurnConsumptionForSuccessfulAction(BattleContext battleContext)
         {

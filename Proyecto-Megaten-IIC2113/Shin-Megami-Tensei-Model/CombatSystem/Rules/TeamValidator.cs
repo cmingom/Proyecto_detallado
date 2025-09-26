@@ -1,5 +1,3 @@
-using Shin_Megami_Tensei_Model.CombatSystem.Core;
-
 namespace Shin_Megami_Tensei_Model.CombatSystem.Rules
 {
     public class TeamValidator

@@ -1,17 +1,45 @@
+ï»¿using System.IO;
+using System.Text;
 using Shin_Megami_Tensei_View;
 using Shin_Megami_Tensei;
 
+Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+Console.InputEncoding  = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
+Console.OutputEncoding = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
+Console.SetOut(new StreamWriter(Console.OpenStandardOutput(), Console.OutputEncoding) { AutoFlush = true });
+
+if (args.Length >= 2)
+{
+    string teamsFolderArg = args[0];
+    string testFile = args[1];
+    var testingView = View.BuildTestingView(testFile);
+    var testGame = new Game(testingView, teamsFolderArg);
+    try
+    {
+        testGame.Play();
+    }
+    finally
+    {
+        foreach (var line in testingView.GetScript())
+        {
+            Console.WriteLine(line);
+        }
+    }
+    return;
+}
+
+
 
 /* 
- * Este código permite replicar un test case. Primero pregunta por el grupo de test
- * case a replicar. Luego pregunta por el test case específico que se quiere replicar.
+ * Este cÃ³digo permite replicar un test case. Primero pregunta por el grupo de test
+ * case a replicar. Luego pregunta por el test case especÃ­fico que se quiere replicar.
  *
- * Al presionar enter, se ingresa el input del test case en forma automática. Si el
+ * Al presionar enter, se ingresa el input del test case en forma automÃ¡tica. Si el
  * color es azul significa que el output de tu programa es el esperado. Si es rojo
- * significa que el output de tu programa es distinto al esperado (i.e., el test falló).
+ * significa que el output de tu programa es distinto al esperado (i.e., el test fallÃ³).
  */
 
-// Verificar si se proporcionó archivo de equipos como argumento de línea de comandos (para tests)
+// Verificar si se proporcionÃ³ archivo de equipos como argumento de lÃ­nea de comandos (para tests)
 if (args.Length > 0)
 {
     string teamsFile = args[0];
@@ -34,7 +62,7 @@ else
 
 string SelectTestFolder()
 {
-    Console.WriteLine("¿Qué grupo de test quieres usar?");
+    Console.WriteLine("Â¿QuÃ© grupo de test quieres usar?");
     string[] dirs = GetAvailableTestsInOrder();
     ShowArrayOfOptions(dirs);
     return AskUserToSelectAnOption(dirs);
@@ -63,7 +91,7 @@ string AskUserToSelectAnOption(string[] options)
 
 int AskUserToSelectNumber(int minValue, int maxValue)
 {
-    Console.WriteLine($"(Ingresa un número entre {minValue} y {maxValue})");
+    Console.WriteLine($"(Ingresa un nÃºmero entre {minValue} y {maxValue})");
     int value;
     bool wasParsePossible;
     do
@@ -80,7 +108,7 @@ bool IsValueOutsideTheValidRange(int minValue, int value, int maxValue)
 
 string SelectTest(string testFolder)
 {
-    Console.WriteLine("¿Qué test quieres ejecutar?");
+    Console.WriteLine("Â¿QuÃ© test quieres ejecutar?");
     string[] tests = Directory.GetFiles(testFolder, "*.txt" );
     Array.Sort(tests);
     return AskUserToSelectAnOption(tests);

@@ -1,4 +1,4 @@
-using Shin_Megami_Tensei_Model.Domain.Entities;
+﻿using Shin_Megami_Tensei_Model.Domain.Entities;
 using Shin_Megami_Tensei_Model.CombatSystem.Contexts;
 using Shin_Megami_Tensei_Model.CombatSystem.Enums;
 
@@ -278,7 +278,7 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
             view.WriteLine($"{unit.Name} se defiende");
         }
 
-        public void ShowHealResult(UnitInstanceContext unit, UnitInstanceContext target, string skillName, int healAmount)
+        public void ShowHealSuccess(UnitInstanceContext unit, UnitInstanceContext target, string skillName, int healAmount)
         {
             ShowSeparator();
             view.WriteLine($"{unit.Name} cura a {target.Name}");
@@ -286,11 +286,28 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
             view.WriteLine($"{target.Name} termina con HP:{target.HP}/{target.MaxHP}");
         }
 
-        public void ShowReviveResult(UnitInstanceContext unit, UnitInstanceContext target, string skillName)
+        public void ShowHealFailure(UnitInstanceContext unit, UnitInstanceContext target, string skillName)
         {
             ShowSeparator();
             view.WriteLine($"{unit.Name} usa {skillName} en {target.Name}");
+            view.WriteLine($"{target.Name} no puede ser curado");
             view.WriteLine($"{target.Name} termina con HP:{target.HP}/{target.MaxHP}");
+        }
+
+        public void ShowReviveResult(UnitInstanceContext unit, UnitInstanceContext target, string skillName, int revivedHp, bool showSeparator = true)
+        {
+            ShowSeparator();
+            view.WriteLine($"{unit.Name} revive a {target.Name}");
+            view.WriteLine($"{target.Name} recibe {revivedHp} de HP");
+            view.WriteLine($"{target.Name} termina con HP:{target.HP}/{target.MaxHP}");
+        }
+
+        public void ShowSkillUsage(UnitInstanceContext unit, string skillName)
+        {
+            ShowSeparator();
+            view.WriteLine($"{unit.Name} usa {skillName}");
         }
     }
 }
+
+

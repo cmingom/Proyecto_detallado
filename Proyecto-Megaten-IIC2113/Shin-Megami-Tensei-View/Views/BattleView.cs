@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Shin_Megami_Tensei_Model.Domain.States;
 using Shin_Megami_Tensei_Model.Domain.Entities;
 using Shin_Megami_Tensei_Model.CombatSystem.Core;
@@ -128,14 +128,24 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
             battleResultDisplayService.ShowSummonResult(unitName);
         }
 
-        public void ShowHealResult(UnitInstanceContext unit, UnitInstanceContext target, string skillName, int healAmount)
+        public void ShowHealSuccess(UnitInstanceContext unit, UnitInstanceContext target, string skillName, int healAmount)
         {
-            actionMenuDisplayService.ShowHealResult(unit, target, skillName, healAmount);
+            actionMenuDisplayService.ShowHealSuccess(unit, target, skillName, healAmount);
         }
 
-        public void ShowReviveResult(UnitInstanceContext unit, UnitInstanceContext target, string skillName)
+        public void ShowHealFailure(UnitInstanceContext unit, UnitInstanceContext target, string skillName)
         {
-            actionMenuDisplayService.ShowReviveResult(unit, target, skillName);
+            actionMenuDisplayService.ShowHealFailure(unit, target, skillName);
+        }
+
+        public void ShowReviveResult(UnitInstanceContext unit, UnitInstanceContext target, string skillName, int revivedHp, bool showSeparator = true)
+        {
+            actionMenuDisplayService.ShowReviveResult(unit, target, skillName, revivedHp, showSeparator);
+        }
+
+        public void ShowSkillUsage(UnitInstanceContext unit, string skillName)
+        {
+            actionMenuDisplayService.ShowSkillUsage(unit, skillName);
         }
 
         public void StartActionBuffer()
@@ -149,5 +159,3 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
         }
     }
 }
-
-

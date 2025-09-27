@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Shin_Megami_Tensei_View.ConsoleLib;
@@ -279,6 +279,7 @@ namespace Shin_Megami_Tensei
 
 
 // to do: ojala que las funciones no retornen null. separacion por partes de lineas largas. ver bien los modificadores. las skills deben tener poliformismo
+
 
 
 

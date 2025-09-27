@@ -1,4 +1,4 @@
-using Shin_Megami_Tensei_Model.CombatSystem.Contexts;
+﻿using Shin_Megami_Tensei_Model.CombatSystem.Contexts;
 using Shin_Megami_Tensei_Model.CombatSystem.Enums;
 using Shin_Megami_Tensei_Model.Domain.Entities;
 using Shin_Megami_Tensei_Model.Domain.States;
@@ -40,8 +40,8 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             this.targetSelector = targetSelector;
             this.damageCalculator = damageCalculator;
             this.turnOutcomeProcessor = turnOutcomeProcessor;
-            this.healProcessor = new HealProcessor(battleView, targetSelector, turnOutcomeProcessor);
             this.sabbatmaProcessor = new SabbatmaProcessor(battleView, turnOutcomeProcessor);
+            this.healProcessor = new HealProcessor(battleView, turnOutcomeProcessor);
             this.basicSkillsProcessor = new BasicSkillsProcessor();
         }
 
@@ -56,20 +56,15 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             }
 
             var selectedSkill = availableSkills[skillChoice - 1];
-            
-            // Delegar a procesadores especializados según el tipo de habilidad
+
             if (IsHealSkill(selectedSkill))
             {
                 return healProcessor.CanProcessHeal(unit, battleState, selectedSkill);
             }
-            else if (IsSabbatmaSkill(selectedSkill))
+
+            if (IsInvitationSkill(selectedSkill))
             {
-                return sabbatmaProcessor.CanProcessSabbatma(unit, battleState);
-            }
-            else if (IsInvitationSkill(selectedSkill))
-            {
-                // Para Invitation, necesitamos seleccionar un objetivo primero
-                var targets = GetAvailableTargetsForHeal(battleState);
+                var targets = GetAvailableTargetsForSkill(battleState, selectedSkill);
                 if (targets.Count == 0)
                 {
                     return false;
@@ -83,9 +78,27 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
                 }
 
                 var target = targets[targetChoice - 1];
-                return sabbatmaProcessor.CanProcessInvitation(unit, target, battleState);
+                var executed = sabbatmaProcessor.CanProcessInvitation(unit, target, battleState, selectedSkill);
+                if (executed)
+                {
+                    unit.MP -= selectedSkill.Cost;
+                }
+
+                return executed;
             }
-            else if (basicSkillsProcessor.IsOffensiveSkillSupported(selectedSkill))
+
+            if (IsSabbatmaSkill(selectedSkill))
+            {
+                var executed = sabbatmaProcessor.CanProcessSabbatma(unit, battleState, selectedSkill);
+                if (executed)
+                {
+                    unit.MP -= selectedSkill.Cost;
+                }
+
+                return executed;
+            }
+
+            if (basicSkillsProcessor.IsOffensiveSkillSupported(selectedSkill))
             {
                 var targets = targetSelector.GetAvailableTargetsForAttack(battleState);
                 if (targets.Count == 0)
@@ -107,6 +120,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 
             return false;
         }
+
 
         public List<Skill> GetAvailableSkills(UnitInstanceContext unit)
         {
@@ -153,10 +167,19 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             return skill.Name == "Invitation";
         }
 
-        private List<UnitInstanceContext> GetAvailableTargetsForHeal(BattleState battleState)
+        private List<UnitInstanceContext> GetAvailableTargetsForSkill(BattleState battleState, Skill skill)
         {
             var allyTeam = battleState.IsPlayer1Turn ? battleState.Team1 : battleState.Team2;
-            return allyTeam.AliveUnits.ToList();
+            var allUnits = allyTeam.Units
+                .Where(unit => unit != null)
+                .Cast<UnitInstanceContext>();
+
+            if (IsInvitationSkill(skill))
+            {
+                return allUnits.Where(unit => unit.HP <= 0).ToList();
+            }
+
+            return allUnits.ToList();
         }
 
 
@@ -174,7 +197,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             // Ejecutar exactamente X golpes como especifica la regla
             for (var hitNumber = 1; hitNumber <= intendedHits; hitNumber++)
             {
-                // Solo detener si el atacante está muerto ANTES del golpe
+                // Solo detener si el atacante est�f¡ muerto ANTES del golpe
                 if (unit.HP <= 0)
                 {
                     break;
@@ -184,7 +207,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
                 reactions.Add(resolution.Reaction);
                 executedHits = hitNumber;
 
-                // Acumular resultado para mostrar después
+                // Acumular resultado para mostrar despu�f©s
                 var context = BuildAttackResultContext(unit, target, skill.Name, element, resolution, hitNumber, intendedHits);
                 hitResults.Add(context);
 
@@ -206,11 +229,11 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
                 for (int i = 0; i < hitResults.Count; i++)
                 {
                     var hitResult = hitResults[i];
-                    // Marcar correctamente cuál es el último golpe ejecutado
+                    // Marcar correctamente cu�f¡l es el �fºltimo golpe ejecutado
                     var finalContext = new AttackResultContext(
                         hitResult.Attacker, hitResult.Target, hitResult.ActionName, hitResult.Element,
                         hitResult.Reaction, hitResult.DamageToTarget, hitResult.DamageToAttacker,
-                        hitResult.HitNumber, hitResults.Count, // Usar el número real de golpes ejecutados
+                        hitResult.HitNumber, hitResults.Count, // Usar el n�fºmero real de golpes ejecutados
                         hitResult.TargetHpAfter, hitResult.AttackerHpAfter, hitResult.IsCritical);
                     
                     battleView.ShowAttackResult(finalContext);
@@ -219,10 +242,10 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
                 var netReaction = DetermineNetReaction(reactions);
                 turnOutcomeProcessor.ApplyOutcome(battleState, netReaction);
                 
-                // Incrementar contador del jugador después de completar la acción
+                // Incrementar contador del jugador despu�f©s de completar la acci�f³n
                 battleState.IncrementCurrentPlayerActionCounter();
                 
-                // Incrementar contador de habilidades del jugador después de usar cualquier habilidad
+                // Incrementar contador de habilidades del jugador despu�f©s de usar cualquier habilidad
                 battleState.IncrementCurrentPlayerSkillCounter();
                 
                 battleView.FlushActionBuffer();
@@ -282,3 +305,4 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
         }
     }
 }
+

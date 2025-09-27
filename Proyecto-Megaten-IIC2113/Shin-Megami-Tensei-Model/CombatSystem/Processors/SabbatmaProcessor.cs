@@ -1,3 +1,5 @@
+﻿using System.Collections.Generic;
+using System.Linq;
 using Shin_Megami_Tensei_Model.Domain.Entities;
 using Shin_Megami_Tensei_Model.Domain.States;
 using Shin_Megami_Tensei_Model.CombatSystem.Exceptions;
@@ -19,7 +21,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             this.turnOutcomeProcessor = turnOutcomeProcessor;
         }
 
-        public bool CanProcessSabbatma(UnitInstanceContext summoner, BattleState battleState)
+        public bool CanProcessSabbatma(UnitInstanceContext summoner, BattleState battleState, Skill skill)
         {
             if (battleState.IsBattleFinished)
             {
@@ -27,14 +29,16 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             }
 
             var currentTeam = battleState.GetCurrentTeam();
-            var availableUnits = GetAvailableAliveUnitsFromReserve(currentTeam); // Solo vivas
+            var availableUnits = GetAvailableAliveUnitsFromReserve(currentTeam);
 
-            if (!availableUnits.Any())
+            battleView.ShowSkillUsage(summoner, skill.Name);
+            battleView.ShowSummonMenu(availableUnits);
+
+            if (availableUnits.Count == 0)
             {
                 return false;
             }
 
-            battleView.ShowSummonMenu(availableUnits);
             var unitChoice = battleView.GetSummonChoice(availableUnits.Count + CANCEL_CHOICE_OFFSET);
 
             if (IsInvalidChoice(unitChoice) || IsUnitChoiceCancelled(unitChoice, availableUnits.Count))
@@ -46,9 +50,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 
             try
             {
-                return summoner.IsSamurai
-                    ? ProcessSamuraiSabbatma(selectedUnit, currentTeam, battleState, summoner)
-                    : ProcessMonsterSabbatma(summoner, selectedUnit, currentTeam, battleState);
+                return ProcessSabbatmaPlacement(selectedUnit, currentTeam, battleState);
             }
             catch (ActionCancelledException)
             {
@@ -56,48 +58,81 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             }
         }
 
-        public bool CanProcessInvitation(UnitInstanceContext summoner, UnitInstanceContext target, BattleState battleState)
+        public bool CanProcessInvitation(UnitInstanceContext summoner, UnitInstanceContext target, BattleState battleState, Skill skill)
         {
             if (battleState.IsBattleFinished)
             {
                 return false;
             }
 
+            if (target.HP > 0)
+            {
+                battleView.StartActionBuffer();
+                battleView.ShowHealFailure(summoner, target, skill.Name);
+                battleView.FlushActionBuffer();
+                return false;
+            }
+
             var currentTeam = battleState.GetCurrentTeam();
             var availableUnits = GetAvailableUnitsFromReserve(currentTeam);
 
-            // Invitation: elegir unidad de reserva (viva o KO)
+            int previousTargetHp = target.HP;
+
+            battleView.StartActionBuffer();
+            target.HP = target.MaxHP;
+            battleView.ShowReviveResult(summoner, target, skill.Name, target.HP);
+            battleView.FlushActionBuffer();
+
             battleView.ShowSummonMenu(availableUnits);
+
+            if (availableUnits.Count == 0)
+            {
+                target.HP = previousTargetHp;
+                return false;
+            }
+
             var unitChoice = battleView.GetSummonChoice(availableUnits.Count + CANCEL_CHOICE_OFFSET);
 
             if (IsInvalidChoice(unitChoice) || IsUnitChoiceCancelled(unitChoice, availableUnits.Count))
             {
-                return false;
-            }
-
-            if (!availableUnits.Any())
-            {
-                // No hay candidatos, solo mostrar "Cancelar" y no ejecutar
+                target.HP = previousTargetHp;
                 return false;
             }
 
             var selectedUnit = availableUnits[unitChoice - 1];
+            int previousSummonedHp = selectedUnit.HP;
+            bool revivedSummonedUnit = false;
 
-            // Si el elegido está KO, se revive primero
             if (selectedUnit.HP <= 0)
             {
                 selectedUnit.HP = selectedUnit.MaxHP;
-                battleView.ShowReviveResult(summoner, selectedUnit, "Invitation");
+                revivedSummonedUnit = true;
+                battleView.ShowReviveResult(summoner, selectedUnit, skill.Name, selectedUnit.HP);
             }
 
             try
             {
-                return summoner.IsSamurai
-                    ? ProcessSamuraiSabbatma(selectedUnit, currentTeam, battleState, summoner)
-                    : ProcessMonsterSabbatma(summoner, selectedUnit, currentTeam, battleState);
+                var executed = ProcessSabbatmaPlacement(selectedUnit, currentTeam, battleState);
+
+                if (!executed)
+                {
+                    target.HP = previousTargetHp;
+                    if (revivedSummonedUnit)
+                    {
+                        selectedUnit.HP = previousSummonedHp;
+                    }
+                }
+
+                return executed;
             }
             catch (ActionCancelledException)
             {
+                target.HP = previousTargetHp;
+                if (revivedSummonedUnit)
+                {
+                    selectedUnit.HP = previousSummonedHp;
+                }
+
                 return false;
             }
         }
@@ -122,7 +157,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             return choice == availableUnitsCount + CANCEL_CHOICE_OFFSET;
         }
 
-        private bool ProcessSamuraiSabbatma(UnitInstanceContext selectedUnit, TeamState currentTeam, BattleState battleState, UnitInstanceContext summoner)
+        private bool ProcessSabbatmaPlacement(UnitInstanceContext selectedUnit, TeamState currentTeam, BattleState battleState)
         {
             var positionOptions = GetSamuraiPositionOptions(currentTeam);
             battleView.ShowSummonPositionMenu(positionOptions);
@@ -134,20 +169,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             }
 
             var (slot, existingUnit) = positionOptions[positionChoice - 1];
-            PerformSamuraiSabbatma(selectedUnit, existingUnit, slot, currentTeam, battleState, summoner);
-            return true;
-        }
-
-        private bool ProcessMonsterSabbatma(UnitInstanceContext summoner, UnitInstanceContext selectedUnit, TeamState currentTeam, BattleState battleState)
-        {
-            // Monstruo: se intercambia por el invocado
-            var summonerSlot = GetSummonerSlot(summoner, currentTeam);
-            if (summonerSlot == '\0')
-            {
-                return false;
-            }
-
-            PerformMonsterSabbatma(summoner, selectedUnit, summonerSlot, currentTeam, battleState);
+            ExecuteSabbatmaPlacement(selectedUnit, existingUnit, slot, currentTeam, battleState);
             return true;
         }
 
@@ -157,6 +179,11 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             foreach (var slot in SAMURAI_POSITIONS)
             {
                 var unit = currentTeam.GetActiveUnitAt(slot);
+                if (unit != null && unit.HP <= 0)
+                {
+                    unit = null;
+                }
+
                 options.Add((slot, unit));
             }
             return options;
@@ -167,53 +194,19 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             return choice == positionOptionsCount + CANCEL_CHOICE_OFFSET;
         }
 
-        private void PerformSamuraiSabbatma(UnitInstanceContext selectedUnit, UnitInstanceContext? existingUnit, char slot, TeamState currentTeam, BattleState battleState, UnitInstanceContext summoner)
+        private void ExecuteSabbatmaPlacement(UnitInstanceContext selectedUnit, UnitInstanceContext? existingUnit, char slot, TeamState currentTeam, BattleState battleState)
         {
-            // Samurai: invoca a un puesto vacío o reemplaza a otro monstruo
             currentTeam.SetActiveUnitAt(slot, selectedUnit);
             currentTeam.RemoveFromReserves(selectedUnit);
 
-            if (existingUnit != null)
+            if (existingUnit != null && !existingUnit.IsSamurai)
             {
                 currentTeam.AddToReserves(existingUnit);
             }
 
             battleView.ShowSummonResult(selectedUnit.Name);
-            
-            // Aplicar reglas de turnos para Sabbatma (igual que Invocar)
             turnOutcomeProcessor.ApplySummonTurnOutcome(battleState);
-            
-            // Incrementar contador de habilidades del jugador después de usar cualquier habilidad
             battleState.IncrementCurrentPlayerSkillCounter();
-        }
-
-        private void PerformMonsterSabbatma(UnitInstanceContext summoner, UnitInstanceContext selectedUnit, char summonerSlot, TeamState currentTeam, BattleState battleState)
-        {
-            // Monstruo: se intercambia por el invocado
-            currentTeam.SetActiveUnitAt(summonerSlot, selectedUnit);
-            currentTeam.RemoveFromReserves(selectedUnit);
-            currentTeam.AddToReserves(summoner);
-
-            battleView.ShowSummonResult(selectedUnit.Name);
-            
-            // Aplicar reglas de turnos para Sabbatma (igual que Invocar)
-            turnOutcomeProcessor.ApplySummonTurnOutcome(battleState);
-            
-            // Incrementar contador de habilidades del jugador después de usar cualquier habilidad
-            battleState.IncrementCurrentPlayerSkillCounter();
-        }
-
-        private char GetSummonerSlot(UnitInstanceContext summoner, TeamState currentTeam)
-        {
-            foreach (var slot in SAMURAI_POSITIONS)
-            {
-                var unit = currentTeam.GetActiveUnitAt(slot);
-                if (unit == summoner)
-                {
-                    return slot;
-                }
-            }
-            return '\0';
         }
     }
 }

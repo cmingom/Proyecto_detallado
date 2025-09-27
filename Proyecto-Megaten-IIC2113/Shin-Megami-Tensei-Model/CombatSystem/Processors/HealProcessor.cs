@@ -1,3 +1,6 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Shin_Megami_Tensei_Model.Domain.Entities;
 using Shin_Megami_Tensei_Model.Domain.States;
 
@@ -5,17 +8,15 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 {
     public class HealProcessor
     {
-        private const int INVALID_CHOICE = -1;
-        private const int CANCEL_CHOICE_OFFSET = 1;
+        private const int InvalidChoice = -1;
+        private const int CancelChoiceOffset = 1;
 
         private readonly IBattleView battleView;
-        private readonly TargetSelector targetSelector;
         private readonly TurnOutcomeProcessor turnOutcomeProcessor;
 
-        public HealProcessor(IBattleView battleView, TargetSelector targetSelector, TurnOutcomeProcessor turnOutcomeProcessor)
+        public HealProcessor(IBattleView battleView, TurnOutcomeProcessor turnOutcomeProcessor)
         {
             this.battleView = battleView;
-            this.targetSelector = targetSelector;
             this.turnOutcomeProcessor = turnOutcomeProcessor;
         }
 
@@ -26,14 +27,8 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
                 return false;
             }
 
-            // Validar que el healer tenga MP suficiente
-            if (healer.MP < skill.Cost)
-            {
-                return false;
-            }
-
-            var availableTargets = GetAvailableTargetsForHeal(battleState, skill);
-            if (!availableTargets.Any())
+            var availableTargets = GetAvailableTargetsForSkill(battleState, skill);
+            if (availableTargets.Count == 0)
             {
                 return false;
             }
@@ -47,129 +42,140 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             }
 
             var selectedTarget = availableTargets[targetChoice - 1];
-            ExecuteHeal(healer, selectedTarget, battleState, skill);
+            var executed = ExecuteHeal(healer, selectedTarget, battleState, skill);
+
+            if (!executed)
+            {
+                return false;
+            }
+
+            healer.MP -= skill.Cost;
+            turnOutcomeProcessor.ApplyHealTurnOutcome(battleState);
+            battleState.IncrementCurrentPlayerSkillCounter();
+
             return true;
         }
 
-        private List<UnitInstanceContext> GetAvailableTargetsForHeal(BattleState battleState, Skill skill)
+        private List<UnitInstanceContext> GetAvailableTargetsForSkill(BattleState battleState, Skill skill)
         {
-            var allyTeam = GetAllyTeam(battleState);
-            var targets = new List<UnitInstanceContext>();
+            var allyTeam = battleState.IsPlayer1Turn ? battleState.Team1 : battleState.Team2;
+            var candidates = allyTeam.Units
+                .Where(unit => unit != null)
+                .Cast<UnitInstanceContext>();
 
-            foreach (var unit in allyTeam.AliveUnits)
+            if (IsReviveSkill(skill))
             {
-                if (IsValidHealTarget(unit, skill))
-                {
-                    targets.Add(unit);
-                }
+                return candidates.Where(unit => unit.HP <= 0).ToList();
             }
 
-            return targets;
-        }
-
-        private bool IsValidHealTarget(UnitInstanceContext target, Skill skill)
-        {
-            // Para habilidades de curación: solo unidades vivas
-            if (skill.Name == "Dia" || skill.Name == "Diarama" || skill.Name == "Diarahan")
-            {
-                return target.HP > 0;
-            }
-
-            // Para habilidades de revivir: solo unidades KO
-            if (skill.Name == "Recarm" || skill.Name == "Samarecarm" || skill.Name == "Invitation")
-            {
-                return target.HP <= 0;
-            }
-
-            return false;
-        }
-
-        private TeamState GetAllyTeam(BattleState battleState)
-        {
-            return battleState.IsPlayer1Turn ? battleState.Team1 : battleState.Team2;
+            return candidates.ToList();
         }
 
         private bool IsInvalidTargetChoice(int targetChoice, int targetCount)
         {
-            return targetChoice == INVALID_CHOICE || targetChoice == targetCount + CANCEL_CHOICE_OFFSET;
+            return targetChoice == InvalidChoice || targetChoice == targetCount + CancelChoiceOffset;
         }
 
-        private void ExecuteHeal(UnitInstanceContext healer, UnitInstanceContext target, BattleState battleState, Skill skill)
+        private bool ExecuteHeal(UnitInstanceContext healer, UnitInstanceContext target, BattleState battleState, Skill skill)
         {
             battleView.StartActionBuffer();
 
-            if (IsHealSkill(skill))
-            {
-                ExecuteHealSkill(healer, target, skill);
-            }
-            else if (IsReviveSkill(skill))
-            {
-                ExecuteReviveSkill(healer, target, skill);
-            }
-
-            // Descontar MP solo después de ejecutar exitosamente
-            healer.MP -= skill.Cost;
-
-            // Aplicar reglas de turnos para habilidades de curación
-            turnOutcomeProcessor.ApplyHealTurnOutcome(battleState);
-            
-            // Incrementar contador de habilidades del jugador después de usar cualquier habilidad
-            battleState.IncrementCurrentPlayerSkillCounter();
+            bool executed = IsReviveSkill(skill)
+                ? ExecuteReviveSkill(healer, target, battleState, skill)
+                : ExecuteStandardHeal(healer, target, skill);
 
             battleView.FlushActionBuffer();
+
+            return executed;
         }
 
-        private bool IsHealSkill(Skill skill)
+        private bool ExecuteStandardHeal(UnitInstanceContext healer, UnitInstanceContext target, Skill skill)
         {
-            return skill.Name == "Dia" || skill.Name == "Diarama" || skill.Name == "Diarahan";
+            if (target.HP <= 0)
+            {
+                battleView.ShowHealFailure(healer, target, skill.Name);
+                return true;
+            }
+
+            var healAmount = CalculateHealAmount(target, skill);
+            var missingHp = Math.Max(0, target.MaxHP - target.HP);
+            var appliedHeal = Math.Min(healAmount, missingHp);
+
+            target.HP += appliedHeal;
+            battleView.ShowHealSuccess(healer, target, skill.Name, healAmount);
+
+            return true;
+        }
+
+        private bool ExecuteReviveSkill(UnitInstanceContext healer, UnitInstanceContext target, BattleState battleState, Skill skill)
+        {
+            if (target.HP > 0)
+            {
+                battleView.ShowHealFailure(healer, target, skill.Name);
+                return false;
+            }
+
+            var revivedHp = CalculateReviveHp(target, skill);
+            var revivedAmount = Math.Min(revivedHp, target.MaxHP);
+            target.HP = revivedAmount;
+
+            var currentTeam = battleState.IsPlayer1Turn ? battleState.Team1 : battleState.Team2;
+            if (!target.IsSamurai)
+            {
+                MoveUnitToReservesIfPossible(currentTeam, target);
+            }
+
+            battleView.ShowReviveResult(healer, target, skill.Name, revivedAmount);
+
+            return true;
         }
 
         private bool IsReviveSkill(Skill skill)
         {
-            return skill.Name == "Recarm" || skill.Name == "Samarecarm" || skill.Name == "Invitation";
+            return skill.Name == "Recarm" || skill.Name == "Samarecarm";
         }
 
-        private void ExecuteHealSkill(UnitInstanceContext healer, UnitInstanceContext target, Skill skill)
+        private int CalculateHealAmount(UnitInstanceContext target, Skill skill)
         {
-            var healAmount = CalculateHealAmount(healer, skill, target);
-            var maxPossibleHeal = target.MaxHP - target.HP;
-            var actualHeal = Math.Min(healAmount, maxPossibleHeal);
-            
-            target.HP += actualHeal;
-
-            // Para Diarahan, mostrar el HP final como la cantidad curada
-            var displayAmount = skill.Name == "Diarahan" ? target.HP : healAmount;
-            battleView.ShowHealResult(healer, target, skill.Name, displayAmount);
-        }
-
-        private void ExecuteReviveSkill(UnitInstanceContext healer, UnitInstanceContext target, Skill skill)
-        {
-            var reviveHp = CalculateReviveHp(target, skill);
-            target.HP = reviveHp;
-
-            battleView.ShowReviveResult(healer, target, skill.Name);
-        }
-
-        private int CalculateHealAmount(UnitInstanceContext healer, Skill skill, UnitInstanceContext target)
-        {
-            return skill.Name switch
+            if (skill.Power <= 0)
             {
-                "Dia" => (target.MaxHP * 25) / 100, // 25% del HP máximo
-                "Diarama" => (target.MaxHP * 50) / 100, // 50% del HP máximo
-                "Diarahan" => target.MaxHP, // cura al máximo HP completo
-                _ => skill.Power
-            };
+                return target.MaxHP;
+            }
+
+            var amount = (target.MaxHP * skill.Power) / 100;
+            return Math.Max(1, amount);
         }
 
         private int CalculateReviveHp(UnitInstanceContext target, Skill skill)
         {
-            return skill.Name switch
+            if (skill.Power <= 0)
             {
-                "Recarm" => target.MaxHP / 2, // 50% HP
-                "Samarecarm" => target.MaxHP, // 100% HP
-                "Invitation" => target.MaxHP, // 100% HP
-                _ => target.MaxHP
-            };
+                return target.MaxHP;
+            }
+
+            var amount = (target.MaxHP * skill.Power) / 100;
+            return Math.Max(1, amount);
+        }
+        private void MoveUnitToReservesIfPossible(TeamState team, UnitInstanceContext unit)
+        {
+            if (!team.CanAddToReserves() && !team.Reserves.Contains(unit))
+            {
+                return;
+            }
+
+            var positions = new[] { 'A', 'B', 'C', 'D' };
+            foreach (var slot in positions)
+            {
+                var current = team.GetActiveUnitAt(slot);
+                if (current == unit)
+                {
+                    team.SetActiveUnitAt(slot, null);
+                    team.AddToReserves(unit);
+                    break;
+                }
+            }
         }
     }
 }
+
+

@@ -1,4 +1,4 @@
-using Shin_Megami_Tensei_Model.CombatSystem.Exceptions;
+﻿using Shin_Megami_Tensei_Model.CombatSystem.Exceptions;
 
 namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 {
@@ -67,3 +67,4 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
         }
     }
 }
+

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace Shin_Megami_Tensei_Model.Domain.Entities
@@ -59,3 +59,4 @@ namespace Shin_Megami_Tensei_Model.Domain.Entities
         }
     }
 }
+

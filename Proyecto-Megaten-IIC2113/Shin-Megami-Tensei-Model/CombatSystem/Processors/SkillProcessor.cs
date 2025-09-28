@@ -64,21 +64,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 
             if (IsInvitationSkill(selectedSkill))
             {
-                var targets = GetAvailableTargetsForSkill(battleState, selectedSkill);
-                if (targets.Count == 0)
-                {
-                    return false;
-                }
-
-                battleView.ShowTargetSelection(unit, targets);
-                var targetChoice = battleView.GetTargetChoice(targets.Count);
-                if (IsInvalidTargetChoice(targetChoice, targets.Count))
-                {
-                    return false;
-                }
-
-                var target = targets[targetChoice - 1];
-                var executed = sabbatmaProcessor.CanProcessInvitation(unit, target, battleState, selectedSkill);
+                var executed = sabbatmaProcessor.CanProcessInvitation(unit, battleState, selectedSkill);
                 if (executed)
                 {
                     unit.MP -= selectedSkill.Cost;
@@ -167,20 +153,6 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             return skill.Name == "Invitation";
         }
 
-        private List<UnitInstanceContext> GetAvailableTargetsForSkill(BattleState battleState, Skill skill)
-        {
-            var allyTeam = battleState.IsPlayer1Turn ? battleState.Team1 : battleState.Team2;
-            var allUnits = allyTeam.Units
-                .Where(unit => unit != null)
-                .Cast<UnitInstanceContext>();
-
-            if (IsInvitationSkill(skill))
-            {
-                return allUnits.Where(unit => unit.HP <= 0).ToList();
-            }
-
-            return allUnits.ToList();
-        }
 
 
         private void ExecuteSkill(UnitInstanceContext unit, UnitInstanceContext target, BattleState battleState, Skill skill)

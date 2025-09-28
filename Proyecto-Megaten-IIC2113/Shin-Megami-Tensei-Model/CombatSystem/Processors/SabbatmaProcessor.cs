@@ -31,13 +31,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             var currentTeam = battleState.GetCurrentTeam();
             var availableUnits = GetAvailableAliveUnitsFromReserve(currentTeam);
 
-            battleView.ShowSkillUsage(summoner, skill.Name);
             battleView.ShowSummonMenu(availableUnits);
-
-            if (availableUnits.Count == 0)
-            {
-                return false;
-            }
 
             var unitChoice = battleView.GetSummonChoice(availableUnits.Count + CANCEL_CHOICE_OFFSET);
 
@@ -58,79 +52,57 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             }
         }
 
-        public bool CanProcessInvitation(UnitInstanceContext summoner, UnitInstanceContext target, BattleState battleState, Skill skill)
+        public bool CanProcessInvitation(UnitInstanceContext summoner, BattleState battleState, Skill skill)
         {
             if (battleState.IsBattleFinished)
             {
                 return false;
             }
 
-            if (target.HP > 0)
-            {
-                battleView.StartActionBuffer();
-                battleView.ShowHealFailure(summoner, target, skill.Name);
-                battleView.FlushActionBuffer();
-                return false;
-            }
-
             var currentTeam = battleState.GetCurrentTeam();
-            var availableUnits = GetAvailableUnitsFromReserve(currentTeam);
-
-            int previousTargetHp = target.HP;
-
-            battleView.StartActionBuffer();
-            target.HP = target.MaxHP;
-            battleView.ShowReviveResult(summoner, target, skill.Name, target.HP);
-            battleView.FlushActionBuffer();
+            var availableUnits = GetAvailableUnitsForInvitation(currentTeam);
 
             battleView.ShowSummonMenu(availableUnits);
-
-            if (availableUnits.Count == 0)
-            {
-                target.HP = previousTargetHp;
-                return false;
-            }
 
             var unitChoice = battleView.GetSummonChoice(availableUnits.Count + CANCEL_CHOICE_OFFSET);
 
             if (IsInvalidChoice(unitChoice) || IsUnitChoiceCancelled(unitChoice, availableUnits.Count))
             {
-                target.HP = previousTargetHp;
                 return false;
             }
 
             var selectedUnit = availableUnits[unitChoice - 1];
-            int previousSummonedHp = selectedUnit.HP;
-            bool revivedSummonedUnit = false;
-
-            if (selectedUnit.HP <= 0)
-            {
-                selectedUnit.HP = selectedUnit.MaxHP;
-                revivedSummonedUnit = true;
-                battleView.ShowReviveResult(summoner, selectedUnit, skill.Name, selectedUnit.HP);
-            }
+            var previousHp = selectedUnit.HP;
+            var needsRevive = selectedUnit.HP <= 0;
 
             try
             {
-                var executed = ProcessSabbatmaPlacement(selectedUnit, currentTeam, battleState);
+                var executed = ProcessSabbatmaPlacement(selectedUnit, currentTeam, battleState, skipTurnOutcome: needsRevive);
 
                 if (!executed)
                 {
-                    target.HP = previousTargetHp;
-                    if (revivedSummonedUnit)
+                    if (needsRevive)
                     {
-                        selectedUnit.HP = previousSummonedHp;
+                        selectedUnit.HP = previousHp;
                     }
+
+                    return false;
                 }
 
-                return executed;
+                if (needsRevive)
+                {
+                    selectedUnit.HP = selectedUnit.MaxHP;
+                    battleView.ShowReviveResult(summoner, selectedUnit, skill.Name, selectedUnit.HP, showSeparator: false);
+                    ApplySummonOutcome(battleState);
+                }
+
+                return true;
             }
             catch (ActionCancelledException)
             {
-                target.HP = previousTargetHp;
-                if (revivedSummonedUnit)
+                if (needsRevive)
                 {
-                    selectedUnit.HP = previousSummonedHp;
+                    selectedUnit.HP = previousHp;
                 }
 
                 return false;
@@ -147,6 +119,30 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             return team.Reserves.Where(unit => unit.HP > 0).ToList();
         }
 
+        private List<UnitInstanceContext> GetAvailableUnitsForInvitation(TeamState team)
+        {
+            var units = new List<UnitInstanceContext>();
+
+            foreach (var slot in SAMURAI_POSITIONS)
+            {
+                var unit = team.GetActiveUnitAt(slot);
+                if (unit != null && !unit.IsSamurai && unit.HP <= 0 && !units.Contains(unit))
+                {
+                    units.Add(unit);
+                }
+            }
+
+            foreach (var reserve in team.Reserves)
+            {
+                if (!units.Contains(reserve))
+                {
+                    units.Add(reserve);
+                }
+            }
+
+            return units;
+        }
+
         private bool IsInvalidChoice(int choice)
         {
             return choice == INVALID_CHOICE;
@@ -157,7 +153,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             return choice == availableUnitsCount + CANCEL_CHOICE_OFFSET;
         }
 
-        private bool ProcessSabbatmaPlacement(UnitInstanceContext selectedUnit, TeamState currentTeam, BattleState battleState)
+        private bool ProcessSabbatmaPlacement(UnitInstanceContext selectedUnit, TeamState currentTeam, BattleState battleState, bool skipTurnOutcome = false)
         {
             var positionOptions = GetSamuraiPositionOptions(currentTeam);
             battleView.ShowSummonPositionMenu(positionOptions);
@@ -169,7 +165,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             }
 
             var (slot, existingUnit) = positionOptions[positionChoice - 1];
-            ExecuteSabbatmaPlacement(selectedUnit, existingUnit, slot, currentTeam, battleState);
+            ExecuteSabbatmaPlacement(selectedUnit, existingUnit, slot, currentTeam, battleState, skipTurnOutcome);
             return true;
         }
 
@@ -194,8 +190,9 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             return choice == positionOptionsCount + CANCEL_CHOICE_OFFSET;
         }
 
-        private void ExecuteSabbatmaPlacement(UnitInstanceContext selectedUnit, UnitInstanceContext? existingUnit, char slot, TeamState currentTeam, BattleState battleState)
+        private void ExecuteSabbatmaPlacement(UnitInstanceContext selectedUnit, UnitInstanceContext? existingUnit, char slot, TeamState currentTeam, BattleState battleState, bool skipTurnOutcome)
         {
+            RemoveUnitFromActivePositions(currentTeam, selectedUnit);
             currentTeam.SetActiveUnitAt(slot, selectedUnit);
             currentTeam.RemoveFromReserves(selectedUnit);
 
@@ -205,6 +202,26 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             }
 
             battleView.ShowSummonResult(selectedUnit.Name);
+
+            if (!skipTurnOutcome)
+            {
+                ApplySummonOutcome(battleState);
+            }
+        }
+
+        private void RemoveUnitFromActivePositions(TeamState team, UnitInstanceContext unit)
+        {
+            foreach (var slot in SAMURAI_POSITIONS)
+            {
+                if (team.GetActiveUnitAt(slot) == unit)
+                {
+                    team.SetActiveUnitAt(slot, null);
+                }
+            }
+        }
+
+        private void ApplySummonOutcome(BattleState battleState)
+        {
             turnOutcomeProcessor.ApplySummonTurnOutcome(battleState);
             battleState.IncrementCurrentPlayerSkillCounter();
         }

@@ -296,7 +296,11 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
 
         public void ShowReviveResult(UnitInstanceContext unit, UnitInstanceContext target, string skillName, int revivedHp, bool showSeparator = true)
         {
-            ShowSeparator();
+            if (showSeparator)
+            {
+                ShowSeparator();
+            }
+
             view.WriteLine($"{unit.Name} revive a {target.Name}");
             view.WriteLine($"{target.Name} recibe {revivedHp} de HP");
             view.WriteLine($"{target.Name} termina con HP:{target.HP}/{target.MaxHP}");

@@ -6,9 +6,9 @@ namespace Shin_Megami_Tensei_Model.Domain.States
     {
         // Reglas del juego: 1 Samurai + hasta 7 monstruos = máximo 8 unidades total
         // En el tablero: Samurai + primeros 3 monstruos = máximo 4 unidades activas
-        // En reserva: monstruos restantes = máximo 4 unidades en reserva
-        private const int MAX_ACTIVE_UNITS = 4; // Samurai + primeros 3 monstruos
-        private const int MAX_RESERVE_UNITS = 4; // Máximo 4 monstruos en reserva
+        // En reserva: los monstruos restantes se almacenan en la reserva con capacidad dinamica
+        private const int MAX_ACTIVE_UNITS = 4; // Samurai + hasta 3 monstruos
+        private const int MAX_TOTAL_MONSTERS = 7; // Maximo de monstruos permitidos en el equipo
         private const int MINIMUM_HP = 0;
         private const int POSITION_A_INDEX = 0;
         private const int POSITION_B_INDEX = 1;
@@ -97,7 +97,8 @@ namespace Shin_Megami_Tensei_Model.Domain.States
 
         public bool CanAddToReserves()
         {
-            return Reserves.Count < MAX_RESERVE_UNITS;
+            var activeMonsters = ActiveUnits.Count(unit => unit != null && !unit.IsSamurai);
+            return Reserves.Count + activeMonsters < MAX_TOTAL_MONSTERS;
         }
         
 

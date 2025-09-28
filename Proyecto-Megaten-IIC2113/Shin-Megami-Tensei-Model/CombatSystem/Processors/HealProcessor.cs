@@ -43,22 +43,17 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
         private List<UnitInstanceContext> GetAvailableTargetsForSkill(BattleState battleState, Skill skill)
         {
             var allyTeam = battleState.IsPlayer1Turn ? battleState.Team1 : battleState.Team2;
-            var activeUnits = allyTeam.ActiveUnits
-                .Where(unit => unit != null)
-                .Cast<UnitInstanceContext>();
-            var reserveUnits = allyTeam.Reserves;
+
             if (IsReviveSkill(skill))
             {
-                return activeUnits
-                    .Concat(reserveUnits)
+                return allyTeam.AllUnits
                     .Where(unit => unit.HP <= 0)
-                    .Distinct()
-                    .OrderBy(unit => unit.OriginalOrder)
                     .ToList();
             }
-            return activeUnits
-                .Where(unit => unit.HP > 0)
-                .OrderBy(unit => unit.OriginalOrder)
+
+            return allyTeam.ActiveUnits
+                .Where(unit => unit != null && unit.HP > 0)
+                .Cast<UnitInstanceContext>()
                 .ToList();
         }
         private bool IsInvalidTargetChoice(int targetChoice, int targetCount)

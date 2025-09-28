@@ -1,11 +1,12 @@
-Ôªøusing Shin_Megami_Tensei_Model.Domain.Entities;
+using System.Linq;
+using Shin_Megami_Tensei_Model.Domain.Entities;
 
 namespace Shin_Megami_Tensei_Model.Domain.States
 {
     public class TeamState
     {
-        // Reglas del juego: 1 Samurai + hasta 7 monstruos = m√°ximo 8 unidades total
-        // En el tablero: Samurai + primeros 3 monstruos = m√°ximo 4 unidades activas
+        // Reglas del juego: 1 Samurai + hasta 7 monstruos = m·ximo 8 unidades total
+        // En el tablero: Samurai + primeros 3 monstruos = m·ximo 4 unidades activas
         // En reserva: los monstruos restantes se almacenan en la reserva con capacidad dinamica
         private const int MAX_ACTIVE_UNITS = 4; // Samurai + hasta 3 monstruos
         private const int MAX_TOTAL_MONSTERS = 7; // Maximo de monstruos permitidos en el equipo
@@ -22,22 +23,29 @@ namespace Shin_Megami_Tensei_Model.Domain.States
         
         private readonly UnitInstanceContext?[] activeUnitsArray;
         private readonly List<UnitInstanceContext> reservesList;
-        
+        private readonly List<UnitInstanceContext> allUnitsList;
+
         public IReadOnlyList<UnitInstanceContext?> ActiveUnits { get; }
         public IReadOnlyList<UnitInstanceContext> Reserves { get; }
+        public IReadOnlyList<UnitInstanceContext> AllUnits { get; }
 
         public TeamState(IEnumerable<UnitInstanceContext> activeUnits, IEnumerable<UnitInstanceContext> reserves)
         {
             activeUnitsArray = new UnitInstanceContext?[MAX_ACTIVE_UNITS];
             reservesList = new List<UnitInstanceContext>();
-            
+            allUnitsList = new List<UnitInstanceContext>();
+
             PopulateActiveUnitsArray(activeUnits);
             PopulateReservesList(reserves);
-            
+
+            allUnitsList.AddRange(activeUnitsArray.Where(unit => unit != null).Cast<UnitInstanceContext>());
+            allUnitsList.AddRange(reservesList);
+
             ActiveUnits = Array.AsReadOnly(activeUnitsArray);
             Reserves = reservesList.AsReadOnly();
+            AllUnits = allUnitsList.AsReadOnly();
         }
-        
+
         private void PopulateActiveUnitsArray(IEnumerable<UnitInstanceContext> units)
         {
             foreach (var unit in units)
@@ -53,7 +61,6 @@ namespace Shin_Megami_Tensei_Model.Domain.States
                 reservesList.Add(reserve);
             }
         }
-
         private void PlaceUnitInActiveArray(UnitInstanceContext unit)
         {
             int index = GetPositionIndex(unit.Position);
@@ -79,6 +86,7 @@ namespace Shin_Megami_Tensei_Model.Domain.States
         {
             return index >= 0 && index < activeUnitsArray.Length;
         }
+
 
         public IEnumerable<UnitInstanceContext> AliveUnits =>
             GetAliveUnitsFromCollection();
@@ -148,6 +156,19 @@ namespace Shin_Megami_Tensei_Model.Domain.States
             else
             {
                 reservesList.Add(unit);
+            }
+
+            if (!allUnitsList.Contains(unit))
+            {
+                var allUnitsIndex = allUnitsList.FindIndex(existing => existing.OriginalOrder > unit.OriginalOrder);
+                if (allUnitsIndex >= 0)
+                {
+                    allUnitsList.Insert(allUnitsIndex, unit);
+                }
+                else
+                {
+                    allUnitsList.Add(unit);
+                }
             }
         }
     }

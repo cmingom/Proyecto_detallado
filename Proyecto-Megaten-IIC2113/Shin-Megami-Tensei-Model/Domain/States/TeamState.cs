@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using Shin_Megami_Tensei_Model.Domain.Entities;
 
@@ -20,7 +22,7 @@ namespace Shin_Megami_Tensei_Model.Domain.States
         private const char POSITION_B = 'B';
         private const char POSITION_C = 'C';
         private const char POSITION_D = 'D';
-        
+
         private readonly UnitInstanceContext?[] activeUnitsArray;
         private readonly List<UnitInstanceContext> reservesList;
         private readonly List<UnitInstanceContext> allUnitsList;
@@ -28,6 +30,7 @@ namespace Shin_Megami_Tensei_Model.Domain.States
         public IReadOnlyList<UnitInstanceContext?> ActiveUnits { get; }
         public IReadOnlyList<UnitInstanceContext> Reserves { get; }
         public IReadOnlyList<UnitInstanceContext> AllUnits { get; }
+        public IEnumerable<UnitInstanceContext> AliveUnits => GetAliveUnitsFromCollection();
 
         public TeamState(IEnumerable<UnitInstanceContext> activeUnits, IEnumerable<UnitInstanceContext> reserves)
         {
@@ -61,13 +64,16 @@ namespace Shin_Megami_Tensei_Model.Domain.States
                 reservesList.Add(reserve);
             }
         }
+
         private void PlaceUnitInActiveArray(UnitInstanceContext unit)
         {
             int index = GetPositionIndex(unit.Position);
-            if (IsValidIndex(index))
+            if (!IsValidIndex(index))
             {
-                activeUnitsArray[index] = unit;
+                return;
             }
+
+            activeUnitsArray[index] = unit;
         }
 
         private int GetPositionIndex(char position)
@@ -82,41 +88,32 @@ namespace Shin_Megami_Tensei_Model.Domain.States
             };
         }
 
-        private bool IsValidIndex(int index)
+        private static bool IsValidIndex(int index)
         {
-            return index >= 0 && index < activeUnitsArray.Length;
+            return index >= 0 && index < MAX_ACTIVE_UNITS;
         }
-
-
-        public IEnumerable<UnitInstanceContext> AliveUnits =>
-            GetAliveUnitsFromCollection();
 
         private IEnumerable<UnitInstanceContext> GetAliveUnitsFromCollection()
         {
             return ActiveUnits.Where(IsUnitAlive).Cast<UnitInstanceContext>();
         }
 
-        private bool IsUnitAlive(UnitInstanceContext? unit)
+        private static bool IsUnitAlive(UnitInstanceContext? unit)
         {
             return unit != null && unit.HP > MINIMUM_HP;
         }
-
-
 
         public bool CanAddToReserves()
         {
             var activeMonsters = ActiveUnits.Count(unit => unit != null && !unit.IsSamurai);
             return Reserves.Count + activeMonsters < MAX_TOTAL_MONSTERS;
         }
-        
 
         public void RemoveFromReserves(UnitInstanceContext unit)
         {
             reservesList.Remove(unit);
         }
 
-
-        // Propiedad de compatibilidad para mantener funcionalidad existente
         public IReadOnlyList<UnitInstanceContext?> Units => ActiveUnits;
 
         public UnitInstanceContext? GetActiveUnitAt(char position)
@@ -139,6 +136,11 @@ namespace Shin_Megami_Tensei_Model.Domain.States
             }
 
             activeUnitsArray[index] = unit;
+
+            if (unit != null)
+            {
+                EnsureUnitTracked(unit);
+            }
         }
 
         public void AddToReserves(UnitInstanceContext unit)
@@ -158,19 +160,30 @@ namespace Shin_Megami_Tensei_Model.Domain.States
                 reservesList.Add(unit);
             }
 
-            if (!allUnitsList.Contains(unit))
+            EnsureUnitTracked(unit);
+        }
+
+        private void EnsureUnitTracked(UnitInstanceContext unit)
+        {
+            if (allUnitsList.Contains(unit))
             {
-                var allUnitsIndex = allUnitsList.FindIndex(existing => existing.OriginalOrder > unit.OriginalOrder);
-                if (allUnitsIndex >= 0)
-                {
-                    allUnitsList.Insert(allUnitsIndex, unit);
-                }
-                else
-                {
-                    allUnitsList.Add(unit);
-                }
+                return;
             }
+
+            var insertIndex = allUnitsList.FindIndex(existing => existing.OriginalOrder > unit.OriginalOrder);
+            if (insertIndex >= 0)
+            {
+                allUnitsList.Insert(insertIndex, unit);
+            }
+            else
+            {
+                allUnitsList.Add(unit);
+            }
+        }
+
+        public bool IsUnitActive(UnitInstanceContext unit)
+        {
+            return ActiveUnits.Any(active => ReferenceEquals(active, unit));
         }
     }
 }
-

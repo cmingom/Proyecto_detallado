@@ -116,31 +116,16 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 
         private List<UnitInstanceContext> GetAvailableAliveUnitsFromReserve(TeamState team)
         {
-            return team.Reserves.Where(unit => unit.HP > 0).ToList();
+            return team.AllUnits
+                .Where(unit => !unit.IsSamurai && unit.HP > 0 && !team.IsUnitActive(unit))
+                .ToList();
         }
 
         private List<UnitInstanceContext> GetAvailableUnitsForInvitation(TeamState team)
         {
-            var units = new List<UnitInstanceContext>();
-
-            foreach (var slot in SAMURAI_POSITIONS)
-            {
-                var unit = team.GetActiveUnitAt(slot);
-                if (unit != null && !unit.IsSamurai && unit.HP <= 0 && !units.Contains(unit))
-                {
-                    units.Add(unit);
-                }
-            }
-
-            foreach (var reserve in team.Reserves)
-            {
-                if (!units.Contains(reserve))
-                {
-                    units.Add(reserve);
-                }
-            }
-
-            return units;
+            return team.AllUnits
+                .Where(unit => !unit.IsSamurai && (!team.IsUnitActive(unit) || unit.HP <= 0))
+                .ToList();
         }
 
         private bool IsInvalidChoice(int choice)

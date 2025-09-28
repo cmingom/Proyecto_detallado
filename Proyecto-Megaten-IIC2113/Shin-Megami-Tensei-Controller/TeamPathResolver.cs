@@ -21,14 +21,9 @@ namespace Shin_Megami_Tensei
             teamsFolder = teamsPath;
         }
 
-        public bool HasSpecificFile()
+        public string? GetSpecificFile()
         {
-            return specificTeamsFile != null;
-        }
-
-        public string GetSpecificFile()
-        {
-            return specificTeamsFile ?? string.Empty;
+            return specificTeamsFile;
         }
 
         public string GetTeamsFolder()
@@ -36,7 +31,7 @@ namespace Shin_Megami_Tensei
             return teamsFolder;
         }
 
-        private bool IsSpecificFile(string teamsPath)
+        private static bool IsSpecificFile(string teamsPath)
         {
             return teamsPath.EndsWith(TEXT_FILE_EXTENSION, StringComparison.OrdinalIgnoreCase);
         }

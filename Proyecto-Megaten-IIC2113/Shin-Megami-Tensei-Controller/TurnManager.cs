@@ -27,14 +27,14 @@ namespace Shin_Megami_Tensei
 
             ShowPlayerTurnHeader(turnContext);
 
-            var battleEnded = ExecutePlayerActions(turnContext);
+            var battleHasEnded = ResolveActionPhase(turnContext);
             if (turnContext.BattleState.IsBattleFinished)
             {
                 return true;
             }
 
             FinalizeTurn(turnContext);
-            return battleEnded;
+            return battleHasEnded;
         }
 
         private void ShowPlayerTurnHeader(TurnContext turnContext)
@@ -54,7 +54,7 @@ namespace Shin_Megami_Tensei
             return battleState.IsPlayer1Turn ? PLAYER_1_LABEL : PLAYER_2_LABEL;
         }
 
-        private bool ExecutePlayerActions(TurnContext turnContext)
+        private bool ResolveActionPhase(TurnContext turnContext)
         {
             var actionOrder = combatManager.GetCalculatedActionOrder(turnContext.CurrentTeam);
             var battleContext = CreateBattleContext(turnContext);

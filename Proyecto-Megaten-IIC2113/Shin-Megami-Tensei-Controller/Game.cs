@@ -28,35 +28,47 @@ namespace Shin_Megami_Tensei
 
         public void Play()
         {
-            var teamsFile = teamFileCoordinator.GetTeamsFile();
-            if (string.IsNullOrWhiteSpace(teamsFile))
+            if (!TryPrepareBattle(out var battleSetup))
             {
                 ShowInvalidFileMessage();
                 return;
+            }
+
+            RunBattle(battleSetup);
+        }
+
+        private bool TryPrepareBattle(out BattleSetup battleSetup)
+        {
+            battleSetup = default!;
+
+            var teamsFile = teamFileCoordinator.GetTeamsFile();
+            if (string.IsNullOrWhiteSpace(teamsFile))
+            {
+                return false;
             }
 
             var battleState = battleStateFactory.GetBattleState(teamsFile);
             if (battleState == null)
             {
-                ShowInvalidFileMessage();
-                return;
+                return false;
             }
 
-            var playerNames = playerNameResolver.GetPlayerNames(teamsFile);
-            RunBattle(battleState, playerNames);
+            var (player1Name, player2Name) = playerNameResolver.GetPlayerNames(teamsFile);
+            battleSetup = new BattleSetup(battleState, player1Name, player2Name);
+            return true;
         }
 
         private void ShowInvalidFileMessage()
         {
-            view.WriteLine("Archivo de equipos inv·lido");
+            view.WriteLine("Archivo de equipos inv√°lido");
         }
 
-        private void RunBattle(BattleState battleState, (string player1Name, string player2Name) playerNames)
+        private void RunBattle(BattleSetup battleSetup)
         {
             var battleEngine = CreateBattleEngine();
             try
             {
-                battleEngine.StartBattle(battleState, playerNames.player1Name, playerNames.player2Name);
+                battleEngine.StartBattle(battleSetup.BattleState, battleSetup.Player1Name, battleSetup.Player2Name);
             }
             finally
             {
@@ -86,5 +98,7 @@ namespace Shin_Megami_Tensei
                 // Ignorar errores de escritura opcionales de depuracion.
             }
         }
+
+        private sealed record BattleSetup(BattleState BattleState, string Player1Name, string Player2Name);
     }
 }

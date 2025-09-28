@@ -8,16 +8,16 @@ namespace Shin_Megami_Tensei
         private const string DEFAULT_PLAYER_1_NAME = "Player1";
         private const string DEFAULT_PLAYER_2_NAME = "Player2";
 
-        private readonly GameManager gameService;
+        private readonly GameManager gameManager;
 
-        public PlayerNameResolver(GameManager gameService)
+        public PlayerNameResolver(GameManager gameManager)
         {
-            this.gameService = gameService;
+            this.gameManager = gameManager;
         }
 
         public (string player1Name, string player2Name) GetPlayerNames(string file)
         {
-            var (team1, team2) = gameService.ParseTeamsFromFile(file);
+            var (team1, team2) = gameManager.ParseTeamsFromFile(file);
             return ResolvePlayerNames(team1, team2);
         }
 

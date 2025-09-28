@@ -25,19 +25,25 @@ namespace Shin_Megami_Tensei
             pathResolver.InitializeTeamsPath(teamsPath);
         }
 
-        public string GetTeamsFile()
+        public string? GetTeamsFile()
         {
-            if (pathResolver.HasSpecificFile())
+            var specificFile = pathResolver.GetSpecificFile();
+            if (!string.IsNullOrWhiteSpace(specificFile))
             {
-                return pathResolver.GetSpecificFile();
+                return specificFile;
             }
 
             return SelectFileFromUser();
         }
 
-        private string SelectFileFromUser()
+        private string? SelectFileFromUser()
         {
             var files = LoadTeamsInOrder();
+            if (files.Length == 0)
+            {
+                return null;
+            }
+
             fileSelector.ShowTeamFiles(files);
             return ReadSelection(files);
         }
@@ -50,18 +56,18 @@ namespace Shin_Megami_Tensei
                 .ToArray();
         }
 
-        private string ReadSelection(string[] files)
+        private string? ReadSelection(string[] files)
         {
             var input = view.ReadLine();
             if (!TryParseFileIndex(input, files.Length, out var index))
             {
-                return string.Empty;
+                return null;
             }
 
             return files[index];
         }
 
-        private bool TryParseFileIndex(string? input, int filesLength, out int index)
+        private static bool TryParseFileIndex(string? input, int filesLength, out int index)
         {
             if (!int.TryParse(input, out index))
             {

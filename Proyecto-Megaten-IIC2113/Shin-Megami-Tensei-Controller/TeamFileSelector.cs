@@ -1,3 +1,4 @@
+using System.IO;
 using Shin_Megami_Tensei_View;
 
 namespace Shin_Megami_Tensei
@@ -6,7 +7,7 @@ namespace Shin_Megami_Tensei
     {
         private const string TEAM_SELECTION_MESSAGE = "Elige un archivo para cargar los equipos";
         private const string FILE_OPTION_FORMAT = "{0}: {1}";
-        
+
         private readonly View view;
 
         public TeamFileSelector(View view)
@@ -27,9 +28,9 @@ namespace Shin_Megami_Tensei
 
         private void ShowFileOptions(string[] files)
         {
-            for (int i = 0; i < files.Length; i++)
+            for (var index = 0; index < files.Length; index++)
             {
-                ShowFileOption(i, files[i]);
+                ShowFileOption(index, files[index]);
             }
         }
 

@@ -25,18 +25,8 @@ namespace Shin_Megami_Tensei
 
         public bool ResolveActionPhase(BattleContext battleContext, List<UnitInstanceContext> actionOrder, TeamState actingTeam)
         {
-            if (IsBattleAlreadyDecided(battleContext))
+            while (CanProcessNextAction(battleContext))
             {
-                return true;
-            }
-
-            while (ShouldProcessNextAction(battleContext))
-            {
-                if (IsBattleAlreadyDecided(battleContext))
-                {
-                    return true;
-                }
-
                 if (IsActionOrderEmpty(actionOrder))
                 {
                     return false;
@@ -44,17 +34,16 @@ namespace Shin_Megami_Tensei
 
                 ShowBattleStatus(battleContext, actionOrder);
 
-                var battleEnded = ProcessNextUnitTurn(battleContext, actionOrder, actingTeam);
-                if (battleEnded)
+                if (ProcessNextUnitTurn(battleContext, actionOrder, actingTeam))
                 {
                     return true;
                 }
             }
 
-            return false;
+            return battleContext.HasBattleEnded(combatManager);
         }
 
-        private bool ShouldProcessNextAction(BattleContext battleContext)
+        private bool CanProcessNextAction(BattleContext battleContext)
         {
             return battleContext.HasRemainingTurns() && !battleContext.HasBattleEnded(combatManager);
         }
@@ -76,9 +65,15 @@ namespace Shin_Megami_Tensei
             var actingUnit = actionOrder[FirstUnitIndex];
             var battleEnded = ExecuteUnitTurn(battleContext, actingUnit);
 
-            UpdateActionOrder(actionOrder, actingTeam, actingUnit, battleEnded);
+            RemoveActingUnit(actionOrder);
 
-            return battleEnded;
+            if (battleEnded)
+            {
+                return true;
+            }
+
+            ReinsertSurvivingUnits(actionOrder, actingTeam, actingUnit);
+            return false;
         }
 
         private bool ExecuteUnitTurn(BattleContext battleContext, UnitInstanceContext actingUnit)
@@ -170,15 +165,13 @@ namespace Shin_Megami_Tensei
             throw new GameEndedException();
         }
 
-        private void UpdateActionOrder(List<UnitInstanceContext> actionOrder, TeamState actingTeam, UnitInstanceContext actingUnit, bool battleEnded)
+        private static void RemoveActingUnit(List<UnitInstanceContext> actionOrder)
         {
             actionOrder.RemoveAt(FirstUnitIndex);
+        }
 
-            if (battleEnded)
-            {
-                return;
-            }
-
+        private void ReinsertSurvivingUnits(List<UnitInstanceContext> actionOrder, TeamState actingTeam, UnitInstanceContext actingUnit)
+        {
             var aliveUnits = actingTeam.AliveUnits.ToList();
 
             if (aliveUnits.Contains(actingUnit))

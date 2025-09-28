@@ -126,25 +126,25 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
         private void MoveUnitToReservesIfPossible(TeamState team, UnitInstanceContext unit)
         {
             var positions = new[] { 'A', 'B', 'C', 'D' };
-            var removedFromActive = false;
-            foreach (var slot in positions)
+
+            if (team.IsUnitActive(unit))
             {
-                var current = team.GetActiveUnitAt(slot);
-                if (current == unit)
+                foreach (var slot in positions)
                 {
-                    team.SetActiveUnitAt(slot, null);
-                    removedFromActive = true;
-                    break;
+                    var current = team.GetActiveUnitAt(slot);
+                    if (current == unit)
+                    {
+                        team.SetActiveUnitAt(slot, null);
+                        break;
+                    }
                 }
             }
-            if (!removedFromActive)
-            {
-                return;
-            }
+
             if (team.Reserves.Contains(unit))
             {
                 return;
             }
+
             if (team.CanAddToReserves())
             {
                 team.AddToReserves(unit);

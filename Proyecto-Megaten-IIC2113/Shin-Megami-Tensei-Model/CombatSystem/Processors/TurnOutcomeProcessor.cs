@@ -1,7 +1,7 @@
-﻿using System;
-using Shin_Megami_Tensei_Model.Domain.States;
-using Shin_Megami_Tensei_Model.CombatSystem.Enums;
+using System;
 using Shin_Megami_Tensei_Model.CombatSystem.Contexts;
+using Shin_Megami_Tensei_Model.CombatSystem.Enums;
+using Shin_Megami_Tensei_Model.Domain.States;
 
 namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 {
@@ -14,9 +14,26 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             this.battleView = battleView;
         }
 
-        public void ApplyOutcome(BattleState battleState, AffinityReaction reaction)
+        public void ProcessAffinityOutcome(BattleState battleState, AffinityReaction reaction)
         {
             var outcome = CalculateOutcome(battleState, reaction);
+            DisplayOutcome(battleState, outcome);
+        }
+
+        public void ProcessHealOutcome(BattleState battleState)
+        {
+            var outcome = CalculateHealOutcome(battleState);
+            DisplayOutcome(battleState, outcome);
+        }
+
+        public void ProcessSummonOutcome(BattleState battleState)
+        {
+            var outcome = CalculateSummonOutcome(battleState);
+            DisplayOutcome(battleState, outcome);
+        }
+
+        private void DisplayOutcome(BattleState battleState, TurnOutcome outcome)
+        {
             battleState.MarkTurnConsumptionMessageShown();
             battleView.ShowTurnConsumptionWithBlinking(outcome.FullTurnsConsumed, outcome.BlinkingTurnsConsumed, outcome.BlinkingTurnsGranted);
         }
@@ -36,13 +53,12 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 
         private TurnOutcome ApplyWeakOutcome(BattleState battleState)
         {
-            int fullConsumed = 0;
-            int blinkingConsumed = 0;
-            int blinkingGranted = 0;
+            var fullConsumed = 0;
+            var blinkingConsumed = 0;
+            var blinkingGranted = 0;
 
             if (battleState.FullTurns > 0)
             {
-                // Al golpear Weak con al menos 1 Full Turn disponible: consumes 1 Full y obtienes 1 Blinking
                 battleState.ConsumeTurn();
                 fullConsumed = 1;
                 battleState.GrantBlinkingTurn();
@@ -50,10 +66,8 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             }
             else if (battleState.BlinkingTurns > 0)
             {
-                // Si no hay Full, consumes 1 Blinking y no se crea otro
                 battleState.ConsumeBlinkingTurn();
                 blinkingConsumed = 1;
-                blinkingGranted = 0;
             }
 
             return new TurnOutcome(fullConsumed, blinkingConsumed, blinkingGranted);
@@ -61,8 +75,8 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 
         private TurnOutcome ApplyNullOutcome(BattleState battleState)
         {
-            int blinkingConsumed = 0;
-            int fullConsumed = 0;
+            var blinkingConsumed = 0;
+            var fullConsumed = 0;
 
             blinkingConsumed += ConsumeBlinkingTurns(battleState, 2, ref fullConsumed);
             return new TurnOutcome(fullConsumed, blinkingConsumed, 0);
@@ -70,8 +84,8 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 
         private TurnOutcome ApplyConsumeAllOutcome(BattleState battleState)
         {
-            int fullConsumed = battleState.FullTurns;
-            int blinkingConsumed = battleState.BlinkingTurns;
+            var fullConsumed = battleState.FullTurns;
+            var blinkingConsumed = battleState.BlinkingTurns;
             battleState.SetFullTurns(0);
             battleState.ResetBlinkingTurns();
             return new TurnOutcome(fullConsumed, blinkingConsumed, 0);
@@ -96,7 +110,8 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 
         private int ConsumeBlinkingTurns(BattleState battleState, int requiredBlinking, ref int fullConsumed)
         {
-            int blinkingConsumed = 0;
+            var blinkingConsumed = 0;
+
             while (requiredBlinking > 0 && battleState.BlinkingTurns > 0)
             {
                 battleState.ConsumeBlinkingTurn();
@@ -113,23 +128,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 
             return blinkingConsumed;
         }
-        
-        public void ApplyHealTurnOutcome(BattleState battleState)
-        {
-            // Habilidades de curación: consume 1 Blinking si hay, sino 1 Full. No otorga Blinking extra.
-            var outcome = CalculateHealOutcome(battleState);
-            battleState.MarkTurnConsumptionMessageShown();
-            battleView.ShowTurnConsumptionWithBlinking(outcome.FullTurnsConsumed, outcome.BlinkingTurnsConsumed, outcome.BlinkingTurnsGranted);
-        }
-        
-        public void ApplySummonTurnOutcome(BattleState battleState)
-        {
-            // Sabbatma e Invitation: siguen reglas de Invocar
-            var outcome = CalculateSummonOutcome(battleState);
-            battleState.MarkTurnConsumptionMessageShown();
-            battleView.ShowTurnConsumptionWithBlinking(outcome.FullTurnsConsumed, outcome.BlinkingTurnsConsumed, outcome.BlinkingTurnsGranted);
-        }
-        
+
         private TurnOutcome CalculateHealOutcome(BattleState battleState)
         {
             if (battleState.BlinkingTurns > 0)
@@ -137,33 +136,31 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
                 battleState.ConsumeBlinkingTurn();
                 return new TurnOutcome(0, 1, 0);
             }
-            else if (battleState.FullTurns > 0)
+
+            if (battleState.FullTurns > 0)
             {
                 battleState.ConsumeTurn();
                 return new TurnOutcome(1, 0, 0);
             }
-            
+
             return new TurnOutcome(0, 0, 0);
         }
-        
+
         private TurnOutcome CalculateSummonOutcome(BattleState battleState)
         {
-            // Sabbatma e Invitation: habilidades no ofensivas (NO otorgan Blinking)
             if (battleState.BlinkingTurns > 0)
             {
                 battleState.ConsumeBlinkingTurn();
-                return new TurnOutcome(0, 1, 0); // Solo consume Blinking
+                return new TurnOutcome(0, 1, 0);
             }
-            else if (battleState.FullTurns > 0)
+
+            if (battleState.FullTurns > 0)
             {
                 battleState.ConsumeTurn();
-                return new TurnOutcome(1, 0, 0); // Consume Full, NO otorga Blinking
+                return new TurnOutcome(1, 0, 0);
             }
-            
+
             return new TurnOutcome(0, 0, 0);
         }
     }
 }
-
-
-

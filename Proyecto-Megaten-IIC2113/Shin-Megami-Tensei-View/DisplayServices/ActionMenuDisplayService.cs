@@ -1,4 +1,6 @@
-ï»¿using Shin_Megami_Tensei_Model.Domain.Entities;
+using System.Collections.Generic;
+
+using Shin_Megami_Tensei_Model.Domain.Entities;
 using Shin_Megami_Tensei_Model.CombatSystem.Contexts;
 using Shin_Megami_Tensei_Model.CombatSystem.Enums;
 
@@ -6,30 +8,30 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
 {
     public class ActionMenuDisplayService
     {
-        private const int MINIMUM_CHOICE = 1;
-        private const int INVALID_CHOICE = -1;
-        private const string SEPARATOR = "----------------------------------------";
-        private const string ACTION_SELECTION_FORMAT = "Seleccione una acciÃ³n para {0}";
-        private const string TARGET_SELECTION_FORMAT = "Seleccione un objetivo para {0}";
-        private const string ACTION_OPTION_FORMAT = "{0}: {1}";
-        private const string TARGET_OPTION_FORMAT = "{0}-{1} HP:{2}/{3} MP:{4}/{5}";
-        private const string CANCEL_OPTION_FORMAT = "{0}-Cancelar";
-        private const string ATTACK_RESULT_FORMAT = "{0} {1} {2}";
-        private const string DAMAGE_RESULT_FORMAT = "{0} recibe {1} de daÃ±o";
-        private const string HP_RESULT_FORMAT = "{0} termina con HP:{1}/{2}";
-        private const string GUN_ATTACK_TEXT = "dispara a";
-        private const string PHYSICAL_ATTACK_TEXT = "ataca a";
-        private const string FIRE_ATTACK_TEXT = "lanza fuego a";
-        private const string ICE_ATTACK_TEXT = "lanza hielo a";
-        private const string ELEC_ATTACK_TEXT = "lanza electricidad a";
-        private const string FORCE_ATTACK_TEXT = "lanza viento a";
-        private const string SUMMON_POSITION_HEADER = "Seleccione una posiciÃ³n para invocar";
-        private const string EMPTY_SLOT_TEXT = "VacÃ­o";
-        private const string RESIST_MESSAGE_FORMAT = "{0} es resistente el ataque de {1}";
-        private const string WEAK_MESSAGE_FORMAT = "{0} es dÃ©bil contra el ataque de {1}";
-        private const string BLOCK_MESSAGE_FORMAT = "{0} bloquea el ataque de {1}";
-        private const string ABSORB_MESSAGE_FORMAT = "{0} absorbe {1} daÃ±o";
-        private const string REPEL_MESSAGE_FORMAT = "{0} devuelve {1} daÃ±o a {2}";
+        private const int MinimumChoice = 1;
+        private const int InvalidChoice = -1;
+        private const string Separator = "----------------------------------------";
+        private const string ActionSelectionFormat = "Seleccione una acción para {0}";
+        private const string TargetSelectionFormat = "Seleccione un objetivo para {0}";
+        private const string ActionOptionFormat = "{0}: {1}";
+        private const string TargetOptionFormat = "{0}-{1} HP:{2}/{3} MP:{4}/{5}";
+        private const string CancelOptionFormat = "{0}-Cancelar";
+        private const string AttackResultFormat = "{0} {1} {2}";
+        private const string DamageResultFormat = "{0} recibe {1} de daño";
+        private const string HpResultFormat = "{0} termina con HP:{1}/{2}";
+        private const string GunAttackText = "dispara a";
+        private const string PhysicalAttackText = "ataca a";
+        private const string FireAttackText = "lanza fuego a";
+        private const string IceAttackText = "lanza hielo a";
+        private const string ElecAttackText = "lanza electricidad a";
+        private const string ForceAttackText = "lanza viento a";
+        private const string SummonPositionHeader = "Seleccione una posición para invocar";
+        private const string EmptySlotText = "Vacío";
+        private const string ResistMessageFormat = "{0} es resistente el ataque de {1}";
+        private const string WeakMessageFormat = "{0} es débil contra el ataque de {1}";
+        private const string BlockMessageFormat = "{0} bloquea el ataque de {1}";
+        private const string AbsorbMessageFormat = "{0} absorbe {1} daño";
+        private const string RepelMessageFormat = "{0} devuelve {1} daño a {2}";
 
         private readonly View view;
 
@@ -47,12 +49,12 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
 
         private void ShowSeparator()
         {
-            view.WriteLine(SEPARATOR);
+            view.WriteLine(Separator);
         }
 
         private void ShowActionSelectionHeader(string unitName)
         {
-            view.WriteLine(string.Format(ACTION_SELECTION_FORMAT, unitName));
+            view.WriteLine(string.Format(ActionSelectionFormat, unitName));
         }
 
         private void ShowActionOptions(List<string> actions)
@@ -65,12 +67,12 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
 
         private void ShowActionOption(int index, string action)
         {
-            view.WriteLine(string.Format(ACTION_OPTION_FORMAT, index, action));
+            view.WriteLine(string.Format(ActionOptionFormat, index, action));
         }
 
         public int GetActionChoice(int maxActions)
         {
-            return GetValidatedChoice(maxActions);
+            return ReadChoice(maxActions);
         }
 
         public void ShowTargetSelection(UnitInstanceContext attacker, List<UnitInstanceContext> targets)
@@ -83,7 +85,7 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
 
         private void ShowTargetSelectionHeader(string attackerName)
         {
-            view.WriteLine(string.Format(TARGET_SELECTION_FORMAT, attackerName));
+            view.WriteLine(string.Format(TargetSelectionFormat, attackerName));
         }
 
         private void ShowTargetOptions(List<UnitInstanceContext> targets)
@@ -96,35 +98,35 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
 
         private void ShowTargetOption(int index, UnitInstanceContext target)
         {
-            view.WriteLine(string.Format(TARGET_OPTION_FORMAT, index, target.Name, target.HP, target.MaxHP, target.MP, target.MaxMP));
+            view.WriteLine(string.Format(TargetOptionFormat, index, target.Name, target.HP, target.MaxHP, target.MP, target.MaxMP));
         }
 
         private void ShowCancelOption(int targetCount)
         {
-            view.WriteLine(string.Format(CANCEL_OPTION_FORMAT, targetCount + 1));
+            view.WriteLine(string.Format(CancelOptionFormat, targetCount + 1));
         }
 
         public int GetTargetChoice(int maxTargets)
         {
-            return GetValidatedChoice(maxTargets + 1);
+            return ReadChoice(maxTargets + 1);
         }
 
-        private int GetValidatedChoice(int maxChoice)
+        private int ReadChoice(int maxChoice)
         {
             var input = view.ReadLine();
-            if (!IsValidChoice(input, maxChoice, out int choice))
+            if (!TryParseChoice(input, maxChoice, out int choice))
             {
-                return INVALID_CHOICE;
+                return InvalidChoice;
             }
 
             return choice;
         }
 
-        private bool IsValidChoice(string input, int maxChoice, out int choice)
+        private bool TryParseChoice(string input, int maxChoice, out int choice)
         {
             choice = 0;
             return int.TryParse(input, out choice) &&
-                   choice >= MINIMUM_CHOICE &&
+                   choice >= MinimumChoice &&
                    choice <= maxChoice;
         }
 
@@ -152,19 +154,19 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
         private void ShowAttackAction(AttackResultContext context)
         {
             var verb = GetAttackVerb(context.Element);
-            view.WriteLine(string.Format(ATTACK_RESULT_FORMAT, context.Attacker.Name, verb, context.Target.Name));
+            view.WriteLine(string.Format(AttackResultFormat, context.Attacker.Name, verb, context.Target.Name));
         }
 
         private static string GetAttackVerb(DamageElement element)
         {
             return element switch
             {
-                DamageElement.Gun => GUN_ATTACK_TEXT,
-                DamageElement.Fire => FIRE_ATTACK_TEXT,
-                DamageElement.Ice => ICE_ATTACK_TEXT,
-                DamageElement.Elec => ELEC_ATTACK_TEXT,
-                DamageElement.Force => FORCE_ATTACK_TEXT,
-                _ => PHYSICAL_ATTACK_TEXT
+                DamageElement.Gun => GunAttackText,
+                DamageElement.Fire => FireAttackText,
+                DamageElement.Ice => IceAttackText,
+                DamageElement.Elec => ElecAttackText,
+                DamageElement.Force => ForceAttackText,
+                _ => PhysicalAttackText
             };
         }
 
@@ -173,19 +175,19 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
             switch (context.Reaction)
             {
                 case AffinityReaction.Weak:
-                    view.WriteLine(string.Format(WEAK_MESSAGE_FORMAT, context.Target.Name, context.Attacker.Name));
+                    view.WriteLine(string.Format(WeakMessageFormat, context.Target.Name, context.Attacker.Name));
                     break;
                 case AffinityReaction.Resist:
-                    view.WriteLine(string.Format(RESIST_MESSAGE_FORMAT, context.Target.Name, context.Attacker.Name));
+                    view.WriteLine(string.Format(ResistMessageFormat, context.Target.Name, context.Attacker.Name));
                     break;
                 case AffinityReaction.Null:
-                    view.WriteLine(string.Format(BLOCK_MESSAGE_FORMAT, context.Target.Name, context.Attacker.Name));
+                    view.WriteLine(string.Format(BlockMessageFormat, context.Target.Name, context.Attacker.Name));
                     break;
                 case AffinityReaction.Repel:
-                    view.WriteLine(string.Format(REPEL_MESSAGE_FORMAT, context.Target.Name, context.DamageToAttacker, context.Attacker.Name));
+                    view.WriteLine(string.Format(RepelMessageFormat, context.Target.Name, context.DamageToAttacker, context.Attacker.Name));
                     break;
                 case AffinityReaction.Drain:
-                    view.WriteLine(string.Format(ABSORB_MESSAGE_FORMAT, context.Target.Name, context.DamageToTarget));
+                    view.WriteLine(string.Format(AbsorbMessageFormat, context.Target.Name, context.DamageToTarget));
                     break;
             }
         }
@@ -199,7 +201,7 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
 
         private void ShowDamageResult(string targetName, int damage)
         {
-            view.WriteLine(string.Format(DAMAGE_RESULT_FORMAT, targetName, damage));
+            view.WriteLine(string.Format(DamageResultFormat, targetName, damage));
         }
 
         private void ShowHpAfterAttack(AttackResultContext context)
@@ -215,7 +217,7 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
 
         private void ShowHpResult(string targetName, int currentHp, int maxHp)
         {
-            view.WriteLine(string.Format(HP_RESULT_FORMAT, targetName, currentHp, maxHp));
+            view.WriteLine(string.Format(HpResultFormat, targetName, currentHp, maxHp));
         }
 
         public void ShowSummonMenu(List<UnitInstanceContext> availableUnits)
@@ -234,25 +236,25 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
 
         public int GetSummonChoice(int maxOptions)
         {
-            return GetValidatedChoice(maxOptions);
+            return ReadChoice(maxOptions);
         }
 
         public void ShowSummonPositionMenu(List<(char Slot, UnitInstanceContext? Unit)> positionOptions)
         {
             ShowSeparator();
-            view.WriteLine(SUMMON_POSITION_HEADER);
+            view.WriteLine(SummonPositionHeader);
 
             for (int i = 0; i < positionOptions.Count; i++)
             {
                 var (slot, unit) = positionOptions[i];
                 var description = unit == null
-                    ? EMPTY_SLOT_TEXT
+                    ? EmptySlotText
                     : $"{unit.Name} HP:{unit.HP}/{unit.MaxHP} MP:{unit.MP}/{unit.MaxMP}";
                 var positionNumber = GetPositionNumber(slot);
                 view.WriteLine($"{i + 1}-{description} (Puesto {positionNumber})");
             }
 
-            view.WriteLine(string.Format(CANCEL_OPTION_FORMAT, positionOptions.Count + 1));
+            view.WriteLine(string.Format(CancelOptionFormat, positionOptions.Count + 1));
         }
 
         private static int GetPositionNumber(char slot)
@@ -269,7 +271,7 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
 
         public int GetSummonPositionChoice(int maxOptions)
         {
-            return GetValidatedChoice(maxOptions);
+            return ReadChoice(maxOptions);
         }
 
         public void ShowGuardAction(UnitInstanceContext unit)
@@ -313,5 +315,8 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
         }
     }
 }
+
+
+
 
 

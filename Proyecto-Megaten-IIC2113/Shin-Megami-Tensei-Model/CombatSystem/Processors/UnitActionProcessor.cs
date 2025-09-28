@@ -1,38 +1,37 @@
-﻿using Shin_Megami_Tensei_Model.Domain.Entities;
+using System.Collections.Generic;
 using Shin_Megami_Tensei_Model.CombatSystem.Contexts;
+using Shin_Megami_Tensei_Model.Domain.Entities;
 
 namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 {
     public class UnitActionProcessor
     {
-        private const int INVALID_ACTION_CHOICE = -1;
-        private const int ACTION_INDEX_OFFSET = 1;
-        private const string ATTACK_ACTION = "Atacar";
-        private const string GUN_ACTION = "Disparar";
-        private const string SKILL_ACTION = "Usar Habilidad";
-        private const string SUMMON_ACTION = "Invocar";
-        private const string PASS_TURN_ACTION = "Pasar Turno";
-        private const string SURRENDER_ACTION = "Rendirse";
-        
-        private readonly IBattleView battleView;
-        private readonly ActionCoordinator actionExecutor;
-        private string lastSelectedAction;
+        private const int InvalidActionChoice = -1;
+        private const int ActionIndexOffset = 1;
+        private const string AttackActionName = "Atacar";
+        private const string GunActionName = "Disparar";
+        private const string SkillActionName = "Usar Habilidad";
+        private const string SummonActionName = "Invocar";
+        private const string PassTurnActionName = "Pasar Turno";
+        private const string SurrenderActionName = "Rendirse";
 
-        public UnitActionProcessor(IBattleView battleView, ActionCoordinator actionExecutor)
+        private readonly IBattleView battleView;
+        private readonly ActionCoordinator actionCoordinator;
+
+        public UnitActionProcessor(IBattleView battleView, ActionCoordinator actionCoordinator)
         {
             this.battleView = battleView;
-            this.actionExecutor = actionExecutor;
+            this.actionCoordinator = actionCoordinator;
         }
-        
-        // to do: Unidad abstracta
-        public bool CanProcessUnitAction(UnitActionContext context)
+
+        public bool ExecuteUnitTurn(UnitActionContext context)
         {
             if (context.BattleState.IsBattleFinished)
             {
                 return true;
             }
 
-            bool actionCompleted = false;
+            var actionCompleted = false;
 
             while (!actionCompleted)
             {
@@ -41,9 +40,8 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
                     return true;
                 }
 
-                actionCompleted = CanProcessSingleAction(context);
-                
-                // Verificar si la batalla terminó después de procesar la acción
+                actionCompleted = ExecuteSingleAction(context);
+
                 if (context.BattleState.IsBattleFinished)
                 {
                     return true;
@@ -52,8 +50,8 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 
             return false;
         }
-        
-        private bool CanProcessSingleAction(UnitActionContext context)
+
+        private bool ExecuteSingleAction(UnitActionContext context)
         {
             var actionChoice = GetUserActionChoice(context.ActingUnit);
             if (IsInvalidActionChoice(actionChoice))
@@ -61,92 +59,66 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
                 return false;
             }
 
-            var result = CanExecuteSelectedAction(context, actionChoice);
-            return result;
+            return ExecuteSelectedAction(context, actionChoice);
         }
 
         private int GetUserActionChoice(UnitInstanceContext actingUnit)
         {
             var availableActions = GetAvailableActions(actingUnit);
-            ShowActionMenu(actingUnit, availableActions);
-            return GetActionChoice(availableActions.Count);
+            battleView.ShowActionMenu(actingUnit, availableActions);
+            return battleView.GetActionChoice(availableActions.Count);
         }
 
         public List<string> GetAvailableActions(UnitInstanceContext unit)
         {
-            return unit.IsSamurai ? GetSamuraiActions() : GetRegularActions();
+            return unit.IsSamurai ? GetSamuraiActions() : GetMonsterActions();
         }
 
         private List<string> GetSamuraiActions()
         {
             return new List<string>
             {
-                ATTACK_ACTION,
-                GUN_ACTION,
-                SKILL_ACTION,
-                SUMMON_ACTION,
-                PASS_TURN_ACTION,
-                SURRENDER_ACTION
+                AttackActionName,
+                GunActionName,
+                SkillActionName,
+                SummonActionName,
+                PassTurnActionName,
+                SurrenderActionName
             };
         }
 
-        private List<string> GetRegularActions()
+        private List<string> GetMonsterActions()
         {
             return new List<string>
             {
-                ATTACK_ACTION,
-                SKILL_ACTION,
-                SUMMON_ACTION,
-                PASS_TURN_ACTION
+                AttackActionName,
+                SkillActionName,
+                SummonActionName,
+                PassTurnActionName
             };
         }
 
-        private void ShowActionMenu(UnitInstanceContext actingUnit, List<string> availableActions)
-        {
-            battleView.ShowActionMenu(actingUnit, availableActions);
-        }
-
-        private int GetActionChoice(int actionCount)
-        {
-            return battleView.GetActionChoice(actionCount);
-        }
-
-        private bool IsInvalidActionChoice(int actionChoice)
-        {
-            return actionChoice == INVALID_ACTION_CHOICE;
-        }
-
-        private bool CanExecuteSelectedAction(UnitActionContext context, int actionChoice)
+        private bool ExecuteSelectedAction(UnitActionContext context, int actionChoice)
         {
             var selectedAction = GetSelectedAction(context.ActingUnit, actionChoice);
-            StoreLastSelectedAction(selectedAction);
-            
-            return CanProcessAction(context, selectedAction);
+            return ExecuteAction(context, selectedAction);
         }
 
         private string GetSelectedAction(UnitInstanceContext actingUnit, int actionChoice)
         {
             var availableActions = GetAvailableActions(actingUnit);
-            return availableActions[actionChoice - ACTION_INDEX_OFFSET];
+            return availableActions[actionChoice - ActionIndexOffset];
         }
 
-        private bool CanProcessAction(UnitActionContext context, string selectedAction)
+        private bool ExecuteAction(UnitActionContext context, string selectedAction)
         {
             var actionProcessingContext = new ActionProcessingContext(context.ActingUnit, context.BattleState, selectedAction, context.Player1Name, context.Player2Name);
-            var result = actionExecutor.CanProcessSelectedAction(actionProcessingContext);
-            return result;
+            return actionCoordinator.ProcessSelectedAction(actionProcessingContext);
         }
 
-
-        private void StoreLastSelectedAction(string action)
+        private static bool IsInvalidActionChoice(int actionChoice)
         {
-            lastSelectedAction = action;
+            return actionChoice == InvalidActionChoice;
         }
-        
     }
 }
-
-
-
-
-

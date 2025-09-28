@@ -17,9 +17,9 @@ namespace Shin_Megami_Tensei
             return result;
         }
 
-        public bool IsBattleOver(CombatManager combatManager)
+        public bool HasBattleEnded(CombatManager combatManager)
         {
-            return combatManager.IsBattleOver(BattleState);
+            return combatManager.HasBattleEnded(BattleState);
         }
 
         public string GetCurrentPlayerName()

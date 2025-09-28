@@ -63,7 +63,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             return Math.Max(MINIMUM_TURNS, currentTurns - TURN_DECREMENT);
         }
 
-        public bool IsBattleOver(BattleState battleState)
+        public bool HasBattleEnded(BattleState battleState)
         {
             return battleState.IsBattleFinished || IsTeamDefeated(battleState.Team1) || IsTeamDefeated(battleState.Team2);
         }

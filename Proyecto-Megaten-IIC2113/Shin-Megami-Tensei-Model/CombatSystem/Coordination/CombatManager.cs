@@ -1,4 +1,5 @@
 using Shin_Megami_Tensei_Model.Domain.States;
+using System.Collections.Generic;
 using Shin_Megami_Tensei_Model.Domain.Entities;
 using Shin_Megami_Tensei_Model.CombatSystem.Contexts;
 
@@ -36,9 +37,9 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             return battleStateManager.GetNextTurnCount(team);
         }
 
-        public bool CanProcessUnitAction(UnitActionContext context)
+        public bool ExecuteUnitTurn(UnitActionContext context)
         {
-            var result = unitActionManager.CanProcessUnitAction(context);
+            var result = unitActionManager.ExecuteUnitTurn(context);
             return result;
         }
         public void ConsumeTurn(BattleState battleState)
@@ -46,9 +47,9 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             battleStateManager.ConsumeTurn(battleState);
         }
 
-        public bool IsBattleOver(BattleState battleState)
+        public bool HasBattleEnded(BattleState battleState)
         {
-            return battleStateManager.IsBattleOver(battleState);
+            return battleStateManager.HasBattleEnded(battleState);
         }
 
         public string GetWinner(BattleState battleState, string player1Name, string player2Name)

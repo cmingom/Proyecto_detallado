@@ -1,13 +1,13 @@
-﻿namespace Shin_Megami_Tensei_View.ConsoleLib;
+namespace Shin_Megami_Tensei_View.ConsoleLib;
 
 public abstract class AbstractView
 {
-    private const string NEWLINE = "\n";
+    private const string NewLine = "\n";
     
     private readonly Script script = new();
     
     public void WriteLine(object text)
-        => Write($"{text}{NEWLINE}");
+        => Write($"{text}{NewLine}");
 
     protected virtual void Write(object text)
         => script.AddToScript(text.ToString());
@@ -23,5 +23,5 @@ public abstract class AbstractView
     
 
     public string[] GetScript()
-        => script.GetScript().Split(NEWLINE);
+        => script.GetScript().Split(NewLine);
 }

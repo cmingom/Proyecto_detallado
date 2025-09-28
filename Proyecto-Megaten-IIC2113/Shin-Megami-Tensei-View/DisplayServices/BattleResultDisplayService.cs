@@ -4,11 +4,11 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
 {
     public class BattleResultDisplayService
     {
-        private const string SEPARATOR = "----------------------------------------";
-        private const string SURRENDER_MESSAGE_FORMAT = "{0} ({1}) se rinde";
-        private const string WINNER_MESSAGE_FORMAT = "Ganador: {0} ({1})";
-        private const string TURN_CONSUMPTION_MESSAGE = "Se han consumido 1 Full Turn(s) y 0 Blinking Turn(s)";
-        private const string TURN_OBTAINED_MESSAGE = "Se han obtenido 0 Blinking Turn(s)";
+        private const string Separator = "----------------------------------------";
+        private const string SurrenderMessageFormat = "{0} ({1}) se rinde";
+        private const string WinnerMessageFormat = "Ganador: {0} ({1})";
+        private const string TurnConsumptionMessage = "Se han consumido 1 Full Turn(s) y 0 Blinking Turn(s)";
+        private const string TurnObtainedMessage = "Se han obtenido 0 Blinking Turn(s)";
 
         private readonly View view;
 
@@ -27,17 +27,17 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
 
         private void ShowSeparator()
         {
-            view.WriteLine(SEPARATOR);
+            view.WriteLine(Separator);
         }
 
         private void ShowSurrenderMessage(string playerName, string playerNumber)
         {
-            view.WriteLine(string.Format(SURRENDER_MESSAGE_FORMAT, playerName, playerNumber));
+            view.WriteLine(string.Format(SurrenderMessageFormat, playerName, playerNumber));
         }
 
         private void ShowWinnerMessage(string winnerName, string winnerNumber)
         {
-            view.WriteLine(string.Format(WINNER_MESSAGE_FORMAT, winnerName, winnerNumber));
+            view.WriteLine(string.Format(WinnerMessageFormat, winnerName, winnerNumber));
         }
 
         public void ShowTurnConsumption()
@@ -49,15 +49,15 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
 
         private void ShowTurnConsumptionMessage()
         {
-            view.WriteLine(TURN_CONSUMPTION_MESSAGE);
+            view.WriteLine(TurnConsumptionMessage);
         }
 
         private void ShowTurnObtainedMessage()
         {
-            view.WriteLine(TURN_OBTAINED_MESSAGE);
+            view.WriteLine(TurnObtainedMessage);
         }
 
-        private void ShowTurnConsumptionMessage(int fullTurnsConsumed, int blinkingTurnsConsumed, int blinkingTurnsGranted)
+        private void ShowTurnConsumptionDetails(int fullTurnsConsumed, int blinkingTurnsConsumed, int blinkingTurnsGranted)
         {
             view.WriteLine($"Se han consumido {fullTurnsConsumed} Full Turn(s) y {blinkingTurnsConsumed} Blinking Turn(s)");
             view.WriteLine($"Se han obtenido {blinkingTurnsGranted} Blinking Turn(s)");
@@ -72,7 +72,7 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
         public void ShowTurnConsumptionWithBlinking(int fullTurnsConsumed, int blinkingTurnsConsumed, int blinkingTurnsGranted)
         {
             ShowSeparator();
-            ShowTurnConsumptionMessage(fullTurnsConsumed, blinkingTurnsConsumed, blinkingTurnsGranted);
+            ShowTurnConsumptionDetails(fullTurnsConsumed, blinkingTurnsConsumed, blinkingTurnsGranted);
         }
 
         public void ShowSummonResult(string unitName)
@@ -82,3 +82,5 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
         }
     }
 }
+
+

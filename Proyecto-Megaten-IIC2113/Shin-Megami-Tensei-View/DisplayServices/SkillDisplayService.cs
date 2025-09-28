@@ -1,15 +1,16 @@
+using System.Collections.Generic;
 using Shin_Megami_Tensei_Model.Domain.Entities;
 
 namespace Shin_Megami_Tensei_View.ConsoleLib
 {
     public class SkillDisplayService
     {
-        private const int MINIMUM_CHOICE = 1;
-        private const int INVALID_CHOICE = -1;
-        private const string SEPARATOR = "----------------------------------------";
-        private const string SKILL_SELECTION_FORMAT = "Seleccione una habilidad para que {0} use";
-        private const string SKILL_OPTION_FORMAT = "{0}-{1} MP:{2}";
-        private const string CANCEL_OPTION_FORMAT = "{0}-Cancelar";
+        private const int MinimumChoice = 1;
+        private const int InvalidChoice = -1;
+        private const string Separator = "----------------------------------------";
+        private const string SkillSelectionFormat = "Seleccione una habilidad para que {0} use";
+        private const string SkillOptionFormat = "{0}-{1} MP:{2}";
+        private const string CancelOptionFormat = "{0}-Cancelar";
 
         private readonly View view;
 
@@ -28,12 +29,12 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
 
         private void ShowSeparator()
         {
-            view.WriteLine(SEPARATOR);
+            view.WriteLine(Separator);
         }
 
         private void ShowSkillSelectionHeader(string unitName)
         {
-            view.WriteLine(string.Format(SKILL_SELECTION_FORMAT, unitName));
+            view.WriteLine(string.Format(SkillSelectionFormat, unitName));
         }
 
         private void ShowSkillOptions(List<Skill> availableSkills)
@@ -46,48 +47,50 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
 
         private void ShowSkillOption(int index, Skill skill)
         {
-            view.WriteLine(string.Format(SKILL_OPTION_FORMAT, index, skill.Name, skill.Cost));
+            view.WriteLine(string.Format(SkillOptionFormat, index, skill.Name, skill.Cost));
         }
 
         private void ShowCancelOption(int skillCount)
         {
-            view.WriteLine(string.Format(CANCEL_OPTION_FORMAT, skillCount + 1));
+            view.WriteLine(string.Format(CancelOptionFormat, skillCount + 1));
         }
 
         public int GetSkillChoice(int maxSkills)
         {
-            return GetValidatedChoice(maxSkills + 1);
+            return ReadChoice(maxSkills + 1);
         }
 
-        private int GetValidatedChoice(int maxChoice)
+        private int ReadChoice(int maxChoice)
         {
-            var input = GetUserInput();
-            return ValidateUserChoice(input, maxChoice);
+            var input = ReadInput();
+            return TryValidateChoice(input, maxChoice);
         }
 
-        private string GetUserInput()
+        private string ReadInput()
         {
             return view.ReadLine();
         }
 
-        private int ValidateUserChoice(string input, int maxChoice)
+        private int TryValidateChoice(string input, int maxChoice)
         {
-            var choice = ParseChoice(input);
-            if (choice == INVALID_CHOICE)
-                return INVALID_CHOICE;
-            if (!IsValidChoiceRange(choice, maxChoice))
-                return INVALID_CHOICE;
+            var choice = ParseChoiceOrDefault(input);
+            if (choice == InvalidChoice)
+                return InvalidChoice;
+            if (!IsChoiceWithinRange(choice, maxChoice))
+                return InvalidChoice;
             return choice;
         }
 
-        private int ParseChoice(string input)
+        private int ParseChoiceOrDefault(string input)
         {
-            return int.TryParse(input, out int choice) ? choice : INVALID_CHOICE;
+            return int.TryParse(input, out int choice) ? choice : InvalidChoice;
         }
 
-        private bool IsValidChoiceRange(int choice, int maxChoice)
+        private bool IsChoiceWithinRange(int choice, int maxChoice)
         {
-            return choice >= MINIMUM_CHOICE && choice <= maxChoice;
+            return choice >= MinimumChoice && choice <= maxChoice;
         }
     }
 }
+
+

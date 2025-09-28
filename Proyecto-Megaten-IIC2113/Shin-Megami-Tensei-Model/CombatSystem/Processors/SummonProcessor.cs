@@ -1,14 +1,16 @@
-﻿using Shin_Megami_Tensei_Model.Domain.Entities;
-using Shin_Megami_Tensei_Model.Domain.States;
+using System.Collections.Generic;
+using System.Linq;
 using Shin_Megami_Tensei_Model.CombatSystem.Exceptions;
+using Shin_Megami_Tensei_Model.Domain.Entities;
+using Shin_Megami_Tensei_Model.Domain.States;
 
 namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 {
     public class SummonProcessor
     {
-        private const int INVALID_CHOICE = -1;
-        private const int CANCEL_CHOICE_OFFSET = 1;
-        private static readonly char[] SAMURAI_POSITIONS = { 'B', 'C', 'D' };
+        private const int InvalidSelectionIndex = -1;
+        private const int CancelOptionOffset = 1;
+        private static readonly char[] SamuraiSlots = { 'B', 'C', 'D' };
 
         private readonly IBattleView battleView;
 
@@ -17,7 +19,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             this.battleView = battleView;
         }
 
-        public bool CanProcessSummon(UnitInstanceContext summoner, BattleState battleState)
+        public bool ProcessSummon(UnitInstanceContext summoner, BattleState battleState)
         {
             if (battleState.IsBattleFinished)
             {
@@ -25,12 +27,12 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             }
 
             var currentTeam = battleState.GetCurrentTeam();
-            var availableUnits = GetAvailableUnitsFromReserve(currentTeam);
+            var availableUnits = GetSummonCandidates(currentTeam);
 
             battleView.ShowSummonMenu(availableUnits);
-            var unitChoice = battleView.GetSummonChoice(availableUnits.Count + CANCEL_CHOICE_OFFSET);
+            var unitChoice = battleView.GetSummonChoice(availableUnits.Count + CancelOptionOffset);
 
-            if (availableUnits.Count == 0 || IsInvalidChoice(unitChoice) || IsUnitChoiceCancelled(unitChoice, availableUnits.Count))
+            if (availableUnits.Count == 0 || IsInvalidSelection(unitChoice) || IsCancelledSelection(unitChoice, availableUnits.Count))
             {
                 return false;
             }
@@ -40,8 +42,8 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             try
             {
                 return summoner.IsSamurai
-                    ? ProcessSamuraiSummon(selectedUnit, currentTeam, battleState)
-                    : ProcessMonsterSummon(summoner, selectedUnit, currentTeam, battleState);
+                    ? SummonForSamurai(selectedUnit, currentTeam, battleState)
+                    : SummonForMonster(summoner, selectedUnit, currentTeam, battleState);
             }
             catch (ActionCancelledException)
             {
@@ -49,29 +51,29 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             }
         }
 
-        private List<UnitInstanceContext> GetAvailableUnitsFromReserve(TeamState team)
+        private List<UnitInstanceContext> GetSummonCandidates(TeamState team)
         {
             return team.Reserves.Where(unit => unit.HP > 0).ToList();
         }
 
-        private bool IsUnitChoiceCancelled(int choice, int unitCount)
+        private static bool IsCancelledSelection(int choice, int optionCount)
         {
-            return choice == unitCount + CANCEL_CHOICE_OFFSET;
+            return choice == optionCount + CancelOptionOffset;
         }
 
-        private bool IsInvalidChoice(int choice)
+        private static bool IsInvalidSelection(int choice)
         {
-            return choice == INVALID_CHOICE;
+            return choice == InvalidSelectionIndex;
         }
 
-        private bool ProcessSamuraiSummon(UnitInstanceContext unitToSummon, TeamState team, BattleState battleState)
+        private bool SummonForSamurai(UnitInstanceContext unitToSummon, TeamState team, BattleState battleState)
         {
-            var positionOptions = GetSamuraiPositionOptions(team);
+            var positionOptions = BuildSamuraiPositionOptions(team);
             battleView.ShowSummonPositionMenu(positionOptions);
 
-            var positionChoice = battleView.GetSummonPositionChoice(positionOptions.Count + CANCEL_CHOICE_OFFSET);
+            var positionChoice = battleView.GetSummonPositionChoice(positionOptions.Count + CancelOptionOffset);
 
-            if (IsPositionChoiceCancelled(positionChoice, positionOptions.Count))
+            if (IsInvalidSelection(positionChoice) || IsCancelledSelection(positionChoice, positionOptions.Count))
             {
                 throw new ActionCancelledException();
             }
@@ -86,33 +88,33 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
                 team.AddToReserves(selectedOption.Unit);
             }
 
-            HandleSummonSuccess(unitToSummon.Name, battleState);
+            FinalizeSummon(unitToSummon.Name, battleState);
             return true;
         }
 
-        private bool ProcessMonsterSummon(UnitInstanceContext summoner, UnitInstanceContext unitToSummon, TeamState team, BattleState battleState)
+        private bool SummonForMonster(UnitInstanceContext summoner, UnitInstanceContext unitToSummon, TeamState team, BattleState battleState)
         {
             var summonerIndex = GetUnitPosition(summoner, team);
-            if (summonerIndex == INVALID_CHOICE)
+            if (summonerIndex == InvalidSelectionIndex)
             {
                 return false;
             }
 
-            var summonerSlot = GetSlotFromIndex(summonerIndex);
+            var summonerSlot = TranslateIndexToSlot(summonerIndex);
 
             team.RemoveFromReserves(unitToSummon);
             team.SetActiveUnitAt(summonerSlot, unitToSummon);
             team.AddToReserves(summoner);
 
-            HandleSummonSuccess(unitToSummon.Name, battleState);
+            FinalizeSummon(unitToSummon.Name, battleState);
             return true;
         }
 
-        private List<(char Slot, UnitInstanceContext? Unit)> GetSamuraiPositionOptions(TeamState team)
+        private List<(char Slot, UnitInstanceContext? Unit)> BuildSamuraiPositionOptions(TeamState team)
         {
-            var options = new List<(char, UnitInstanceContext?)>();
+            var options = new List<(char Slot, UnitInstanceContext? Unit)>();
 
-            foreach (var slot in SAMURAI_POSITIONS)
+            foreach (var slot in SamuraiSlots)
             {
                 var unit = team.GetActiveUnitAt(slot);
                 if (unit != null && unit.HP <= 0)
@@ -126,12 +128,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             return options;
         }
 
-        private bool IsPositionChoiceCancelled(int choice, int optionCount)
-        {
-            return choice == INVALID_CHOICE || choice == optionCount + CANCEL_CHOICE_OFFSET;
-        }
-
-        private char GetSlotFromIndex(int index)
+        private static char TranslateIndexToSlot(int index)
         {
             return index switch
             {
@@ -143,9 +140,9 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             };
         }
 
-        private int GetUnitPosition(UnitInstanceContext unit, TeamState team)
+        private static int GetUnitPosition(UnitInstanceContext unit, TeamState team)
         {
-            for (int i = 0; i < team.Units.Count; i++)
+            for (var i = 0; i < team.Units.Count; i++)
             {
                 if (team.Units[i] == unit)
                 {
@@ -153,25 +150,20 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
                 }
             }
 
-            return INVALID_CHOICE;
+            return InvalidSelectionIndex;
         }
 
-        private void HandleSummonSuccess(string unitName, BattleState battleState)
-        {
-            ShowSummonMessage(unitName);
-            ConsumeTurnsForSummon(battleState);
-        }
-
-        private void ShowSummonMessage(string unitName)
+        private void FinalizeSummon(string unitName, BattleState battleState)
         {
             battleView.ShowSummonResult(unitName);
+            ConsumeTurnsForSummon(battleState);
         }
 
         private void ConsumeTurnsForSummon(BattleState battleState)
         {
-            int fullTurnsConsumed = 0;
-            int blinkingTurnsConsumed = 0;
-            int blinkingTurnsGranted = 0;
+            var fullTurnsConsumed = 0;
+            var blinkingTurnsConsumed = 0;
+            var blinkingTurnsGranted = 0;
 
             if (battleState.BlinkingTurns > 0)
             {
@@ -187,16 +179,11 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             }
 
             battleState.MarkTurnConsumptionMessageShown();
-            
-            // Usar buffering atómico para invocación
+
             battleView.StartActionBuffer();
             battleView.ShowTurnConsumptionWithBlinking(fullTurnsConsumed, blinkingTurnsConsumed, blinkingTurnsGranted);
-            
-            // Incrementar contador del jugador después de completar la acción
             battleState.IncrementCurrentPlayerActionCounter();
-            
             battleView.FlushActionBuffer();
         }
     }
 }
-

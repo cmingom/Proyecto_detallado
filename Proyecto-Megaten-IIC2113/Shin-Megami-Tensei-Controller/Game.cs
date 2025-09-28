@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using Shin_Megami_Tensei_View;
 using Shin_Megami_Tensei_Model.CombatSystem.Core;
@@ -17,48 +17,42 @@ namespace Shin_Megami_Tensei
         public Game(View view, string teamsPath)
         {
             this.view = view;
-            this.teamFileCoordinator = new TeamFileCoordinator(view);
-            this.gameManager = new GameManager();
-            this.battleStateFactory = new BattleStateFactory(gameManager);
-            this.playerNameResolver = new PlayerNameResolver(gameManager);
-            
-            this.teamFileCoordinator.InitializeTeamsPath(teamsPath);
-            this.gameManager.LoadReferenceData();
+            teamFileCoordinator = new TeamFileCoordinator(view);
+            gameManager = new GameManager();
+            battleStateFactory = new BattleStateFactory(gameManager);
+            playerNameResolver = new PlayerNameResolver(gameManager);
+
+            teamFileCoordinator.InitializeTeamsPath(teamsPath);
+            gameManager.LoadReferenceData();
         }
 
         public void Play()
         {
-            var file = teamFileCoordinator.GetTeamsFile();
-            if (IsNullOrEmpty(file))
+            var teamsFile = teamFileCoordinator.GetTeamsFile();
+            if (string.IsNullOrWhiteSpace(teamsFile))
             {
                 ShowInvalidFileMessage();
                 return;
             }
-            
-            var battleState = battleStateFactory.GetBattleState(file);
-            var playerNames = playerNameResolver.GetPlayerNames(file);
-            
-            StartBattle(battleState, playerNames);
-        }
 
-        private bool IsNullOrEmpty(string? item)
-        {
-            return string.IsNullOrEmpty(item);
+            var battleState = battleStateFactory.GetBattleState(teamsFile);
+            if (battleState == null)
+            {
+                ShowInvalidFileMessage();
+                return;
+            }
+
+            var playerNames = playerNameResolver.GetPlayerNames(teamsFile);
+            RunBattle(battleState, playerNames);
         }
 
         private void ShowInvalidFileMessage()
         {
-            view.WriteLine("Archivo de equipos inválido");
+            view.WriteLine("Archivo de equipos inv�lido");
         }
-        
-        private void StartBattle(BattleState battleState, (string player1Name, string player2Name) playerNames)
-        {
-            if (IsNull(battleState))
-            {
-                ShowInvalidFileMessage();
-                return;
-            }
 
+        private void RunBattle(BattleState battleState, (string player1Name, string player2Name) playerNames)
+        {
             var battleEngine = CreateBattleEngine();
             try
             {
@@ -70,15 +64,11 @@ namespace Shin_Megami_Tensei
             }
         }
 
-        private bool IsNull<T>(T? item) where T : class
-        {
-            return item == null;
-        }
-
         private BattleEngine CreateBattleEngine()
         {
             return new BattleEngine(view, gameManager.GetSkillData());
         }
+
         private void DumpScriptIfRequested()
         {
             var dumpPath = Environment.GetEnvironmentVariable("DUMP_SCRIPT_PATH");
@@ -93,7 +83,7 @@ namespace Shin_Megami_Tensei
             }
             catch
             {
-                // Ignorar errores de escritura opcionales de depuración.
+                // Ignorar errores de escritura opcionales de depuracion.
             }
         }
     }

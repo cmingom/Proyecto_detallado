@@ -1,4 +1,6 @@
-﻿using Shin_Megami_Tensei_Model.CombatSystem.Contexts;
+using System.Collections.Generic;
+using System.Linq;
+using Shin_Megami_Tensei_Model.CombatSystem.Contexts;
 using Shin_Megami_Tensei_Model.CombatSystem.Enums;
 using Shin_Megami_Tensei_Model.Domain.Entities;
 using Shin_Megami_Tensei_Model.Domain.States;
@@ -23,27 +25,27 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             this.turnOutcomeProcessor = turnOutcomeProcessor;
         }
 
-        public bool CanExecutePhysicalAttack(UnitInstanceContext attacker, BattleState battleState)
+        public bool ProcessPhysicalAttack(UnitInstanceContext attacker, BattleState battleState)
         {
             var attackContext = new AttackContext(attacker, battleState, AttackType.Physical);
-            return CanProcessAttack(attackContext);
+            return TryResolveAttack(attackContext);
         }
 
-        public bool CanExecuteGunAttack(UnitInstanceContext attacker, BattleState battleState)
+        public bool ProcessGunAttack(UnitInstanceContext attacker, BattleState battleState)
         {
             var attackContext = new AttackContext(attacker, battleState, AttackType.Gun);
-            return CanProcessAttack(attackContext);
+            return TryResolveAttack(attackContext);
         }
 
-        private bool CanProcessAttack(AttackContext attackContext)
+        private bool TryResolveAttack(AttackContext attackContext)
         {
-            var availableTargets = GetValidTargets(attackContext);
+            var availableTargets = GetValidTargets(attackContext.BattleState);
             if (!availableTargets.Any())
             {
                 return false;
             }
 
-            var selectedTarget = targetSelector.SelectTargetForAttack(attackContext.Attacker, availableTargets);
+            var selectedTarget = targetSelector.RequestTargetForAttack(attackContext.Attacker, availableTargets);
             if (selectedTarget == null)
             {
                 return false;
@@ -53,9 +55,9 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             return true;
         }
 
-        private List<UnitInstanceContext> GetValidTargets(AttackContext attackContext)
+        private List<UnitInstanceContext> GetValidTargets(BattleState battleState)
         {
-            return targetSelector.GetAvailableTargetsForAttack(attackContext.BattleState);
+            return targetSelector.GetAvailableTargetsForAttack(battleState);
         }
 
         private void ExecuteAttackOnTarget(AttackContext attackContext, UnitInstanceContext selectedTarget)
@@ -66,14 +68,10 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             var resolution = damageCalculator.ResolveDamage(attackContext.Attacker, selectedTarget, element, baseDamage);
             var context = BuildAttackResultContext(attackContext.Attacker, selectedTarget, abilityName, element, resolution, 1, 1);
 
-            // Ejecutar acción como bloque atómico
             battleView.StartActionBuffer();
             battleView.ShowAttackResult(context);
-            turnOutcomeProcessor.ApplyOutcome(attackContext.BattleState, resolution.Reaction);
-            
-            // Incrementar contador del jugador después de completar la acción
+            turnOutcomeProcessor.ProcessAffinityOutcome(attackContext.BattleState, resolution.Reaction);
             attackContext.BattleState.IncrementCurrentPlayerActionCounter();
-            
             battleView.FlushActionBuffer();
         }
 
@@ -102,4 +100,3 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
         }
     }
 }
-

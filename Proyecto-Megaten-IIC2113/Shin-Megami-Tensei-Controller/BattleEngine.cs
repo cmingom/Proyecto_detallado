@@ -1,4 +1,5 @@
-﻿using Shin_Megami_Tensei_View.ConsoleLib;
+using System.Collections.Generic;
+using Shin_Megami_Tensei_View.ConsoleLib;
 using Shin_Megami_Tensei_Model.Domain.States;
 using Shin_Megami_Tensei_Model.Domain.Entities;
 using Shin_Megami_Tensei_Model.CombatSystem.Core;
@@ -14,27 +15,25 @@ namespace Shin_Megami_Tensei
 
         public BattleEngine(View view, Dictionary<string, Skill> skillData)
         {
-            this.battleView = new BattleView(view);
-            this.combatManager = new CombatManager(skillData, this.battleView);
-            this.turnManager = new TurnManager(this.battleView, this.combatManager);
+            battleView = new BattleView(view);
+            combatManager = new CombatManager(skillData, battleView);
+            turnManager = new TurnManager(battleView, combatManager);
         }
 
         public void StartBattle(BattleState battleState, string player1Name, string player2Name)
         {
-            ExecuteBattleLoop(battleState, player1Name, player2Name);
+            RunBattleLoop(battleState, player1Name, player2Name);
         }
 
-        //TO DO:  agregar catch de excepciones
-        private void ExecuteBattleLoop(BattleState battleState, string player1Name, string player2Name)
+        private void RunBattleLoop(BattleState battleState, string player1Name, string player2Name)
         {
-            while (ShouldContinueBattle(battleState))
+            while (IsBattleInProgress(battleState))
             {
-                if (ShouldExitBattle(battleState, player1Name, player2Name))
+                if (ProcessPlayerTurn(battleState, player1Name, player2Name))
                 {
                     return;
                 }
-                
-                // Verificar si la batalla terminó después de procesar el turno (ej: rendirse)
+
                 if (battleState.IsBattleFinished)
                 {
                     return;
@@ -42,16 +41,14 @@ namespace Shin_Megami_Tensei
             }
         }
 
-        private bool ShouldContinueBattle(BattleState battleState)
+        private bool IsBattleInProgress(BattleState battleState)
         {
-            return !combatManager.IsBattleOver(battleState);
+            return !combatManager.HasBattleEnded(battleState);
         }
 
-        private bool ShouldExitBattle(BattleState battleState, string player1Name, string player2Name)
+        private bool ProcessPlayerTurn(BattleState battleState, string player1Name, string player2Name)
         {
-            var result = turnManager.IsPlayerTurnComplete(battleState, player1Name, player2Name);
-            return result;
+            return turnManager.ProcessTurn(battleState, player1Name, player2Name);
         }
     }
 }
-

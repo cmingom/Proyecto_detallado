@@ -1,4 +1,6 @@
-﻿using Shin_Megami_Tensei_Model.CombatSystem.Contexts;
+using System.Collections.Generic;
+using System.Linq;
+using Shin_Megami_Tensei_Model.CombatSystem.Contexts;
 using Shin_Megami_Tensei_Model.CombatSystem.Enums;
 using Shin_Megami_Tensei_Model.Domain.Entities;
 using Shin_Megami_Tensei_Model.Domain.States;
@@ -7,11 +9,10 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 {
     public class SkillProcessor
     {
-        private const int InvalidSkillChoice = -1;
-        private const int CancelSkillChoiceOffset = 1;
+        private const int InvalidSkillSelection = -1;
+        private const int CancelSkillOffset = 1;
 
-        private static readonly Random MultiHitRandom = Random.Shared;
-        private static readonly HashSet<AffinityReaction> PenaltyReactions = new HashSet<AffinityReaction>
+        private static readonly HashSet<AffinityReaction> PenaltyReactions = new()
         {
             AffinityReaction.Miss,
             AffinityReaction.Null,
@@ -40,17 +41,18 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             this.targetSelector = targetSelector;
             this.damageCalculator = damageCalculator;
             this.turnOutcomeProcessor = turnOutcomeProcessor;
-            this.sabbatmaProcessor = new SabbatmaProcessor(battleView, turnOutcomeProcessor);
-            this.healProcessor = new HealProcessor(battleView, turnOutcomeProcessor);
-            this.basicSkillsProcessor = new BasicSkillsProcessor();
+            sabbatmaProcessor = new SabbatmaProcessor(battleView, turnOutcomeProcessor);
+            healProcessor = new HealProcessor(battleView, turnOutcomeProcessor);
+            basicSkillsProcessor = new BasicSkillsProcessor();
         }
 
-        public bool CanProcessUseSkill(UnitInstanceContext unit, BattleState battleState)
+        public bool ProcessSkill(UnitInstanceContext unit, BattleState battleState)
         {
             var availableSkills = GetAvailableSkills(unit);
             battleView.ShowSkillSelection(unit, availableSkills);
+
             var skillChoice = battleView.GetSkillChoice(availableSkills.Count);
-            if (!IsValidSkillChoice(skillChoice, availableSkills.Count))
+            if (IsCancelledSelection(skillChoice, availableSkills.Count))
             {
                 return false;
             }
@@ -59,12 +61,12 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 
             if (IsHealSkill(selectedSkill))
             {
-                return healProcessor.CanProcessHeal(unit, battleState, selectedSkill);
+                return healProcessor.ProcessHeal(unit, battleState, selectedSkill);
             }
 
             if (IsInvitationSkill(selectedSkill))
             {
-                var executed = sabbatmaProcessor.CanProcessInvitation(unit, battleState, selectedSkill);
+                var executed = sabbatmaProcessor.ProcessInvitation(unit, battleState, selectedSkill);
                 if (executed)
                 {
                     unit.MP -= selectedSkill.Cost;
@@ -75,7 +77,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 
             if (IsSabbatmaSkill(selectedSkill))
             {
-                var executed = sabbatmaProcessor.CanProcessSabbatma(unit, battleState, selectedSkill);
+                var executed = sabbatmaProcessor.ProcessSabbatma(unit, battleState, selectedSkill);
                 if (executed)
                 {
                     unit.MP -= selectedSkill.Cost;
@@ -84,29 +86,31 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
                 return executed;
             }
 
-            if (basicSkillsProcessor.IsOffensiveSkillSupported(selectedSkill))
+            if (!basicSkillsProcessor.IsOffensiveSkillSupported(selectedSkill))
             {
-                var targets = targetSelector.GetAvailableTargetsForAttack(battleState);
-                if (targets.Count == 0)
-                {
-                    return false;
-                }
-
-                battleView.ShowTargetSelection(unit, targets);
-                var targetChoice = battleView.GetTargetChoice(targets.Count);
-                if (IsInvalidTargetChoice(targetChoice, targets.Count))
-                {
-                    return false;
-                }
-
-                var target = targets[targetChoice - 1];
-                ExecuteSkill(unit, target, battleState, selectedSkill);
-                return true;
+                return false;
             }
 
-            return false;
+            return ExecuteOffensiveSkill(unit, battleState, selectedSkill);
         }
 
+        private bool ExecuteOffensiveSkill(UnitInstanceContext unit, BattleState battleState, Skill selectedSkill)
+        {
+            var targets = targetSelector.GetAvailableTargetsForAttack(battleState);
+            if (!targets.Any())
+            {
+                return false;
+            }
+
+            var target = targetSelector.RequestTargetForAttack(unit, targets);
+            if (target == null)
+            {
+                return false;
+            }
+
+            ExecuteSkill(unit, target, battleState, selectedSkill);
+            return true;
+        }
 
         public List<Skill> GetAvailableSkills(UnitInstanceContext unit)
         {
@@ -122,38 +126,25 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             return availableSkills;
         }
 
-        private bool IsValidSkillChoice(int skillChoice, int skillCount)
+        private static bool IsCancelledSelection(int skillChoice, int skillCount)
         {
-            return !IsInvalidSkillChoice(skillChoice, skillCount);
-        }
-
-        private static bool IsInvalidSkillChoice(int skillChoice, int skillCount)
-        {
-            return skillChoice == InvalidSkillChoice || skillChoice == skillCount + CancelSkillChoiceOffset;
-        }
-
-        private static bool IsInvalidTargetChoice(int targetChoice, int targetCount)
-        {
-            return targetChoice == InvalidSkillChoice || targetChoice == targetCount + CancelSkillChoiceOffset;
+            return skillChoice == InvalidSkillSelection || skillChoice == skillCount + CancelSkillOffset;
         }
 
         private bool IsHealSkill(Skill skill)
         {
-            return skill.Name == "Dia" || skill.Name == "Diarama" || skill.Name == "Diarahan" ||
-                   skill.Name == "Recarm" || skill.Name == "Samarecarm";
+            return skill.Name is "Dia" or "Diarama" or "Diarahan" or "Recarm" or "Samarecarm";
         }
 
-        private bool IsSabbatmaSkill(Skill skill)
+        private static bool IsSabbatmaSkill(Skill skill)
         {
             return skill.Name == "Sabbatma";
         }
 
-        private bool IsInvitationSkill(Skill skill)
+        private static bool IsInvitationSkill(Skill skill)
         {
             return skill.Name == "Invitation";
         }
-
-
 
         private void ExecuteSkill(UnitInstanceContext unit, UnitInstanceContext target, BattleState battleState, Skill skill)
         {
@@ -166,10 +157,8 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             var reactions = new List<AffinityReaction>();
             var hitResults = new List<AttackResultContext>();
 
-            // Ejecutar exactamente X golpes como especifica la regla
             for (var hitNumber = 1; hitNumber <= intendedHits; hitNumber++)
             {
-                // Solo detener si el atacante est�f¡ muerto ANTES del golpe
                 if (unit.HP <= 0)
                 {
                     break;
@@ -179,49 +168,48 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
                 reactions.Add(resolution.Reaction);
                 executedHits = hitNumber;
 
-                // Acumular resultado para mostrar despu�f©s
                 var context = BuildAttackResultContext(unit, target, skill.Name, element, resolution, hitNumber, intendedHits);
                 hitResults.Add(context);
 
-                // NO interrumpir por Repel - ejecutar exactamente X golpes
-                // NO detener si el objetivo muere - continuar con todos los hits
-                // Solo detener si el atacante muere (por Repel)
                 if (unit.HP <= 0)
                 {
                     break;
                 }
             }
 
-            // Ahora mostrar todos los resultados de una vez
-            if (executedHits > 0)
+            if (executedHits == 0)
             {
-                battleView.StartActionBuffer();
-                
-                // Mostrar todos los golpes
-                for (int i = 0; i < hitResults.Count; i++)
-                {
-                    var hitResult = hitResults[i];
-                    // Marcar correctamente cu�f¡l es el �fºltimo golpe ejecutado
-                    var finalContext = new AttackResultContext(
-                        hitResult.Attacker, hitResult.Target, hitResult.ActionName, hitResult.Element,
-                        hitResult.Reaction, hitResult.DamageToTarget, hitResult.DamageToAttacker,
-                        hitResult.HitNumber, hitResults.Count, // Usar el n�fºmero real de golpes ejecutados
-                        hitResult.TargetHpAfter, hitResult.AttackerHpAfter, hitResult.IsCritical);
-                    
-                    battleView.ShowAttackResult(finalContext);
-                }
-
-                var netReaction = DetermineNetReaction(reactions);
-                turnOutcomeProcessor.ApplyOutcome(battleState, netReaction);
-                
-                // Incrementar contador del jugador despu�f©s de completar la acci�f³n
-                battleState.IncrementCurrentPlayerActionCounter();
-                
-                // Incrementar contador de habilidades del jugador despu�f©s de usar cualquier habilidad
-                battleState.IncrementCurrentPlayerSkillCounter();
-                
-                battleView.FlushActionBuffer();
+                return;
             }
+
+            battleView.StartActionBuffer();
+
+            foreach (var hitResult in hitResults)
+            {
+                var context = new AttackResultContext(
+                    hitResult.Attacker,
+                    hitResult.Target,
+                    hitResult.ActionName,
+                    hitResult.Element,
+                    hitResult.Reaction,
+                    hitResult.DamageToTarget,
+                    hitResult.DamageToAttacker,
+                    hitResult.HitNumber,
+                    hitResults.Count,
+                    hitResult.TargetHpAfter,
+                    hitResult.AttackerHpAfter,
+                    hitResult.IsCritical);
+
+                battleView.ShowAttackResult(context);
+            }
+
+            var netReaction = DetermineNetReaction(reactions);
+            turnOutcomeProcessor.ProcessAffinityOutcome(battleState, netReaction);
+
+            battleState.IncrementCurrentPlayerActionCounter();
+            battleState.IncrementCurrentPlayerSkillCounter();
+
+            battleView.FlushActionBuffer();
         }
 
         private AttackResultContext BuildAttackResultContext(
@@ -277,4 +265,3 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
         }
     }
 }
-

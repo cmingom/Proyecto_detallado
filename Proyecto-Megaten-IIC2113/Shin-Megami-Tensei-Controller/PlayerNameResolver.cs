@@ -7,7 +7,7 @@ namespace Shin_Megami_Tensei
     {
         private const string DEFAULT_PLAYER_1_NAME = "Player1";
         private const string DEFAULT_PLAYER_2_NAME = "Player2";
-        
+
         private readonly GameManager gameService;
 
         public PlayerNameResolver(GameManager gameService)
@@ -17,40 +17,36 @@ namespace Shin_Megami_Tensei
 
         public (string player1Name, string player2Name) GetPlayerNames(string file)
         {
-            var (parsedTeam1, parsedTeam2) = ParseTeamsFromFile(file);
-            
-            return GetPlayerNamesFromTeams(parsedTeam1, parsedTeam2);
+            var (team1, team2) = gameService.ParseTeamsFromFile(file);
+            return ResolvePlayerNames(team1, team2);
         }
 
-        private (List<UnitInfo> team1, List<UnitInfo> team2) ParseTeamsFromFile(string file)
+        private (string player1Name, string player2Name) ResolvePlayerNames(List<UnitInfo> team1, List<UnitInfo> team2)
         {
-            return gameService.ParseTeamsFromFile(file);
-        }
+            var player1Name = ResolvePlayerName(team1, DEFAULT_PLAYER_1_NAME);
+            var player2Name = ResolvePlayerName(team2, DEFAULT_PLAYER_2_NAME);
 
-        private (string player1Name, string player2Name) GetPlayerNamesFromTeams(List<UnitInfo> team1, List<UnitInfo> team2)
-        {
-            var player1Name = GetPlayerNameFromTeam(team1, DEFAULT_PLAYER_1_NAME);
-            var player2Name = GetPlayerNameFromTeam(team2, DEFAULT_PLAYER_2_NAME);
-            
             return (player1Name, player2Name);
         }
 
-        private string GetPlayerNameFromTeam(List<UnitInfo> team, string defaultName)
+        private string ResolvePlayerName(List<UnitInfo> team, string defaultName)
         {
-            var samuraiName = GetSamuraiNameFromTeam(team);
+            var samuraiName = GetSamuraiName(team);
             if (samuraiName != null)
+            {
                 return samuraiName;
-                
-            var firstUnitName = GetFirstUnitNameFromTeam(team);
+            }
+
+            var firstUnitName = GetFirstUnitName(team);
             return firstUnitName ?? defaultName;
         }
 
-        private string? GetSamuraiNameFromTeam(List<UnitInfo> team)
+        private static string? GetSamuraiName(List<UnitInfo> team)
         {
-            return team.FirstOrDefault(u => u.IsSamurai)?.Name;
+            return team.FirstOrDefault(unit => unit.IsSamurai)?.Name;
         }
 
-        private string? GetFirstUnitNameFromTeam(List<UnitInfo> team)
+        private static string? GetFirstUnitName(List<UnitInfo> team)
         {
             return team.FirstOrDefault()?.Name;
         }

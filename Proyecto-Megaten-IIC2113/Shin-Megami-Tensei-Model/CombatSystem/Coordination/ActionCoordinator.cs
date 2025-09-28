@@ -1,4 +1,4 @@
-﻿using Shin_Megami_Tensei_Model.CombatSystem.Contexts;
+using Shin_Megami_Tensei_Model.CombatSystem.Contexts;
 
 namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 {
@@ -20,10 +20,10 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             return new ActionSelector(actionSelectorConfig);
         }
 
-        public bool CanProcessSelectedAction(ActionProcessingContext context)
+        public bool ProcessSelectedAction(ActionProcessingContext context)
         {
             var actionContext = new ActionContext(context.ActingUnit, context.BattleState, context.Player1Name, context.Player2Name);
-            return actionSelector.CanProcessSelectedAction(actionContext, context.SelectedAction);
+            return actionSelector.ProcessSelectedAction(actionContext, context.SelectedAction);
         }
     }
 }

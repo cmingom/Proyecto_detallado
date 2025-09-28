@@ -1,11 +1,13 @@
+using System;
+using System.IO;
+
 namespace Shin_Megami_Tensei
 {
     public class TeamPathResolver
     {
         private const string TEXT_FILE_EXTENSION = ".txt";
-        private const string EMPTY_STRING = "";
-        
-        private string teamsFolder;
+
+        private string teamsFolder = string.Empty;
         private string? specificTeamsFile;
 
         public void InitializeTeamsPath(string teamsPath)
@@ -13,11 +15,10 @@ namespace Shin_Megami_Tensei
             if (IsSpecificFile(teamsPath))
             {
                 SetSpecificFileAndFolder(teamsPath);
+                return;
             }
-            else
-            {
-                SetTeamsFolder(teamsPath);
-            }
+
+            teamsFolder = teamsPath;
         }
 
         public bool HasSpecificFile()
@@ -27,7 +28,7 @@ namespace Shin_Megami_Tensei
 
         public string GetSpecificFile()
         {
-            return specificTeamsFile;
+            return specificTeamsFile ?? string.Empty;
         }
 
         public string GetTeamsFolder()
@@ -37,18 +38,13 @@ namespace Shin_Megami_Tensei
 
         private bool IsSpecificFile(string teamsPath)
         {
-            return teamsPath.EndsWith(TEXT_FILE_EXTENSION);
+            return teamsPath.EndsWith(TEXT_FILE_EXTENSION, StringComparison.OrdinalIgnoreCase);
         }
 
         private void SetSpecificFileAndFolder(string teamsPath)
         {
-            this.specificTeamsFile = teamsPath;
-            this.teamsFolder = Path.GetDirectoryName(teamsPath) ?? EMPTY_STRING;
-        }
-
-        private void SetTeamsFolder(string teamsPath)
-        {
-            this.teamsFolder = teamsPath;
+            specificTeamsFile = teamsPath;
+            teamsFolder = Path.GetDirectoryName(teamsPath) ?? string.Empty;
         }
     }
 }

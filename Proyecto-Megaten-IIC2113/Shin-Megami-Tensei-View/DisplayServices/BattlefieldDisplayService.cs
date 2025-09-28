@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Shin_Megami_Tensei_Model.Domain.States;
 using Shin_Megami_Tensei_Model.Domain.Entities;
 
@@ -5,22 +6,22 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
 {
     public class BattlefieldDisplayService
     {
-        private const int MAX_POSITIONS = 4;
-        private const int MINIMUM_HP = 0;
-        private const int INDEX_OFFSET = 1;
-        private const char POSITION_A = 'A';
-        private const char POSITION_B = 'B';
-        private const char POSITION_C = 'C';
-        private const char POSITION_D = 'D';
-        private const string SEPARATOR = "----------------------------------------";
-        private const string TEAM_HEADER_FORMAT = "Equipo de {0} ({1})";
-        private const string UNIT_INFO_FORMAT = "{0}-{1} HP:{2}/{3} MP:{4}/{5}";
-        private const string EMPTY_POSITION_FORMAT = "{0}-";
-        private const string FULL_TURNS_FORMAT = "Full Turns: {0}";
-        private const string BLINKING_TURNS_FORMAT = "Blinking Turns: {0}";
-        private const string ORDER_HEADER = "Orden:";
-        private const string ORDER_ITEM_FORMAT = "{0}-{1}";
-        private const string ROUND_HEADER_FORMAT = "Ronda de {0} ({1})";
+        private const int MaxPositions = 4;
+        private const int MinimumHp = 0;
+        private const int IndexOffset = 1;
+        private const char PositionA = 'A';
+        private const char PositionB = 'B';
+        private const char PositionC = 'C';
+        private const char PositionD = 'D';
+        private const string Separator = "----------------------------------------";
+        private const string TeamHeaderFormat = "Equipo de {0} ({1})";
+        private const string UnitInfoFormat = "{0}-{1} HP:{2}/{3} MP:{4}/{5}";
+        private const string EmptyPositionFormat = "{0}-";
+        private const string FullTurnsFormat = "Full Turns: {0}";
+        private const string BlinkingTurnsFormat = "Blinking Turns: {0}";
+        private const string OrderHeader = "Orden:";
+        private const string OrderItemFormat = "{0}-{1}";
+        private const string RoundHeaderFormat = "Ronda de {0} ({1})";
 
         private readonly View view;
 
@@ -38,7 +39,7 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
 
         private void ShowSeparator()
         {
-            view.WriteLine(SEPARATOR);
+            view.WriteLine(Separator);
         }
 
         private void ShowTeamStatus(TeamState team, string playerName, string playerNumber)
@@ -49,14 +50,14 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
 
         private void ShowTeamHeader(string playerName, string playerNumber)
         {
-            view.WriteLine(string.Format(TEAM_HEADER_FORMAT, playerName, playerNumber));
+            view.WriteLine(string.Format(TeamHeaderFormat, playerName, playerNumber));
         }
 
         private void ShowAllUnitPositions(TeamState team)
         {
             char[] positions = GetPositions();
             
-            for (int i = 0; i < MAX_POSITIONS; i++)
+            for (int i = 0; i < MaxPositions; i++)
             {
                 ShowSingleUnitPosition(team.Units[i], positions[i]);
             }
@@ -64,7 +65,7 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
 
         private char[] GetPositions()
         {
-            return new char[] { POSITION_A, POSITION_B, POSITION_C, POSITION_D };
+            return new char[] { PositionA, PositionB, PositionC, PositionD };
         }
 
         private void ShowSingleUnitPosition(UnitInstanceContext? unit, char position)
@@ -87,17 +88,17 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
 
         private bool ShouldShowUnitInfo(UnitInstanceContext unit)
         {
-            return unit.IsSamurai || unit.HP > MINIMUM_HP;
+            return unit.IsSamurai || unit.HP > MinimumHp;
         }
 
         private void ShowUnitInfo(UnitInstanceContext unit, char position)
         {
-            view.WriteLine(string.Format(UNIT_INFO_FORMAT, position, unit.Name, unit.HP, unit.MaxHP, unit.MP, unit.MaxMP));
+            view.WriteLine(string.Format(UnitInfoFormat, position, unit.Name, unit.HP, unit.MaxHP, unit.MP, unit.MaxMP));
         }
 
         private void ShowEmptyPosition(char position)
         {
-            view.WriteLine(string.Format(EMPTY_POSITION_FORMAT, position));
+            view.WriteLine(string.Format(EmptyPositionFormat, position));
         }
 
         public void ShowTurnCounters(BattleState battleState)
@@ -109,12 +110,12 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
 
         private void ShowFullTurns(int fullTurns)
         {
-            view.WriteLine(string.Format(FULL_TURNS_FORMAT, fullTurns));
+            view.WriteLine(string.Format(FullTurnsFormat, fullTurns));
         }
 
         private void ShowBlinkingTurns(int blinkingTurns)
         {
-            view.WriteLine(string.Format(BLINKING_TURNS_FORMAT, blinkingTurns));
+            view.WriteLine(string.Format(BlinkingTurnsFormat, blinkingTurns));
         }
 
         public void ShowActionOrderBySpeed(List<UnitInstanceContext> actionOrder)
@@ -126,20 +127,20 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
 
         private void ShowOrderHeader()
         {
-            view.WriteLine(ORDER_HEADER);
+            view.WriteLine(OrderHeader);
         }
 
         private void ShowOrderItems(List<UnitInstanceContext> actionOrder)
         {
             for (int i = 0; i < actionOrder.Count; i++)
             {
-                ShowOrderItem(i + INDEX_OFFSET, actionOrder[i].Name);
+                ShowOrderItem(i + IndexOffset, actionOrder[i].Name);
             }
         }
 
         private void ShowOrderItem(int index, string unitName)
         {
-            view.WriteLine(string.Format(ORDER_ITEM_FORMAT, index, unitName));
+            view.WriteLine(string.Format(OrderItemFormat, index, unitName));
         }
 
         public void ShowRoundHeader(string playerName, string playerNumber)
@@ -150,8 +151,10 @@ namespace Shin_Megami_Tensei_View.ConsoleLib
 
         private void ShowRoundHeaderText(string playerName, string playerNumber)
         {
-            view.WriteLine(string.Format(ROUND_HEADER_FORMAT, playerName, playerNumber));
+            view.WriteLine(string.Format(RoundHeaderFormat, playerName, playerNumber));
         }
     }
 }
+
+
 

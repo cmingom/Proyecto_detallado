@@ -2,6 +2,7 @@
 using Shin_Megami_Tensei_View.ConsoleLib;
 using Shin_Megami_Tensei_Model.Domain.States;
 using Shin_Megami_Tensei_Model.CombatSystem.Core;
+using Shin_Megami_Tensei_Model.CombatSystem.Contexts;
 
 namespace Shin_Megami_Tensei
 {
@@ -63,12 +64,10 @@ namespace Shin_Megami_Tensei
 
         private static BattleContext CreateBattleContext(TurnContext turnContext)
         {
-            return new BattleContext
-            {
-                BattleState = turnContext.BattleState,
-                Player1Name = turnContext.Player1Name,
-                Player2Name = turnContext.Player2Name
-            };
+            return new BattleContext(
+                turnContext.BattleState,
+                turnContext.Player1Name,
+                turnContext.Player2Name);
         }
 
         private void FinalizeTurn(TurnContext turnContext)
@@ -116,3 +115,5 @@ namespace Shin_Megami_Tensei
         }
     }
 }
+
+

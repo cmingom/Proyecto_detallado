@@ -1,12 +1,14 @@
-using System;
+﻿using System;
 using System.IO;
+using Shin_Megami_Tensei_Model.CombatSystem.Data;
 using Shin_Megami_Tensei_View;
 using Shin_Megami_Tensei_Model.CombatSystem.Core;
 using Shin_Megami_Tensei_Model.Domain.States;
+using Shin_Megami_Tensei_Model.Services;
 
 namespace Shin_Megami_Tensei
 {
-    public class Game
+    public class GameController
     {
         private readonly View view;
         private readonly TeamFileCoordinator teamFileCoordinator;
@@ -14,7 +16,7 @@ namespace Shin_Megami_Tensei
         private readonly PlayerNameResolver playerNameResolver;
         private readonly GameManager gameManager;
 
-        public Game(View view, string teamsPath)
+        public GameController(View view, string teamsPath)
         {
             this.view = view;
             teamFileCoordinator = new TeamFileCoordinator(view);
@@ -95,7 +97,7 @@ namespace Shin_Megami_Tensei
             }
             catch
             {
-                // Ignorar errores de escritura opcionales de depuracion.
+                // Ignorar errores de escritura opcionales de depuración.
             }
         }
 

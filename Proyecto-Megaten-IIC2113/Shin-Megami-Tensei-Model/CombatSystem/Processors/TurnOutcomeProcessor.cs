@@ -1,5 +1,4 @@
-using System;
-using Shin_Megami_Tensei_Model.CombatSystem.Contexts;
+﻿using Shin_Megami_Tensei_Model.CombatSystem.Contexts;
 using Shin_Megami_Tensei_Model.CombatSystem.Enums;
 using Shin_Megami_Tensei_Model.Domain.States;
 
@@ -22,14 +21,12 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 
         public void ProcessHealOutcome(BattleState battleState)
         {
-            var outcome = CalculateHealOutcome(battleState);
-            DisplayOutcome(battleState, outcome);
+            DisplayOutcome(battleState, ConsumeSingleTurn(battleState));
         }
 
         public void ProcessSummonOutcome(BattleState battleState)
         {
-            var outcome = CalculateSummonOutcome(battleState);
-            DisplayOutcome(battleState, outcome);
+            DisplayOutcome(battleState, ConsumeSingleTurn(battleState));
         }
 
         private void DisplayOutcome(BattleState battleState, TurnOutcome outcome)
@@ -47,38 +44,30 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
                 AffinityReaction.Repel => ApplyConsumeAllOutcome(battleState),
                 AffinityReaction.Drain => ApplyConsumeAllOutcome(battleState),
                 AffinityReaction.Miss => ApplyNullOutcome(battleState),
-                _ => ApplyNeutralOutcome(battleState)
+                _ => ConsumeSingleTurn(battleState)
             };
         }
 
         private TurnOutcome ApplyWeakOutcome(BattleState battleState)
         {
-            var fullConsumed = 0;
-            var blinkingConsumed = 0;
-            var blinkingGranted = 0;
-
             if (battleState.FullTurns > 0)
             {
-                battleState.ConsumeTurn();
-                fullConsumed = 1;
-                battleState.GrantBlinkingTurn();
-                blinkingGranted = 1;
-            }
-            else if (battleState.BlinkingTurns > 0)
-            {
-                battleState.ConsumeBlinkingTurn();
-                blinkingConsumed = 1;
+                return ConsumeFullTurnAndGrantBlinking(battleState);
             }
 
-            return new TurnOutcome(fullConsumed, blinkingConsumed, blinkingGranted);
+            if (battleState.BlinkingTurns > 0)
+            {
+                battleState.ConsumeBlinkingTurn();
+                return new TurnOutcome(0, 1, 0);
+            }
+
+            return new TurnOutcome(0, 0, 0);
         }
 
         private TurnOutcome ApplyNullOutcome(BattleState battleState)
         {
-            var blinkingConsumed = 0;
             var fullConsumed = 0;
-
-            blinkingConsumed += ConsumeBlinkingTurns(battleState, 2, ref fullConsumed);
+            var blinkingConsumed = ConsumeBlinkingTurns(battleState, 2, ref fullConsumed);
             return new TurnOutcome(fullConsumed, blinkingConsumed, 0);
         }
 
@@ -91,7 +80,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             return new TurnOutcome(fullConsumed, blinkingConsumed, 0);
         }
 
-        private TurnOutcome ApplyNeutralOutcome(BattleState battleState)
+        private TurnOutcome ConsumeSingleTurn(BattleState battleState)
         {
             if (battleState.BlinkingTurns > 0)
             {
@@ -106,6 +95,13 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             }
 
             return new TurnOutcome(0, 0, 0);
+        }
+
+        private TurnOutcome ConsumeFullTurnAndGrantBlinking(BattleState battleState)
+        {
+            battleState.ConsumeTurn();
+            battleState.GrantBlinkingTurn();
+            return new TurnOutcome(1, 0, 1);
         }
 
         private int ConsumeBlinkingTurns(BattleState battleState, int requiredBlinking, ref int fullConsumed)
@@ -127,40 +123,6 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             }
 
             return blinkingConsumed;
-        }
-
-        private TurnOutcome CalculateHealOutcome(BattleState battleState)
-        {
-            if (battleState.BlinkingTurns > 0)
-            {
-                battleState.ConsumeBlinkingTurn();
-                return new TurnOutcome(0, 1, 0);
-            }
-
-            if (battleState.FullTurns > 0)
-            {
-                battleState.ConsumeTurn();
-                return new TurnOutcome(1, 0, 0);
-            }
-
-            return new TurnOutcome(0, 0, 0);
-        }
-
-        private TurnOutcome CalculateSummonOutcome(BattleState battleState)
-        {
-            if (battleState.BlinkingTurns > 0)
-            {
-                battleState.ConsumeBlinkingTurn();
-                return new TurnOutcome(0, 1, 0);
-            }
-
-            if (battleState.FullTurns > 0)
-            {
-                battleState.ConsumeTurn();
-                return new TurnOutcome(1, 0, 0);
-            }
-
-            return new TurnOutcome(0, 0, 0);
         }
     }
 }

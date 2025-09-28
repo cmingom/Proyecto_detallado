@@ -1,6 +1,5 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using Shin_Megami_Tensei_Model.CombatSystem.Exceptions;
 using Shin_Megami_Tensei_Model.Domain.Entities;
 using Shin_Megami_Tensei_Model.Domain.States;
 
@@ -29,26 +28,13 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             }
 
             var currentTeam = battleState.GetCurrentTeam();
-            var availableUnits = GetAliveReserves(currentTeam);
-
-            battleView.ShowSummonMenu(availableUnits);
-            var unitChoice = battleView.GetSummonChoice(availableUnits.Count + CancelChoiceOffset);
-
-            if (IsInvalidSelection(unitChoice) || IsCancelledSelection(unitChoice, availableUnits.Count))
+            var selectedUnit = SelectUnit(GetAliveReserves(currentTeam));
+            if (selectedUnit == null)
             {
                 return false;
             }
 
-            var selectedUnit = availableUnits[unitChoice - 1];
-
-            try
-            {
-                return PlaceUnit(selectedUnit, currentTeam, battleState);
-            }
-            catch (ActionCancelledException)
-            {
-                return false;
-            }
+            return TryPlaceUnit(selectedUnit, currentTeam, battleState, skipTurnOutcome: false);
         }
 
         public bool ProcessInvitation(UnitInstanceContext summoner, BattleState battleState, Skill skill)
@@ -59,45 +45,32 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             }
 
             var currentTeam = battleState.GetCurrentTeam();
-            var availableUnits = GetInvitationCandidates(currentTeam);
-
-            battleView.ShowSummonMenu(availableUnits);
-            var unitChoice = battleView.GetSummonChoice(availableUnits.Count + CancelChoiceOffset);
-
-            if (IsInvalidSelection(unitChoice) || IsCancelledSelection(unitChoice, availableUnits.Count))
+            var selectedUnit = SelectUnit(GetInvitationCandidates(currentTeam));
+            if (selectedUnit == null)
             {
                 return false;
             }
 
-            var selectedUnit = availableUnits[unitChoice - 1];
             var previousHp = selectedUnit.HP;
             var needsRevive = selectedUnit.HP <= 0;
 
-            try
-            {
-                if (!PlaceUnit(selectedUnit, currentTeam, battleState, skipTurnOutcome: needsRevive))
-                {
-                    RestorePreviousHpIfNeeded(selectedUnit, previousHp, needsRevive);
-                    return false;
-                }
-
-                if (needsRevive)
-                {
-                    selectedUnit.HP = selectedUnit.MaxHP;
-                    battleView.ShowReviveResult(summoner, selectedUnit, skill.Name, selectedUnit.HP, showSeparator: false);
-                    ApplySummonOutcome(battleState);
-                }
-
-                return true;
-            }
-            catch (ActionCancelledException)
+            if (!TryPlaceUnit(selectedUnit, currentTeam, battleState, needsRevive))
             {
                 RestorePreviousHpIfNeeded(selectedUnit, previousHp, needsRevive);
                 return false;
             }
+
+            if (needsRevive)
+            {
+                selectedUnit.HP = selectedUnit.MaxHP;
+                battleView.ShowReviveResult(summoner, selectedUnit, skill.Name, selectedUnit.HP, showSeparator: false);
+                ApplySummonOutcome(battleState);
+            }
+
+            return true;
         }
 
-        private static void RestorePreviousHpIfNeeded(UnitInstanceContext unit, int previousHp, bool needsRevive)
+        private void RestorePreviousHpIfNeeded(UnitInstanceContext unit, int previousHp, bool needsRevive)
         {
             if (needsRevive)
             {
@@ -119,17 +92,20 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
                 .ToList();
         }
 
-        private static bool IsInvalidSelection(int choice)
+        private UnitInstanceContext? SelectUnit(List<UnitInstanceContext> candidates)
         {
-            return choice == InvalidChoice;
+            battleView.ShowSummonMenu(candidates);
+            var unitChoice = battleView.GetSummonChoice(candidates.Count + CancelChoiceOffset);
+
+            if (candidates.Count == 0 || IsInvalidSelection(unitChoice) || IsCancelledSelection(unitChoice, candidates.Count))
+            {
+                return null;
+            }
+
+            return candidates[unitChoice - 1];
         }
 
-        private static bool IsCancelledSelection(int choice, int optionCount)
-        {
-            return choice == optionCount + CancelChoiceOffset;
-        }
-
-        private bool PlaceUnit(UnitInstanceContext selectedUnit, TeamState currentTeam, BattleState battleState, bool skipTurnOutcome = false)
+        private bool TryPlaceUnit(UnitInstanceContext selectedUnit, TeamState currentTeam, BattleState battleState, bool skipTurnOutcome)
         {
             var positionOptions = BuildSamuraiPositionOptions(currentTeam);
             battleView.ShowSummonPositionMenu(positionOptions);
@@ -137,7 +113,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 
             if (IsInvalidSelection(positionChoice) || IsCancelledSelection(positionChoice, positionOptions.Count))
             {
-                throw new ActionCancelledException();
+                return false;
             }
 
             var (slot, existingUnit) = positionOptions[positionChoice - 1];
@@ -202,6 +178,16 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
         {
             turnOutcomeProcessor.ProcessSummonOutcome(battleState);
             battleState.IncrementCurrentPlayerSkillCounter();
+        }
+
+        private static bool IsInvalidSelection(int choice)
+        {
+            return choice == InvalidChoice;
+        }
+
+        private static bool IsCancelledSelection(int choice, int optionCount)
+        {
+            return choice == optionCount + CancelChoiceOffset;
         }
     }
 }

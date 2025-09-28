@@ -1,7 +1,9 @@
+using Shin_Megami_Tensei_Model.CombatSystem.Data;
+using Shin_Megami_Tensei_Model.CombatSystem.Parsers;
 using Shin_Megami_Tensei_Model.Domain.Entities;
 using Shin_Megami_Tensei_Model.CombatSystem.Rules;
 
-namespace Shin_Megami_Tensei_Model.CombatSystem.Core
+namespace Shin_Megami_Tensei_Model.CombatSystem.Data
 {
     public class GameManager
     {

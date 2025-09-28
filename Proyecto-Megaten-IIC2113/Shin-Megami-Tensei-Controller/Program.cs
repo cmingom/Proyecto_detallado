@@ -13,7 +13,7 @@ if (args.Length >= 2)
     string teamsFolderArg = args[0];
     string testFile = args[1];
     var testingView = View.BuildTestingView(testFile);
-    var testGame = new Game(testingView, teamsFolderArg);
+    var testGame = new GameController(testingView, teamsFolderArg);
     try
     {
         testGame.Play();
@@ -44,8 +44,8 @@ if (args.Length > 0)
 {
     string teamsFile = args[0];
     var view = View.BuildConsoleView();
-    var game = new Game(view, teamsFile);
-    game.Play();
+    var gameController = new GameController(view, teamsFile);
+    gameController.Play();
 }
 else
 {
@@ -56,8 +56,8 @@ else
     AnnounceTestCase(test);
 
     var view = View.BuildManualTestingView(test);
-    var game = new Game(view, teamsFolder);
-    game.Play();
+    var gameController = new GameController(view, teamsFolder);
+    gameController.Play();
 }
 
 string SelectTestFolder()

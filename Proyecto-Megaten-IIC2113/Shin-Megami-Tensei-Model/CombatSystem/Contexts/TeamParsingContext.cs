@@ -1,4 +1,4 @@
-using Shin_Megami_Tensei_Model.CombatSystem.Core;
+using Shin_Megami_Tensei_Model.CombatSystem.Parsers;
 
 namespace Shin_Megami_Tensei_Model.CombatSystem.Contexts
 {

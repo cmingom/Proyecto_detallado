@@ -1,7 +1,7 @@
-using System.Text.Json;
+﻿using System.Text.Json;
 using Shin_Megami_Tensei_Model.Domain.Entities;
 
-namespace Shin_Megami_Tensei_Model.CombatSystem.Core
+namespace Shin_Megami_Tensei_Model.CombatSystem.Data
 {
     public class GameDataLoader
     {
@@ -96,3 +96,4 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
         }
     }
 }
+

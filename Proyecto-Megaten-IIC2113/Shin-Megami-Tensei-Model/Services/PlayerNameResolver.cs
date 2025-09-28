@@ -1,7 +1,9 @@
-using Shin_Megami_Tensei_Model.CombatSystem.Core;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Shin_Megami_Tensei_Model.CombatSystem.Data;
 using Shin_Megami_Tensei_Model.Domain.Entities;
 
-namespace Shin_Megami_Tensei
+namespace Shin_Megami_Tensei_Model.Services
 {
     public class PlayerNameResolver
     {

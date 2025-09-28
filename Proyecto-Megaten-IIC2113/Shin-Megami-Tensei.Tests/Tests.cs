@@ -1,4 +1,5 @@
-﻿using Shin_Megami_Tensei_View;
+﻿using Shin_Megami_Tensei;
+using Shin_Megami_Tensei_View;
 
 namespace Shin_Megami_Tensei.Tests;
 
@@ -71,8 +72,8 @@ public class Tests
     private static void RunTest(string teamsFolder, string testFile)
     {
         var view = View.BuildTestingView(testFile);
-        var game = new Game(view, teamsFolder);
-        game.Play();
+        var gameController = new GameController(view, teamsFolder);
+        gameController.Play();
         
         var actualScript = view.GetScript();
         var expectedScript = File.ReadAllLines(testFile);
@@ -93,3 +94,4 @@ public class Tests
     private static string GetTheItemOrEmptyIfOutOfIndex(int index, IReadOnlyList<string> script)
         => index < script.Count ? script[index] : "";
 }
+

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Shin_Megami_Tensei_Model.Domain.Entities;
@@ -28,16 +28,13 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             }
 
             var availableTargets = GetAvailableTargetsForSkill(battleState, skill);
-            battleView.ShowTargetSelection(healer, availableTargets);
-
-            var targetChoice = battleView.GetTargetChoice(availableTargets.Count);
-            if (IsCancelledSelection(targetChoice, availableTargets.Count))
+            var selectedTarget = SelectHealTarget(healer, availableTargets);
+            if (selectedTarget == null)
             {
                 return false;
             }
 
-            var selectedTarget = availableTargets[targetChoice - 1];
-            if (!ExecuteHeal(healer, selectedTarget, battleState, skill))
+            if (!ExecuteHealAction(healer, selectedTarget, battleState, skill))
             {
                 return false;
             }
@@ -65,12 +62,20 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
                 .ToList();
         }
 
-        private bool IsCancelledSelection(int targetChoice, int targetCount)
+        private UnitInstanceContext? SelectHealTarget(UnitInstanceContext healer, List<UnitInstanceContext> targets)
         {
-            return targetChoice == InvalidChoice || targetChoice == targetCount + CancelChoiceOffset;
+            battleView.ShowTargetSelection(healer, targets);
+            var targetChoice = battleView.GetTargetChoice(targets.Count);
+
+            if (targets.Count == 0 || IsCancelledSelection(targetChoice, targets.Count))
+            {
+                return null;
+            }
+
+            return targets[targetChoice - 1];
         }
 
-        private bool ExecuteHeal(UnitInstanceContext healer, UnitInstanceContext target, BattleState battleState, Skill skill)
+        private bool ExecuteHealAction(UnitInstanceContext healer, UnitInstanceContext target, BattleState battleState, Skill skill)
         {
             battleView.StartActionBuffer();
 
@@ -120,12 +125,17 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             return true;
         }
 
-        private bool IsReviveSkill(Skill skill)
+        private static bool IsCancelledSelection(int targetChoice, int targetCount)
+        {
+            return targetChoice == InvalidChoice || targetChoice == targetCount + CancelChoiceOffset;
+        }
+
+        private static bool IsReviveSkill(Skill skill)
         {
             return skill.Name == "Recarm" || skill.Name == "Samarecarm";
         }
 
-        private int CalculateHealAmount(UnitInstanceContext target, Skill skill)
+        private static int CalculateHealAmount(UnitInstanceContext target, Skill skill)
         {
             if (skill.Power <= 0)
             {
@@ -136,7 +146,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             return Math.Max(1, amount);
         }
 
-        private int CalculateReviveHp(UnitInstanceContext target, Skill skill)
+        private static int CalculateReviveHp(UnitInstanceContext target, Skill skill)
         {
             if (skill.Power <= 0)
             {
@@ -147,7 +157,7 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             return Math.Max(1, amount);
         }
 
-        private void MoveUnitToReservesIfPossible(TeamState team, UnitInstanceContext unit)
+        private static void MoveUnitToReservesIfPossible(TeamState team, UnitInstanceContext unit)
         {
             var positions = new[] { 'A', 'B', 'C', 'D' };
 

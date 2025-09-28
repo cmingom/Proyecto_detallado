@@ -1,6 +1,6 @@
-using Shin_Megami_Tensei_Model.Domain.Entities;
+﻿using Shin_Megami_Tensei_Model.Domain.Entities;
 
-namespace Shin_Megami_Tensei_Model.CombatSystem.Core
+namespace Shin_Megami_Tensei_Model.CombatSystem.Parsers
 {
     public class UnitParser
     {
@@ -167,3 +167,4 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             => line.Contains(OPEN_PARENTHESIS) || line.Contains(CLOSE_PARENTHESIS) || line.Contains(COLON);
     }
 }
+

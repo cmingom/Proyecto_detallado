@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Shin_Megami_Tensei_Model.CombatSystem.Contexts;
 using Shin_Megami_Tensei_Model.CombatSystem.Enums;
@@ -48,17 +48,45 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 
         public bool ProcessSkill(UnitInstanceContext unit, BattleState battleState)
         {
+            var selectedSkill = RequestSkillSelection(unit);
+            if (selectedSkill == null)
+            {
+                return false;
+            }
+
+            return ExecuteSkillSelection(unit, battleState, selectedSkill);
+        }
+
+        public List<Skill> GetAvailableSkills(UnitInstanceContext unit)
+        {
+            var availableSkills = new List<Skill>();
+            foreach (var skillName in unit.Skills)
+            {
+                if (skillData.TryGetValue(skillName, out var skill) && unit.MP >= skill.Cost)
+                {
+                    availableSkills.Add(skill);
+                }
+            }
+
+            return availableSkills;
+        }
+
+        private Skill? RequestSkillSelection(UnitInstanceContext unit)
+        {
             var availableSkills = GetAvailableSkills(unit);
             battleView.ShowSkillSelection(unit, availableSkills);
 
             var skillChoice = battleView.GetSkillChoice(availableSkills.Count);
             if (IsCancelledSelection(skillChoice, availableSkills.Count))
             {
-                return false;
+                return null;
             }
 
-            var selectedSkill = availableSkills[skillChoice - 1];
+            return availableSkills[skillChoice - 1];
+        }
 
+        private bool ExecuteSkillSelection(UnitInstanceContext unit, BattleState battleState, Skill selectedSkill)
+        {
             if (IsHealSkill(selectedSkill))
             {
                 return healProcessor.ProcessHeal(unit, battleState, selectedSkill);
@@ -66,24 +94,12 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 
             if (IsInvitationSkill(selectedSkill))
             {
-                var executed = sabbatmaProcessor.ProcessInvitation(unit, battleState, selectedSkill);
-                if (executed)
-                {
-                    unit.MP -= selectedSkill.Cost;
-                }
-
-                return executed;
+                return ProcessInvitationSkill(unit, battleState, selectedSkill);
             }
 
             if (IsSabbatmaSkill(selectedSkill))
             {
-                var executed = sabbatmaProcessor.ProcessSabbatma(unit, battleState, selectedSkill);
-                if (executed)
-                {
-                    unit.MP -= selectedSkill.Cost;
-                }
-
-                return executed;
+                return ProcessSabbatmaSkill(unit, battleState, selectedSkill);
             }
 
             if (!basicSkillsProcessor.IsOffensiveSkillSupported(selectedSkill))
@@ -92,6 +108,28 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             }
 
             return ExecuteOffensiveSkill(unit, battleState, selectedSkill);
+        }
+
+        private bool ProcessInvitationSkill(UnitInstanceContext unit, BattleState battleState, Skill selectedSkill)
+        {
+            var executed = sabbatmaProcessor.ProcessInvitation(unit, battleState, selectedSkill);
+            if (executed)
+            {
+                unit.MP -= selectedSkill.Cost;
+            }
+
+            return executed;
+        }
+
+        private bool ProcessSabbatmaSkill(UnitInstanceContext unit, BattleState battleState, Skill selectedSkill)
+        {
+            var executed = sabbatmaProcessor.ProcessSabbatma(unit, battleState, selectedSkill);
+            if (executed)
+            {
+                unit.MP -= selectedSkill.Cost;
+            }
+
+            return executed;
         }
 
         private bool ExecuteOffensiveSkill(UnitInstanceContext unit, BattleState battleState, Skill selectedSkill)
@@ -112,26 +150,13 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
             return true;
         }
 
-        public List<Skill> GetAvailableSkills(UnitInstanceContext unit)
+        private static bool IsCancelledSelection(int skillChoice, int availableSkillCount)
         {
-            var availableSkills = new List<Skill>();
-            foreach (var skillName in unit.Skills)
-            {
-                if (skillData.TryGetValue(skillName, out var skill) && unit.MP >= skill.Cost)
-                {
-                    availableSkills.Add(skill);
-                }
-            }
-
-            return availableSkills;
+            return skillChoice == InvalidSkillSelection ||
+                   skillChoice == availableSkillCount + CancelSkillOffset;
         }
 
-        private static bool IsCancelledSelection(int skillChoice, int skillCount)
-        {
-            return skillChoice == InvalidSkillSelection || skillChoice == skillCount + CancelSkillOffset;
-        }
-
-        private bool IsHealSkill(Skill skill)
+        private static bool IsHealSkill(Skill skill)
         {
             return skill.Name is "Dia" or "Diarama" or "Diarahan" or "Recarm" or "Samarecarm";
         }
@@ -265,3 +290,4 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
         }
     }
 }
+

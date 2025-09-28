@@ -1,8 +1,8 @@
-using Shin_Megami_Tensei_Model.Domain.Entities;
+﻿using Shin_Megami_Tensei_Model.Domain.Entities;
 using Shin_Megami_Tensei_Model.CombatSystem.Contexts;
 
 
-namespace Shin_Megami_Tensei_Model.CombatSystem.Core
+namespace Shin_Megami_Tensei_Model.CombatSystem.Parsers
 {
     public class TeamParser
     {
@@ -132,3 +132,4 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
 
     }
 }
+

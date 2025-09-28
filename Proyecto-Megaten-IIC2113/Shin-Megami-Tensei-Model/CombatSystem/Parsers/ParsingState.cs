@@ -1,4 +1,4 @@
-namespace Shin_Megami_Tensei_Model.CombatSystem.Core
+﻿namespace Shin_Megami_Tensei_Model.CombatSystem.Parsers
 {
     public class ParsingState
     {
@@ -6,3 +6,4 @@ namespace Shin_Megami_Tensei_Model.CombatSystem.Core
         public bool ReadingTeam2 { get; set; }
     }
 }
+
